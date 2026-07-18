@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Libro — BiblioTech</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/book-detail.css">
+</head>
+
+<body class="book-detail-light">
+    <div class="dashboard-layout">
+        <!-- Barra Lateral (Sidebar) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                <span>BiblioTech</span>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="books.html" class="menu-item" id="menu-libros">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        <span>Libros</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="menu-item" id="menu-mi-lista" onclick="switchTab('mi-lista')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>Mi lista</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="menu-item" id="menu-lectura" onclick="switchTab('lectura')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        <span>Leídos</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-bottom">
+                <a href="settings.html" class="menu-item" id="menu-config">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>Configuración</span>
+                </a>
+                <a href="index.html" class="menu-item" id="menu-logout" onclick="logout()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Barra Superior (Topbar) -->
+            <header class="topbar">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <h1 class="topbar-title" id="currentSectionTitle">Detalle del Libro</h1>
+                </div>
+
+                <div class="topbar-actions">
+                    <a href="books.html" class="btn-back">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Volver al Catálogo
+                    </a>
+
+                    <div class="user-profile">
+                        <div class="avatar" id="avatarLetter">V</div>
+                        <div class="user-info">
+                            <span class="user-name" id="profileEmail">visitante@bibliotech.com</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Área de Detalle del Libro - NUEVO DISEÑO -->
+            <section class="dashboard-container">
+                <div class="book-detail-page" id="bookDetailPage">
+                    
+                    <!-- GRID PRINCIPAL: 2 columnas asimétricas -->
+                    <div class="detail-grid">
+                        
+                        <!-- COLUMNA IZQUIERDA (30%) - Portada y Acciones -->
+                        <div class="detail-left-col">
+                            
+                            <!-- Tarjeta de Portada -->
+                            <div class="cover-card">
+                                <!-- Etiqueta de Categoría Flotante -->
+                                <span class="category-badge" id="categoryBadge">Ficción</span>
+                                
+                                <!-- Contenedor de Portada -->
+                                <div class="cover-container">
+                                    <div class="book-cover" id="bookCover">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                
+                                <!-- Badge de Estado -->
+                                <span class="status-badge" id="statusBadge">
+                                    <span class="status-dot"></span>
+                                    Disponible
+                                </span>
+                            </div>
+                            
+                            <!-- Contenedor de Acciones -->
+                            <div class="actions-container">
+                                <!-- Sistema de Valoración -->
+                                <div class="rating-section">
+                                    <div class="stars-container">
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star">★</span>
+                                    </div>
+                                    <div class="rating-info">
+                                        <span class="rating-number" id="ratingNumber">4.5</span>
+                                        <span class="rating-votes" id="ratingVotes">7 votos</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Contador de Visitas -->
+                                <div class="visits-counter">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <span id="visitsCounter">7.2K visitas</span>
+                                </div>
+                                
+                                <!-- Contenedor de Botones en Horizontal -->
+                                <div class="buttons-row">
+                                    <!-- Botón Mi Lista -->
+                                    <button class="btn-add-list" id="btnAddList" onclick="toggleMyList()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                        <span id="listBtnText">Añadir a Mi Lista</span>
+                                    </button>
+                                    
+                                    <!-- Botón Principal Leer Ahora -->
+                                    <button class="btn-read-main" id="btnReadMain" onclick="openReader()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                        </svg>
+                                        <span>Leer Ahora</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- COLUMNA DERECHA (70%) - Información Técnica -->
+                        <div class="detail-right-col">
+                            <div class="info-panel">
+                                
+                                <!-- Título del Libro -->
+                                <h2 class="book-title" id="bookTitle">Cargando...</h2>
+                                <p class="book-author" id="bookAuthor">-</p>
+                                
+                                <!-- Sinopsis -->
+                                <div class="info-section">
+                                    <h3 class="info-section-title">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        </svg>
+                                        Sinopsis
+                                    </h3>
+                                    <p class="synopsis-text" id="synopsisText">Sin información disponible.</p>
+                                </div>
+                                
+                                <!-- Metadatos con Iconos -->
+                                <div class="info-section">
+                                    <h3 class="info-section-title">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                        </svg>
+                                        Información
+                                    </h3>
+                                    <div class="metadata-grid">
+                                        <div class="metadata-item">
+                                            <span class="metadata-label">Autor</span>
+                                            <span class="metadata-value" id="metaAuthor">-</span>
+                                        </div>
+                                        
+                                        <div class="metadata-item">
+                                            <span class="metadata-label">Idioma</span>
+                                            <span class="metadata-value" id="metaLanguage">Español</span>
+                                        </div>
+                                        
+                                        <div class="metadata-item">
+                                            <span class="metadata-label">Fecha de Registro</span>
+                                            <span class="metadata-value" id="metaDate">-</span>
+                                        </div>
+                                        
+                                        <div class="metadata-item">
+                                            <span class="metadata-label">Última Actualización</span>
+                                            <span class="metadata-value" id="metaUpdate">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Etiquetas (Tags) -->
+                                <div class="info-section">
+                                    <h3 class="info-section-title">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                                        </svg>
+                                        Etiquetas
+                                    </h3>
+                                    <div class="tags-container" id="tagsContainer">
+                                        <span class="tag-pill">Novela</span>
+                                        <span class="tag-pill">Drama</span>
+                                        <span class="tag-pill">Clásico</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SECCIÓN DE SUGERENCIAS -->
+                    <section class="suggestions-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                </svg>
+                                También te puede interesar
+                            </h3>
+                            <a href="books.html" class="section-link">Ver todos →</a>
+                        </div>
+                        <div class="suggestions-grid" id="suggestionsGrid">
+                            <!-- Minitarjetas de libros sugeridos -->
+                            <a href="#" class="mini-book-card" data-book-id="1">
+                                <div class="mini-book-cover">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="mini-book-title">El Gran Gatsby</h4>
+                                <p class="mini-book-author">F. Scott Fitzgerald</p>
+                            </a>
+                            
+                            <a href="#" class="mini-book-card" data-book-id="2">
+                                <div class="mini-book-cover">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="mini-book-title">1984</h4>
+                                <p class="mini-book-author">George Orwell</p>
+                            </a>
+                            
+                            <a href="#" class="mini-book-card" data-book-id="3">
+                                <div class="mini-book-cover">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="mini-book-title">Don Quijote</h4>
+                                <p class="mini-book-author">Miguel de Cervantes</p>
+                            </a>
+                            
+                            <a href="#" class="mini-book-card" data-book-id="4">
+                                <div class="mini-book-cover">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="mini-book-title">Cien Años</h4>
+                                <p class="mini-book-author">Gabriel García Márquez</p>
+                            </a>
+                        </div>
+                    </section>
+                    
+                    <!-- SECCIÓN DE COMENTARIOS -->
+                    <section class="comments-section">
+                        <div class="comments-header">
+                            <h3 class="comments-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                Comentarios
+                            </h3>
+                            <span class="comments-count" id="commentsCount">0 comentarios</span>
+                        </div>
+                        
+                        <!-- Formulario de Comentario -->
+                        <form class="comment-form" id="commentForm">
+                            <textarea class="comment-textarea" id="commentInput" placeholder="Escribe tu opinión sobre este libro..." rows="3"></textarea>
+                            <div class="comment-form-actions">
+                                <button type="button" class="btn-comment" id="submitComment">Publicar Comentario</button>
+                            </div>
+                        </form>
+                        
+                        <!-- Lista de Comentarios -->
+                        <div class="comments-list" id="commentsList">
+                            <!-- Los comentarios se cargarán dinámicamente -->
+                        </div>
+                    </section>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal de Notificación -->
+    <div class="toast-notification" id="toastNotification">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span id="toastMessage">Enlace copiado al portapapeles</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/books.js"></script>
+    <script src="js/bookDetail.js"></script>
+</body>
+
+</html>

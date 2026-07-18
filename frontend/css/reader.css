@@ -1,0 +1,805 @@
+/* ===================================
+   READER.CSS - Lector de PDF Cinematico
+   =================================== */
+
+/* Variables CSS */
+:root {
+    --reader-bg: #000000;
+    --reader-header-bg: rgba(10, 10, 15, 0.95);
+    --reader-text: #ffffff;
+    --reader-text-muted: #888899;
+    --reader-accent: #667eea;
+    --reader-accent-hover: #5a6fd6;
+    --reader-border: rgba(255, 255, 255, 0.1);
+    --reader-pill-bg: rgba(20, 20, 30, 0.95);
+    --reader-pill-border: rgba(255, 255, 255, 0.15);
+    --reader-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --reader-radius: 16px;
+    --reader-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tema Claro */
+.reader-light {
+    --reader-bg: #f5f5f5;
+    --reader-header-bg: rgba(255, 255, 255, 0.95);
+    --reader-text: #1a1a1a;
+    --reader-text-muted: #666666;
+    --reader-border: rgba(0, 0, 0, 0.1);
+    --reader-pill-bg: rgba(255, 255, 255, 0.95);
+    --reader-pill-border: rgba(0, 0, 0, 0.1);
+    --reader-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Tema Sepia */
+.reader-sepia {
+    --reader-bg: #f4ecd8;
+    --reader-header-bg: rgba(244, 236, 216, 0.95);
+    --reader-text: #3d3d3d;
+    --reader-text-muted: #666666;
+    --reader-border: rgba(0, 0, 0, 0.1);
+    --reader-pill-bg: rgba(255, 250, 235, 0.95);
+    --reader-pill-border: rgba(0, 0, 0, 0.1);
+    --reader-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Tema Negro Profundo */
+.reader-darker {
+    --reader-bg: #000000;
+    --reader-header-bg: rgba(0, 0, 0, 0.98);
+    --reader-text: #ffffff;
+    --reader-text-muted: #555555;
+    --reader-border: rgba(255, 255, 255, 0.05);
+    --reader-pill-bg: rgba(0, 0, 0, 0.98);
+    --reader-pill-border: rgba(255, 255, 255, 0.08);
+}
+
+/* Body del Reader */
+.reader-dark {
+    background: var(--reader-bg);
+    color: var(--reader-text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* ===================================
+   HEADER FIJO
+   =================================== */
+.reader-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: var(--reader-header-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 1000;
+    border-bottom: 1px solid var(--reader-border);
+    transition: var(--reader-transition);
+}
+
+.reader-header.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
+.header-left,
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-back {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--reader-border);
+    background: transparent;
+    color: var(--reader-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--reader-transition);
+}
+
+.btn-back:hover {
+    background: var(--reader-accent);
+    border-color: var(--reader-accent);
+    transform: translateX(-2px);
+}
+
+.btn-back svg {
+    width: 20px;
+    height: 20px;
+}
+
+.reader-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--reader-text);
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.page-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    color: var(--reader-text-muted);
+    background: var(--reader-pill-bg);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--reader-border);
+}
+
+#currentPage {
+    color: var(--reader-text);
+    font-weight: 600;
+}
+
+.page-separator {
+    opacity: 0.5;
+}
+
+.page-label {
+    margin-left: 4px;
+}
+
+.btn-settings {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--reader-border);
+    background: transparent;
+    color: var(--reader-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--reader-transition);
+}
+
+.btn-settings:hover {
+    background: var(--reader-accent);
+    border-color: var(--reader-accent);
+}
+
+.btn-settings svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ===================================
+   CONTENEDOR PRINCIPAL
+   =================================== */
+.reader-container {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--reader-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+}
+
+.pdf-viewer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+#pdfCanvas {
+    max-width: 100%;
+    max-height: 100%;
+    box-shadow: var(--reader-shadow);
+}
+
+/* Iframe para PDF */
+.pdf-iframe-wrapper {
+    width: 100%;
+    height: 100vh;
+    border: none;
+    position: relative;
+    z-index: 2;
+}
+
+.pdf-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #ffffff;
+    box-shadow: var(--reader-shadow);
+    display: block;
+}
+
+/* Placeholder */
+.pdf-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--reader-text-muted);
+    text-align: center;
+    padding: 40px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: var(--reader-bg);
+}
+
+.pdf-placeholder svg {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 24px;
+    opacity: 0.5;
+}
+
+.placeholder-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: var(--reader-text);
+}
+
+.placeholder-subtitle {
+    font-size: 14px;
+    margin: 0;
+    opacity: 0.7;
+}
+
+/* ===================================
+   BARRA DE CONTROL FLOTANTE
+   =================================== */
+.controls-pill {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--reader-pill-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--reader-pill-border);
+    border-radius: 50px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: var(--reader-shadow);
+    z-index: 1000;
+    transition: var(--reader-transition);
+}
+
+.controls-pill.hidden {
+    transform: translateX(-50%) translateY(100px);
+    opacity: 0;
+}
+
+.control-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--reader-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--reader-transition);
+}
+
+.control-btn:hover {
+    background: var(--reader-accent);
+    transform: scale(1.1);
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+.control-btn.active {
+    background: var(--reader-accent);
+    color: white;
+}
+
+.control-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+.control-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--reader-border);
+    margin: 0 4px;
+}
+
+.btn-info {
+    background: rgba(102, 126, 234, 0.2);
+    color: var(--reader-accent);
+}
+
+.btn-info:hover {
+    background: var(--reader-accent);
+    color: white;
+}
+
+/* ===================================
+   MODAL DE INFORMACIÓN
+   =================================== */
+.info-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--reader-transition);
+}
+
+.info-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.info-modal-content {
+    background: var(--reader-header-bg);
+    border: 1px solid var(--reader-border);
+    border-radius: var(--reader-radius);
+    width: 90%;
+    max-width: 500px;
+    box-shadow: var(--reader-shadow);
+    transform: scale(0.9) translateY(20px);
+    transition: var(--reader-transition);
+}
+
+.info-modal.active .info-modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.info-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--reader-border);
+}
+
+.info-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.btn-close-modal,
+.btn-close-settings {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    color: var(--reader-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--reader-transition);
+}
+
+.btn-close-modal:hover,
+.btn-close-settings:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-close-modal svg,
+.btn-close-settings svg {
+    width: 20px;
+    height: 20px;
+}
+
+.info-modal-body {
+    padding: 24px;
+    display: flex;
+    gap: 24px;
+}
+
+.info-book-cover {
+    width: 100px;
+    height: 140px;
+    background: linear-gradient(135deg, var(--reader-accent), #764ba2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.info-book-cover svg {
+    width: 40px;
+    height: 40px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.info-book-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.info-book-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: var(--reader-text);
+}
+
+.info-book-author {
+    font-size: 14px;
+    color: var(--reader-text-muted);
+    margin: 0 0 16px 0;
+}
+
+.info-book-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.info-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--reader-text-muted);
+}
+
+.info-meta-item svg {
+    width: 16px;
+    height: 16px;
+}
+
+.info-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.progress-bar {
+    height: 6px;
+    background: var(--reader-border);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--reader-accent), #764ba2);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: var(--reader-text-muted);
+}
+
+/* ===================================
+   MODAL DE CONFIGURACIÓN
+   =================================== */
+.settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--reader-transition);
+}
+
+.settings-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.settings-modal-content {
+    background: var(--reader-header-bg);
+    border: 1px solid var(--reader-border);
+    border-radius: var(--reader-radius);
+    width: 90%;
+    max-width: 400px;
+    box-shadow: var(--reader-shadow);
+    transform: scale(0.9) translateY(20px);
+    transition: var(--reader-transition);
+}
+
+.settings-modal.active .settings-modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--reader-border);
+}
+
+.settings-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.settings-body {
+    padding: 24px;
+}
+
+.setting-group {
+    margin-bottom: 24px;
+}
+
+.setting-group:last-child {
+    margin-bottom: 0;
+}
+
+.setting-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--reader-text);
+}
+
+.theme-options {
+    display: flex;
+    gap: 12px;
+}
+
+.theme-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: var(--reader-transition);
+}
+
+.theme-btn:hover {
+    transform: scale(1.1);
+}
+
+.theme-btn.active {
+    border-color: var(--reader-accent);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+.font-size-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.font-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    border: 1px solid var(--reader-border);
+    background: transparent;
+    color: var(--reader-text);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--reader-transition);
+}
+
+.font-btn:hover {
+    background: var(--reader-accent);
+    border-color: var(--reader-accent);
+}
+
+.font-size-value {
+    font-size: 16px;
+    font-weight: 600;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* ===================================
+   TOAST NOTIFICATION
+   =================================== */
+.toast-notification {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--reader-pill-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--reader-pill-border);
+    border-radius: 50px;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--reader-shadow);
+    z-index: 3000;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--reader-transition);
+}
+
+.toast-notification.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-notification svg {
+    width: 20px;
+    height: 20px;
+    color: #2ecc71;
+}
+
+#toastMessage {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--reader-text);
+}
+
+/* ===================================
+   ANIMACIONES
+   =================================== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* ===================================
+   RESPONSIVE
+   =================================== */
+@media (max-width: 768px) {
+    .reader-header {
+        padding: 0 16px;
+        height: 56px;
+    }
+    
+    .reader-title {
+        font-size: 14px;
+        max-width: 150px;
+    }
+    
+    .page-indicator {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .page-label {
+        display: none;
+    }
+    
+    .controls-pill {
+        bottom: 24px;
+        padding: 6px;
+    }
+    
+    .control-btn {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .control-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .info-modal-body {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .info-book-cover {
+        width: 80px;
+        height: 112px;
+    }
+    
+    .info-book-meta {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-back,
+    .btn-settings {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .btn-back svg,
+    .btn-settings svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .reader-title {
+        display: none;
+    }
+    
+    .control-divider {
+        margin: 0 2px;
+    }
+}
+
+/* ===================================
+   MODO PANTALLA COMPLETA
+   =================================== */
+:fullscreen .reader-header,
+:-webkit-full-screen .reader-header {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+:fullscreen .controls-pill,
+:-webkit-full-screen .controls-pill {
+    bottom: 24px;
+}
+
+:fullscreen .reader-container,
+:-webkit-full-screen .reader-container {
+    top: 0;
+}

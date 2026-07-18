@@ -1,0 +1,1410 @@
+/* ==========================================================================
+   PÁGINA DE AUTENTICACIÓN — DISEÑO DE PANEL DIVIDIDO RESPONSIVO (SPLIT SCREEN)
+   ========================================================================== */
+
+/* Reglas generales para reiniciar márgenes y rellenos estándar */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilos de la página base de autenticación */
+.auth-page {
+    font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    background: #FFFFFF; /* Fondo blanco puro */
+    color: #1a1a1a;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Contenedor principal de los paneles y formularios */
+.auth-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    background: #FFFFFF;
+}
+
+/* Estilos base de la decoración con forma de óvalo/círculo azul */
+.bg-decoration {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(
+        145deg,
+        #1E4B65 0%,   /* Azul océano oscuro */
+        #3A6B82 35%,
+        #7A9AAD 65%,
+        #BAC8D3 100%  /* Gris azulado */
+    );
+    z-index: 0;
+    pointer-events: none; /* Asegura que no interfiera con clics de usuario */
+}
+
+/* ==========================================================================
+   VISTA PARA LAPTOP / PC / TABLET (PANTALLAS MEDIANAS Y GRANDES >= 577px)
+   ========================================================================== */
+@media (min-width: 577px) {
+    /* Cuerpo de la página en PC: diseño pantalla completa real (100vw y 100vh) sin márgenes ni paddings */
+    .auth-page {
+        background: #FFFFFF; /* Fondo base blanco */
+        padding: 0;
+        margin: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* El contenedor ahora ocupa toda la pantalla de forma real (100% real de ancho y alto) */
+    .auth-wrapper {
+        width: 100vw;
+        height: 100vh;
+        max-width: 100vw;
+        min-height: 100vh;
+        background: #FFFFFF;
+        box-shadow: none; /* Eliminación de sombras flotantes anteriores */
+        border-radius: 0; /* Eliminación de bordes redondeados externos para un diseño Full Screen */
+        overflow: hidden; /* Evita cualquier desbordamiento de elementos */
+        display: flex;
+    }
+
+    /* Ocultar el fondo móvil específico en la vista desktop */
+    .mobile-bg {
+        display: none !important;
+    }
+
+    /* Contenedores de formularios individuales (ocupan exactamente la mitad 50%) */
+    .form-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+        background: #FFFFFF;
+    }
+
+    /* Inicialmente el Login es el panel activo y visible en la izquierda */
+    .login-container {
+        z-index: 2;
+        opacity: 1;
+    }
+
+    /* Inicialmente el Registro está detrás y oculto en la izquierda */
+    .register-container {
+        z-index: 1;
+        opacity: 0;
+    }
+
+    /* Contenedor del panel estético deslizante (ocupa el 50% de la derecha inicialmente) */
+    .overlay-container {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 50%;
+        height: 100%;
+        overflow: hidden; /* Impide que el contenido deslizante se desborde */
+        transition: transform 0.6s ease-in-out;
+        z-index: 10;
+        background: #1E4B65; /* Color base de fondo azul para el panel estético */
+    }
+
+    /* Estructura del área interna del panel estético (ocupa el doble del contenedor para poder deslizarse) */
+    .overlay {
+        background: linear-gradient(
+            135deg,
+            #1E4B65 0%,
+            #3A6B82 50%,
+            #1E4B65 100%
+        ); /* Gradiente azul profundo premium para todo el panel deslizante */
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
+        left: -100%;
+        height: 100%;
+        width: 200%;
+        transform: translateX(0);
+        transition: transform 0.6s ease-in-out;
+        color: #FFFFFF;
+    }
+
+    /* Estilos específicos de los paneles de texto que acompañan la estética del overlay */
+    .overlay-panel {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding: 0 40px;
+        text-align: center;
+        top: 0;
+        height: 100%;
+        width: 50%; /* Ocupa la mitad del overlay de 200% (es decir, el 100% del contenedor visible) */
+        transform: translateX(0);
+        transition: transform 0.6s ease-in-out;
+        box-sizing: border-box;
+        z-index: 2; /* Por encima del círculo decorativo */
+    }
+
+    /* Panel izquierdo (bienvenida al crear cuenta) */
+    .overlay-left {
+        transform: translateX(-20%);
+    }
+
+    /* Panel derecho (bienvenida al iniciar sesión) */
+    .overlay-right {
+        right: 0;
+        transform: translateX(0);
+    }
+
+    /* Títulos limpios y de alto contraste dentro de los paneles deslizantes */
+    .overlay-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #FFFFFF;
+        margin-bottom: 15px;
+        letter-spacing: -0.5px;
+    }
+
+    /* Descripciones estilizadas dentro de los paneles deslizantes */
+    .overlay-desc {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 320px;
+    }
+
+    /* El círculo/óvalo azul anclado estrictamente dentro de su propio panel */
+    .overlay-bg {
+        top: -120px;
+        right: -80px;
+        width: 440px;
+        height: 440px;
+        z-index: 1; /* Detrás de los textos de bienvenida */
+    }
+
+    /* ==========================================================================
+       TRANSICIÓN DINÁMICA (Intercambio de posiciones con deslizamiento suave)
+       ========================================================================== */
+
+    /* Al activar la clase '.right-panel-active' en el contenedor principal: */
+
+    /* 1. El panel estético se desplaza suavemente hacia la izquierda */
+    .auth-wrapper.right-panel-active .overlay-container {
+        transform: translateX(-100%);
+    }
+
+    /* 2. El fondo y contenido interno de la máscara se desplazan en sentido contrario para sincronizarse */
+    .auth-wrapper.right-panel-active .overlay {
+        transform: translateX(50%);
+    }
+
+    /* Desplazamientos internos de los paneles de texto para dar un efecto de profundidad/paralaje */
+    .auth-wrapper.right-panel-active .overlay-left {
+        transform: translateX(0);
+    }
+
+    .auth-wrapper.right-panel-active .overlay-right {
+        transform: translateX(20%);
+    }
+
+    /* 3. El formulario de Login se mueve a la derecha y se oculta gradualmente */
+    .auth-wrapper.right-panel-active .login-container {
+        transform: translateX(100%);
+        opacity: 0;
+        z-index: 1;
+    }
+
+    /* 4. El formulario de Registro se mueve a la derecha, revelándose con opacidad */
+    .auth-wrapper.right-panel-active .register-container {
+        transform: translateX(100%);
+        opacity: 1;
+        z-index: 5;
+    }
+}
+
+/* ==========================================================================
+   DISEÑO INTERNO DEL PANEL DEL FORMULARIO (ESTRUCTURA DE LOS CAMPOS)
+   ========================================================================== */
+.form-panel {
+    width: 100%;
+    max-width: 400px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Estilo del Título del Formulario */
+.form-title {
+    font-size: clamp(2rem, 5vw, 2.5rem);
+    font-weight: 800;
+    color: #1E4B65;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+}
+
+.form-subtitle {
+    font-size: 0.95rem;
+    color: #5c768d;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+/* Texto de switch (enlace alternador) */
+.form-switch {
+    font-size: 0.88rem;
+    color: #555;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+/* Enlaces interactivos principales */
+.link-action {
+    color: #1E4B65;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.link-action:hover {
+    color: #163a4f;
+    text-decoration: underline;
+}
+
+/* Estructura del formulario interno */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Inputs con diseño estilo píldora de color gris azulado claro (#B2C3D2) */
+.input-pill {
+    display: flex;
+    align-items: center;
+    background: #B2C3D2; /* Color gris azulado claro requerido */
+    border-radius: 50px;  /* Redondeado estilo píldora completo */
+    padding: 0 22px;
+    min-height: 52px;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Enfoque del input píldora */
+.input-pill:focus-within {
+    background: #a5b8c9; /* Variación ligera al enfocar */
+    box-shadow: 0 0 0 2px rgba(30, 75, 101, 0.15);
+}
+
+/* Ajustes si el input contiene un icono */
+.input-pill.has-icon {
+    gap: 10px;
+}
+
+/* Iconos de entrada alineados */
+.input-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: #1a1a1a;
+    opacity: 0.75;
+}
+
+/* Input nativo limpio */
+.input-pill input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.95rem;
+    color: #1a1a1a;
+    padding: 14px 0;
+    width: 100%;
+}
+
+/* Estilo del placeholder oscuro dentro del input */
+.input-pill input::placeholder {
+    color: #3d4f5c;
+    opacity: 0.85;
+}
+
+/* Enlace de contraseña olvidada */
+.link-forgot {
+    font-size: 0.82rem;
+    color: #1E4B65;
+    text-decoration: none;
+    margin-top: -4px;
+    align-self: flex-start;
+    transition: color 0.2s ease;
+}
+
+.link-forgot:hover {
+    color: #163a4f;
+    text-decoration: underline;
+}
+
+/* Fila de acción del botón (alineado estrictamente a la derecha) */
+.btn-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 6px;
+}
+
+/* Botones con estilo píldora gris azulado claro (#B2C3D2) */
+.btn-pill {
+    background: #B2C3D2; /* Color gris azulado claro requerido */
+    border: none;
+    border-radius: 50px; /* Redondeado estilo píldora completo */
+    padding: 12px 36px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+    min-width: 120px;
+}
+
+/* Hover del botón píldora */
+.btn-pill:hover {
+    background: #a5b8c9;
+}
+
+/* Efecto de clic activo */
+.btn-pill:active {
+    transform: scale(0.97);
+}
+
+/* Mensajes de error o éxito del formulario */
+.form-message {
+    font-size: 0.85rem;
+    min-height: 1.2em;
+    text-align: center;
+    color: #c0392b;
+    margin-top: 4px;
+}
+
+.form-message.success {
+    color: #1E4B65;
+}
+
+/* Pie de página para los iconos de redes sociales centrados */
+.social-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 22px;
+    margin-top: 40px;
+}
+
+/* Iconos de redes sociales individuales circulares */
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #111;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.social-icon:hover {
+    transform: scale(1.08);
+    opacity: 0.85;
+}
+
+.social-icon span {
+    line-height: 1;
+}
+
+.social-icon svg {
+    display: block;
+}
+
+
+/* ==========================================================================
+   VISTA PARA TELÉFONO MÓVIL (PANTALLAS PEQUEÑAS <= 576px)
+   ========================================================================== */
+@media (max-width: 576px) {
+    /* Ocultar el contenedor deslizante overlay de PC en el móvil */
+    .overlay-container {
+        display: none !important;
+    }
+
+    /* Hacer que la página se pinte completamente blanca en el fondo base */
+    .auth-page {
+        background: #FFFFFF;
+        align-items: flex-start; /* Permite scroll limpio si la pantalla es muy pequeña */
+    }
+
+    /* El wrapper móvil llena completamente la pantalla */
+    .auth-wrapper {
+        min-height: 100vh;
+        width: 100%;
+        background: #FFFFFF;
+        display: block;
+    }
+
+    /* El óvalo decorativo con gradiente se coloca estéticamente arriba del todo en móvil */
+    .mobile-bg {
+        display: block !important;
+        top: -120px;
+        right: -60px;
+        width: 320px;
+        height: 320px;
+        z-index: 1; /* Por debajo de los formularios pero visible como fondo superior */
+    }
+
+    /* Contenedor de formulario móvil (colapsado a una sola columna vertical) */
+    .form-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Padding superior para que el contenido empiece debajo del óvalo */
+        padding: 130px 24px 24px 24px;
+        transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s ease;
+        background: transparent; /* Permite ver la decoración de fondo del wrapper */
+    }
+
+    /* El Login se ve activo y centrado por defecto en móvil */
+    .login-container {
+        opacity: 1;
+        visibility: visible;
+        z-index: 5;
+    }
+
+    /* El Registro permanece oculto y desplazado hacia la derecha por defecto en móvil */
+    .register-container {
+        opacity: 0;
+        visibility: hidden;
+        z-index: 1;
+        transform: translateX(30px);
+    }
+
+    /* Transición de desvanecimiento suave (fade) y deslizamiento limpio en móvil al registrarse */
+    .auth-wrapper.right-panel-active .login-container {
+        opacity: 0;
+        visibility: hidden;
+        z-index: 1;
+        transform: translateX(-30px);
+    }
+
+    .auth-wrapper.right-panel-active .register-container {
+        opacity: 1;
+        visibility: visible;
+        z-index: 5;
+        transform: translateX(0);
+    }
+
+    /* Relleno optimizado para paneles de formulario móviles */
+    .form-panel {
+        padding: 12px 0;
+        z-index: 10;
+    }
+
+    /* Título ligeramente ajustado para móvil */
+    .form-title {
+        font-size: 2.2rem;
+    }
+
+    /* Ajuste de margen inferior en switch */
+    .form-switch {
+        margin-bottom: 20px;
+    }
+
+    /* Redes sociales alineadas en móvil */
+    .social-footer {
+        margin-top: 32px;
+    }
+}
+
+
+/* ==========================================================================
+   PÁGINA DE GESTIÓN DE BIBLIOTECA (BIBLIOTECH DASHBOARD)
+   ========================================================================== */
+
+body.users-page {
+    font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    background: #F4F7FC; /* Gris claro/azulado moderno */
+    color: #333333;
+    min-height: 100vh;
+    display: flex;
+    overflow-x: hidden;
+}
+
+/* Diseño de Dashboard Moderno con Sidebar */
+.dashboard-layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Barra Lateral (Sidebar) */
+.sidebar {
+    width: 260px;
+    background: #1E4B65; /* Azul océano oscuro premium */
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    z-index: 100;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-logo svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+}
+
+.sidebar-menu {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 12px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.menu-item:hover, .menu-item.active {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.menu-item.active {
+    background: #BAC8D3;
+    color: #1E4B65;
+}
+
+.menu-item svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Sidebar bottom section - pushed to bottom with margin-top: auto */
+.sidebar-bottom {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Contenido Principal */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* Evita desbordamiento con flexbox */
+}
+
+/* Barra Superior (Topbar) */
+.topbar {
+    height: 70px;
+    background: #FFFFFF;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    z-index: 90;
+}
+
+.topbar-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1E4B65;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Botón Volver al Catálogo - pequeño y elegante */
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #F4F7FC;
+    color: #1E4B65;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid #E0E8F0;
+}
+
+.btn-back:hover {
+    background: #E8EEF4;
+    transform: translateX(-2px);
+}
+
+.btn-back svg {
+    width: 16px;
+    height: 16px;
+    stroke: #1E4B65;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background: #F4F7FC;
+    border-radius: 20px;
+    padding: 0 16px;
+    height: 40px;
+    width: 240px;
+}
+
+.search-bar input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 0.9rem;
+    color: #333;
+    padding-left: 8px;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #BAC8D3;
+    color: #1E4B65;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #1E4B65;
+}
+
+.user-info {
+    font-size: 0.85rem;
+}
+
+.user-name {
+    font-weight: 700;
+    color: #333;
+}
+
+.user-role {
+    color: #888;
+}
+
+/* ==========================================================================
+   BARRA DE HERRAMIENTAS COMBINADA: BUSCADOR + FILTROS
+   ========================================================================== */
+
+.toolbar-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Buscador integrado en la barra de herramientas */
+.toolbar-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 240px;
+    max-width: 360px;
+    padding: 10px 16px;
+    background: #F8FAFC;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 50px;
+    transition: all 0.25s ease;
+}
+
+.toolbar-search:focus-within {
+    border-color: #1E4B65;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(30, 75, 101, 0.1);
+}
+
+.toolbar-search svg {
+    width: 18px;
+    height: 18px;
+    color: #888;
+    flex-shrink: 0;
+}
+
+.toolbar-search input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    color: #333;
+    outline: none;
+}
+
+.toolbar-search input::placeholder {
+    color: #999;
+}
+
+/* Filtros de género */
+.toolbar-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex: 2;
+}
+
+/* ==========================================================================
+   BARRA DE FILTROS POR GÉNERO (Legacy - mantener para compatibilidad)
+   ========================================================================== */
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    background: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.filter-btn {
+    padding: 8px 18px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 50px;
+    background: transparent;
+    color: #555555;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.filter-btn:hover {
+    border-color: #1E4B65;
+    color: #1E4B65;
+    background: rgba(30, 75, 101, 0.05);
+}
+
+.filter-btn.active {
+    background: #1E4B65;
+    border-color: #1E4B65;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(30, 75, 101, 0.25);
+}
+
+/* ==========================================================================
+   ÁREA DE TRABAJO DE LIBROS
+   ========================================================================== */
+.dashboard-container {
+    padding: 32px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: #111111;
+}
+
+/* Botón Añadir Libro Estilo Moderno */
+.btn-add {
+    background: #1E4B65;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(30, 75, 101, 0.3);
+}
+
+.btn-add:hover {
+    background: #3A6B82;
+    transform: translateY(-2px);
+}
+
+.btn-add svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* ==========================================================================
+   ANIMACIONES DE TARJETAS - FADE-IN + SLIDE-UP
+   ========================================================================== */
+
+/* Animación de entrada para las tarjetas de libros */
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animación de salida para ocultamiento suave */
+@keyframes fadeOutSlideDown {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+/* ==========================================================================
+   GRID DE LIBROS
+   ========================================================================== */
+
+/* Grid de Libros */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+/* ==========================================================================
+   TARJETA DE LIBRO INDIVIDUAL - EFECTO MINIMALISTA DE ELEVACIÓN
+   ========================================================================== */
+
+/* Tarjeta de Libro Individual */
+.book-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    /* Estado inicial para la animación */
+    opacity: 0;
+    animation: fadeInSlideUp 0.4s ease-out forwards;
+}
+
+/* Efecto minimalista de elevación limpia al hacer hover */
+.book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(30, 75, 101, 0.15);
+}
+
+/* Efecto de presión al hacer clic */
+.book-card:active {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(30, 75, 101, 0.1);
+}
+
+/* Tarjeta oculta con animación de salida */
+.book-card.hiding {
+    animation: fadeOutSlideDown 0.3s ease-out forwards;
+}
+
+.book-card-header {
+    height: 160px;
+    background: linear-gradient(135deg, #3A6B82 0%, #1E4B65 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+}
+
+.book-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: #FFFFFF;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.book-badge.disponible {
+    background: rgba(46, 204, 113, 0.25);
+    color: #2ecc71;
+}
+
+.book-badge.no-disponible {
+    background: rgba(231, 76, 60, 0.25);
+    color: #e74c3c;
+}
+
+.book-cover-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.9;
+}
+
+.book-cover-placeholder svg {
+    width: 48px;
+    height: 48px;
+}
+
+.book-card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.book-title {
+    font-size: 1.15rem;
+    font-weight: 750;
+    color: #111111;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.book-author {
+    font-size: 0.9rem;
+    color: #555555;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.book-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #888888;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid #F0F4F8;
+    margin-bottom: 16px;
+}
+
+.book-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.book-btn {
+    flex: 1;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.book-btn-edit {
+    background: #BAC8D3;
+    color: #1E4B65;
+}
+
+.book-btn-edit:hover {
+    background: #a2b7c7;
+}
+
+.book-btn-delete {
+    background: #FEECEB;
+    color: #EB5757;
+}
+
+.book-btn-delete:hover {
+    background: #fcd8d6;
+}
+
+/* Panel de detalle de libro */
+.book-detail-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 440px;
+    max-width: 100%;
+    height: 100%;
+    background: #F8FBFF;
+    box-shadow: -18px 0 60px rgba(16, 50, 79, 0.12);
+    transform: translateX(110%);
+    transition: transform 0.35s ease;
+    z-index: 1200;
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+}
+
+.book-detail-panel.active {
+    transform: translateX(0);
+}
+
+.detail-panel-inner {
+    width: 100%;
+    padding: 34px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    overflow-y: auto;
+}
+
+.detail-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 12px 30px rgba(23, 65, 116, 0.08);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.detail-close:hover {
+    transform: scale(1.05);
+    background: #FFFFFF;
+}
+
+.detail-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.detail-tag {
+    display: inline-flex;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    background: rgba(30, 75, 101, 0.08);
+    color: #1E4B65;
+    margin-bottom: 14px;
+}
+
+.detail-tag.available {
+    background: rgba(46, 204, 113, 0.14);
+    color: #16A34A;
+}
+
+.detail-tag.borrowed {
+    background: rgba(231, 76, 60, 0.14);
+    color: #C0392B;
+}
+
+#detailPanelTitle {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: #112031;
+    margin-bottom: 8px;
+}
+
+.detail-subtitle {
+    color: #4F6172;
+    line-height: 1.7;
+    max-width: 360px;
+}
+
+.detail-panel-body {
+    display: grid;
+    grid-template-columns: 1.4fr 0.9fr;
+    gap: 24px;
+}
+
+.detail-main {
+    display: grid;
+    gap: 20px;
+}
+
+.detail-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #FFFFFF;
+    border-radius: 18px;
+    padding: 18px 18px 16px;
+    box-shadow: 0 10px 28px rgba(78, 93, 126, 0.07);
+}
+
+.detail-field label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #5B6B7D;
+}
+
+.detail-field p {
+    color: #172B4D;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.detail-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: 0 10px 28px rgba(78, 93, 126, 0.07);
+}
+
+.detail-notes textarea {
+    width: 100%;
+    min-height: 220px;
+    resize: vertical;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: #112031;
+    line-height: 1.68;
+    background: #F7FBFF;
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.detail-aside {
+    display: grid;
+    gap: 16px;
+}
+
+.detail-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 18px 16px;
+    box-shadow: 0 10px 30px rgba(78, 93, 126, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.detail-card span {
+    font-size: 0.78rem;
+    color: #6B7A8C;
+}
+
+.detail-card strong {
+    font-size: 1.1rem;
+    color: #112031;
+    font-weight: 700;
+}
+
+/* Modal Formulario Estilizado */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background: #FFFFFF;
+    width: 480px;
+    max-width: 90%;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    position: relative;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+}
+
+.modal.active .modal-content {
+    transform: translateY(0);
+}
+
+.modal-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: #111;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1E4B65;
+    margin-bottom: 20px;
+}
+
+/* Menú Móvil Hamburguesa */
+.menu-toggle {
+    display: none;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #1E4B65;
+}
+
+.menu-toggle svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Responsividad para Móviles y Tabletas */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -260px;
+        top: 0;
+        bottom: 0;
+        height: 100vh;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .topbar {
+        padding: 0 16px;
+    }
+
+    .search-bar {
+        display: none;
+    }
+
+    .dashboard-container {
+        padding: 20px;
+    }
+
+    .books-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .book-detail-panel {
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        transform: translateY(100%);
+        height: auto;
+        max-height: 95%;
+        border-top-left-radius: 24px;
+        border-top-right-radius: 24px;
+    }
+
+    .book-detail-panel.active {
+        transform: translateY(0);
+    }
+
+    .detail-panel-inner {
+        padding: 24px 20px;
+    }
+
+    .detail-panel-body {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-close {
+        top: 18px;
+        right: 18px;
+    }
+}
+

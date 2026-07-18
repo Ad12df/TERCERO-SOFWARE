@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — BiblioTech</title>
+    <!-- Importación de las hojas de estilo personalizadas -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/book-detail.css">
+</head>
+
+<body class="users-page">
+    <div class="dashboard-layout">
+        <!-- Barra Lateral (Sidebar) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                <span>BiblioTech</span>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" class="menu-item active" id="menu-libros" onclick="switchTab('libros')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        <span>Libros</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="menu-item" id="menu-mi-lista" onclick="switchTab('mi-lista')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>Mi lista</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="menu-item" id="menu-lectura" onclick="switchTab('lectura')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>Leídos</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-bottom">
+                <a href="#" class="menu-item" id="menu-config" onclick="switchTab('configuracion')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>Configuración</span>
+                </a>
+                <a href="index.html" class="menu-item" id="menu-logout" onclick="logout()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Barra Superior (Topbar) -->
+            <header class="topbar">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <h1 class="topbar-title" id="currentSectionTitle">Catálogo de Libros</h1>
+                </div>
+
+                <div class="topbar-actions">
+                    <div class="user-profile">
+                        <div class="avatar" id="avatarLetter">A</div>
+                        <div class="user-info">
+                            <p class="user-name" id="profileEmail">Admin@bibliotech.com</p>
+                            <p class="user-role">Bibliotecario Administrador</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Área de Trabajo Principal (Libros) -->
+            <section class="dashboard-container">
+                <div class="section-header">
+                    <h2 class="section-title">Todos los Libros</h2>
+                    <button class="btn-add" onclick="openAddModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>Añadir Libro</span>
+                    </button>
+                </div>
+
+                <!-- Barra de Herramientas Combinada: Buscador + Filtros -->
+                <div class="toolbar-container">
+                    <div class="toolbar-search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Buscar libros, autores..." oninput="filterBooks()">
+                    </div>
+                    <div class="toolbar-filters" id="filterBar">
+                        <button class="filter-btn active" data-genre="Todos" onclick="filterByGenre('Todos')">Todos</button>
+                        <button class="filter-btn" data-genre="Realismo Mágico" onclick="filterByGenre('Realismo Mágico')">Realismo Mágico</button>
+                        <button class="filter-btn" data-genre="Clásico" onclick="filterByGenre('Clásico')">Clásico</button>
+                        <button class="filter-btn" data-genre="Infantil / Fantasía" onclick="filterByGenre('Infantil / Fantasía')">Infantil / Fantasía</button>
+                        <button class="filter-btn" data-genre="Ficción / Filosofía" onclick="filterByGenre('Ficción / Filosofía')">Ficción / Filosofía</button>
+                    </div>
+                </div>
+
+                <!-- Grid de Libros dinámico -->
+                <div class="books-grid" id="booksGrid">
+                    <!-- Se llenará dinámicamente con JavaScript -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Formulario para añadir/editar libros -->
+    <div class="modal" id="bookModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px;">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </span>
+            <h3 class="modal-title" id="modalTitle">Registrar Nuevo Libro</h3>
+            
+            <form class="auth-form" id="bookForm" onsubmit="return false;">
+                <div class="input-pill">
+                    <input id="bookTitle" type="text" placeholder="Título del libro" required>
+                </div>
+                
+                <div class="input-pill">
+                    <input id="bookAuthor" type="text" placeholder="Autor" required>
+                </div>
+
+                <div class="input-pill">
+                    <input id="bookGenre" type="text" placeholder="Categoría / Género" required>
+                </div>
+
+                <div class="input-pill">
+                    <input id="bookYear" type="number" placeholder="Año de Publicación" required>
+                </div>
+
+                <div class="btn-row" style="margin-top: 15px;">
+                    <button type="button" class="btn-pill" id="saveButton" onclick="saveBook()">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Carga de los scripts de conexión de API y lógica de gestión -->
+    <script src="js/api.js"></script>
+    <script src="js/books.js"></script>
+    <script src="js/bookDetail.js"></script>
+
+    <!-- Overlay de fondo para el panel de detalle -->
+    <div class="detail-overlay" id="detailOverlay"></div>
+
+    <!-- Panel de Detalle de Libro -->
+    <aside class="book-detail-panel" id="bookDetailPanel" aria-hidden="true">
+        <div class="detail-header">
+            <div class="detail-header-top">
+                <h2 class="detail-title" id="detailPanelTitle">Detalle del Libro</h2>
+                <button class="detail-close" onclick="closeBookDetail()" aria-label="Cerrar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <span class="detail-status-tag available" id="detailStatusTag">Disponible</span>
+        </div>
+
+        <div class="detail-content">
+            <!-- Información del libro -->
+            <div class="detail-section">
+                <h3 class="detail-section-title">Información</h3>
+                <div class="detail-info-grid">
+                    <div class="detail-info-item">
+                        <p class="detail-info-label">Autor</p>
+                        <p class="detail-info-value" id="detailBookAuthor">-</p>
+                    </div>
+                    <div class="detail-info-item">
+                        <p class="detail-info-label">Género</p>
+                        <p class="detail-info-value" id="detailBookGenre">-</p>
+                    </div>
+                    <div class="detail-info-item">
+                        <p class="detail-info-label">Año</p>
+                        <p class="detail-info-value" id="detailBookYear">-</p>
+                    </div>
+                    <div class="detail-info-item">
+                        <p class="detail-info-label">ID</p>
+                        <p class="detail-info-value" id="detailBookId">#-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sinopsis -->
+            <div class="detail-section">
+                <h3 class="detail-section-title">Sinopsis</h3>
+                <div class="detail-synopsis">
+                    <p id="detailSynopsis">Sin información disponible.</p>
+                </div>
+            </div>
+
+            <!-- Calificación -->
+            <div class="detail-section">
+                <h3 class="detail-section-title">Calificación</h3>
+                <div class="detail-rating">
+                    <div class="star-rating">
+                        <span class="star" onclick="saveRating(1)">☆</span>
+                        <span class="star" onclick="saveRating(2)">☆</span>
+                        <span class="star" onclick="saveRating(3)">☆</span>
+                        <span class="star" onclick="saveRating(4)">☆</span>
+                        <span class="star" onclick="saveRating(5)">☆</span>
+                    </div>
+                    <span class="rating-value" id="ratingValue">(0.0)</span>
+                </div>
+            </div>
+
+            <!-- Comentarios -->
+            <div class="detail-section">
+                <h3 class="detail-section-title">Comentarios</h3>
+                <div class="detail-comments" id="commentsList">
+                    <!-- Comentarios se cargan dinámicamente -->
+                </div>
+                <div class="add-comment-form">
+                    <textarea id="newCommentInput" placeholder="Escribe tu opinión sobre este libro..."></textarea>
+                    <button type="button" onclick="addComment()">Publicar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-footer">
+            <label class="detail-notes-label">Notas Personales</label>
+            <textarea class="detail-notes-textarea" id="detailNotes" placeholder="Añade tus notas, observaciones o pensamientos sobre este libro..."></textarea>
+            <div class="detail-notes-actions">
+                <button class="btn-save-notes" onclick="saveBookNotes()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Guardar Notas
+                </button>
+            </div>
+        </div>
+    </aside>
+
+</body>
+
+</html>

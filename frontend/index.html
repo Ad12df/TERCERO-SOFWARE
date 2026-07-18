@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Tercero Software</title>
+    <!-- Importación de la hoja de estilos personalizada -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="auth-page">
+
+    <!-- Contenedor principal de autenticación -->
+    <div class="auth-wrapper" id="authWrapper">
+
+        <!-- Decoración de fondo (óvalo con gradiente azul) para la vista móvil -->
+        <!-- Se muestra únicamente en pantallas pequeñas y permanece fijo en la parte superior -->
+        <div class="bg-decoration mobile-bg" aria-hidden="true"></div>
+
+        <!-- Contenedor del Formulario de Login (Mitad Izquierda en Desktop) -->
+        <div class="form-container login-container" id="loginContainer">
+            <div class="form-panel active" id="loginPanel">
+                <!-- Título del formulario -->
+                <h1 class="form-title">BiblioTech</h1>
+                <p class="form-subtitle">Sistema de Gestión de Biblioteca</p>
+
+                <!-- Enlace alternador para cambiar a la vista de registro -->
+                <p class="form-switch">
+                    ¿No tienes una cuenta?
+                    <a href="#" class="link-action" id="goToRegister">Crear cuenta</a>
+                </p>
+
+                <!-- Formulario de inicio de sesión -->
+                <form class="auth-form" id="loginForm" onsubmit="return false;">
+
+                    <!-- Campo de entrada estilo píldora para Correo Electrónico (Reemplazado de teléfono a email) -->
+                    <div class="input-pill">
+                        <input
+                            id="loginContact"
+                            type="email"
+                            placeholder="correo@ejemplo.com"
+                            autocomplete="username"
+                            required
+                        >
+                    </div>
+
+                    <!-- Campo de entrada estilo píldora para Contraseña con icono de candado -->
+                    <div class="input-pill has-icon">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <rect x="5" y="11" width="14" height="10" rx="2"/>
+                            <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+                        </svg>
+                        <input
+                            id="loginPassword"
+                            type="password"
+                            placeholder="Contraseña"
+                            autocomplete="current-password"
+                        >
+                    </div>
+
+                    <!-- Enlace para recuperar contraseña -->
+                    <a href="#" class="link-forgot" id="forgotPassword">Olvidé mi contraseña</a>
+
+                    <!-- Fila de botón de acción alineado a la derecha -->
+                    <div class="btn-row">
+                        <button type="button" class="btn-pill" onclick="login()">Login</button>
+                    </div>
+
+                    <!-- Mensaje para mostrar retroalimentación o errores -->
+                    <p class="form-message" id="loginMessage"></p>
+
+                </form>
+
+                <!-- Pie de página con enlaces a redes sociales centrados -->
+                <div class="social-footer">
+                    <a href="#" class="social-icon" aria-label="Google" title="Google">
+                        <span>G</span>
+                    </a>
+                    <a href="#" class="social-icon" aria-label="Facebook" title="Facebook">
+                        <span>f</span>
+                    </a>
+                    <a href="#" class="social-icon" aria-label="Instagram" title="Instagram">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor del Formulario de Registro (Mitad Izquierda, oculto inicialmente) -->
+        <div class="form-container register-container" id="registerContainer">
+            <div class="form-panel" id="registerPanel">
+                <!-- Título del formulario -->
+                <h1 class="form-title">Registrarse</h1>
+                <p class="form-subtitle">Únete a nuestra comunidad lectora</p>
+
+                <!-- Enlace alternador para cambiar a la vista de inicio de sesión -->
+                <p class="form-switch">
+                    Ya tengo una cuenta
+                    <a href="#" class="link-action" id="goToLogin">Iniciar Sesión</a>
+                </p>
+
+                <!-- Formulario de creación de cuenta -->
+                <form class="auth-form" id="registerForm" onsubmit="return false;">
+
+                    <!-- Campo de entrada estilo píldora para Nombre -->
+                    <div class="input-pill">
+                        <input
+                            id="registerName"
+                            type="text"
+                            placeholder="Nombre:"
+                            autocomplete="name"
+                        >
+                    </div>
+
+                    <!-- Campo de entrada estilo píldora para Email/Teléfono -->
+                    <div class="input-pill">
+                        <input
+                            id="registerContact"
+                            type="text"
+                            placeholder="Email/Teléfono:"
+                            autocomplete="email"
+                        >
+                    </div>
+
+                    <!-- Campo de entrada estilo píldora para Contraseña -->
+                    <div class="input-pill">
+                        <input
+                            id="registerPassword"
+                            type="password"
+                            placeholder="Contraseña"
+                            autocomplete="new-password"
+                        >
+                    </div>
+
+                    <!-- Fila de botón de acción alineado a la derecha -->
+                    <div class="btn-row">
+                        <button type="button" class="btn-pill" onclick="register()">Registrarse</button>
+                    </div>
+
+                    <!-- Mensaje para mostrar retroalimentación o errores -->
+                    <p class="form-message" id="registerMessage"></p>
+
+                </form>
+
+                <!-- Pie de página con enlaces a redes sociales centrados -->
+                <div class="social-footer">
+                    <a href="#" class="social-icon" aria-label="Google" title="Google">
+                        <span>G</span>
+                    </a>
+                    <a href="#" class="social-icon" aria-label="Facebook" title="Facebook">
+                        <span>f</span>
+                    </a>
+                    <a href="#" class="social-icon" aria-label="Instagram" title="Instagram">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor del Panel Estético Flotante (Overlay) (Mitad Derecha en Desktop) -->
+        <!-- Actúa como máscara para que el círculo azul nunca se desborde fuera del panel deslizante -->
+        <div class="overlay-container" id="overlayContainer">
+            <div class="overlay">
+                
+                <!-- Panel del overlay izquierdo: Se muestra cuando se está visualizando el formulario de registro (a la derecha) -->
+                <div class="overlay-panel overlay-left">
+                    <h2 class="overlay-title">¡Bienvenido Lector!</h2>
+                    <p class="overlay-desc">Regístrate para explorar nuestro catálogo completo, reservar libros y gestionar tus préstamos digitales.</p>
+                </div>
+
+                <!-- Panel del overlay derecho: Se muestra cuando se está visualizando el formulario de login (a la izquierda) -->
+                <div class="overlay-panel overlay-right">
+                    <h2 class="overlay-title">¡Hola de nuevo!</h2>
+                    <p class="overlay-desc">Inicia sesión para volver a tu rincón de lectura, ver tus libros pendientes y descubrir nuevas recomendaciones.</p>
+                </div>
+
+                <!-- El óvalo/círculo azul #1E4B65 con gradiente fluido (Fondo decorativo para los paneles) -->
+                <!-- Queda perfectamente anclado y recortado dentro de su propio panel -->
+                <div class="bg-decoration overlay-bg" aria-hidden="true"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Carga de los scripts de conexión de API y lógica de Login/Registro -->
+    <script src="js/api.js"></script>
+    <script src="js/login.js"></script>
+
+</body>
+
+</html>

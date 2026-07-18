@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración — BiblioTech</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/settings.css">
+</head>
+
+<body class="settings-page">
+    <div class="dashboard-layout">
+        <!-- Barra Lateral (Sidebar) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                <span>BiblioTech</span>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="books.html" class="menu-item" id="menu-libros">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        <span>Libros</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="menu-item" id="menu-mi-lista" onclick="switchTab('mi-lista')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>Mi lista</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="menu-item" id="menu-lectura" onclick="switchTab('lectura')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>Leídos</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-bottom">
+                <a href="#" class="menu-item active" id="menu-config" onclick="switchTab('configuracion')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>Configuración</span>
+                </a>
+                <a href="index.html" class="menu-item" id="menu-logout" onclick="logout()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Barra Superior (Topbar) -->
+            <header class="topbar">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <h1 class="topbar-title" id="currentSectionTitle">Configuración</h1>
+                </div>
+
+                <div class="topbar-actions">
+                    <div class="user-profile">
+                        <div class="avatar" id="avatarLetter">A</div>
+                        <div class="user-info">
+                            <p class="user-name" id="profileEmail">Admin@bibliotech.com</p>
+                            <p class="user-role">Bibliotecario Administrador</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Área de Configuración -->
+            <section class="dashboard-container">
+                <div class="settings-container">
+                    
+                    <!-- Sección 1: Perfil de Usuario -->
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <div class="settings-card-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                            <div class="settings-card-title-group">
+                                <h3 class="settings-card-title">Perfil de Usuario</h3>
+                                <p class="settings-card-subtitle">Gestiona tu información personal</p>
+                            </div>
+                        </div>
+                        <div class="settings-card-body">
+                            <div class="profile-section">
+                                <div class="avatar-edit">
+                                    <div class="avatar avatar-large" id="settingsAvatar">A</div>
+                                    <button class="avatar-change-btn" onclick="changeAvatar()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                            <circle cx="12" cy="13" r="4"></circle>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="profile-fields">
+                                    <div class="settings-field">
+                                        <label for="settingsName">Nombre</label>
+                                        <input type="text" id="settingsName" value="Bibliotecario Administrador" placeholder="Tu nombre">
+                                    </div>
+                                    <div class="settings-field">
+                                        <label for="settingsEmail">Correo Electrónico</label>
+                                        <input type="email" id="settingsEmail" value="Admin@bibliotech.com" placeholder="tu@correo.com">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="settings-actions">
+                                <button class="btn-save-settings" onclick="saveProfile()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                        <polyline points="7 3 7 8 15 8"></polyline>
+                                    </svg>
+                                    Guardar Cambios
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección 2: Preferencias del Sistema -->
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <div class="settings-card-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                </svg>
+                            </div>
+                            <div class="settings-card-title-group">
+                                <h3 class="settings-card-title">Preferencias del Sistema</h3>
+                                <p class="settings-card-subtitle">Personaliza tu experiencia</p>
+                            </div>
+                        </div>
+                        <div class="settings-card-body">
+                            <div class="settings-toggles">
+                                <div class="settings-toggle-item">
+                                    <div class="toggle-info">
+                                        <div class="toggle-icon dark-mode-icon">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="toggle-text">
+                                            <span class="toggle-label">Modo Oscuro</span>
+                                            <span class="toggle-description">Activa el tema oscuro para reducir fatiga visual</span>
+                                        </div>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="toggleDarkMode" onchange="toggleDarkMode()">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="settings-toggle-item">
+                                    <div class="toggle-info">
+                                        <div class="toggle-icon notifications-icon">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="toggle-text">
+                                            <span class="toggle-label">Notificaciones de Préstamos</span>
+                                            <span class="toggle-description">Recibe alertas cuando un préstamo esté por vencer</span>
+                                        </div>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="toggleNotifications" checked onchange="toggleNotifications()">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="settings-toggle-item">
+                                    <div class="toggle-info">
+                                        <div class="toggle-icon language-icon">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="toggle-text">
+                                            <span class="toggle-label">Idioma</span>
+                                            <span class="toggle-description">Selecciona el idioma de la interfaz</span>
+                                        </div>
+                                    </div>
+                                    <select class="language-select" id="languageSelect" onchange="changeLanguage()">
+                                        <option value="es" selected>Español</option>
+                                        <option value="en">English</option>
+                                        <option value="fr">Français</option>
+                                        <option value="pt">Português</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección 3: Gestión de Seguridad -->
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <div class="settings-card-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </div>
+                            <div class="settings-card-title-group">
+                                <h3 class="settings-card-title">Gestión de Seguridad</h3>
+                                <p class="settings-card-subtitle">Protege tu cuenta</p>
+                            </div>
+                        </div>
+                        <div class="settings-card-body">
+                            <div class="security-section">
+                                <div class="security-item">
+                                    <div class="security-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="security-info">
+                                        <h4>Cambiar Contraseña</h4>
+                                        <p>Actualiza tu contraseña periódicamente para mayor seguridad</p>
+                                    </div>
+                                    <button class="btn-security" onclick="openPasswordModal()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                        Cambiar
+                                    </button>
+                                </div>
+                                <div class="security-item">
+                                    <div class="security-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="security-info">
+                                        <h4>Autenticación de Dos Factores</h4>
+                                        <p>Añade una capa extra de seguridad a tu cuenta</p>
+                                    </div>
+                                    <label class="toggle-switch small">
+                                        <input type="checkbox" id="toggle2FA" onchange="toggle2FA()">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección 4: Información de la App -->
+                    <div class="settings-card settings-card-info">
+                        <div class="app-info">
+                            <div class="app-logo">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="app-details">
+                                <h4>BiblioTech</h4>
+                                <p>Versión 1.0.0</p>
+                                <p class="app-copyright">© 2024 BiblioTech. Todos los derechos reservados.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal para cambiar contraseña -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content modal-password">
+            <span class="modal-close" onclick="closePasswordModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px;">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </span>
+            <h3 class="modal-title">Cambiar Contraseña</h3>
+            <form class="auth-form" id="passwordForm" onsubmit="return false;">
+                <div class="input-pill">
+                    <input id="currentPassword" type="password" placeholder="Contraseña actual" required>
+                </div>
+                <div class="input-pill">
+                    <input id="newPassword" type="password" placeholder="Nueva contraseña" required>
+                </div>
+                <div class="input-pill">
+                    <input id="confirmPassword" type="password" placeholder="Confirmar nueva contraseña" required>
+                </div>
+                <button type="button" class="btn-save-password" onclick="savePassword()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Actualizar Contraseña
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/books.js"></script>
+    <script src="js/settings.js"></script>
+</body>
+
+</html>
