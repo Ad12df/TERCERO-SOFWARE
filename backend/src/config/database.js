@@ -10,8 +10,14 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT,
     dialect: "postgres",
     logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
     define: {
-      timestamps: false,
+      timestamps: true,
       freezeTableName: true,
     },
     pool: {
