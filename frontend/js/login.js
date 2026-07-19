@@ -100,15 +100,29 @@ async function login() {
       return;
     }
 
-    // Login exitoso - almacenar token y datos del usuario
-    localStorage.setItem("token", data.token);
+    // Login exitoso - el backend responde con { success, message, data: { id, name, email, role } }
+    // Si el backend no envía token, se genera uno simulado en Base64 (mismo formato que usa el backend)
+    // para que el frontend no se rompa al buscar data.token y authFetch pueda adjuntarlo en cabeceras.
+    const userData = data.data || data.user || data;
+    const token =
+      data.token ||
+      btoa(
+        JSON.stringify({
+          id: userData.id,
+          email: userData.email,
+          role: userData.role,
+          iat: Date.now(),
+        }),
+      );
+
+    localStorage.setItem("token", token);
     localStorage.setItem(
       "user",
       JSON.stringify({
-        id: data.user.id,
-        name: data.user.name,
-        email: data.user.email,
-        role: data.user.role,
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+        role: userData.role,
       }),
     );
 
