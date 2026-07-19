@@ -83,9 +83,13 @@ async function login() {
 
   try {
     // Solicitud POST hacia el endpoint de login del backend
+    // credentials: "include" permite el envío de cookies/credenciales si el backend CORS las exige
     const response = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
       body: JSON.stringify({
         email: contact,
         password: password,
@@ -96,6 +100,7 @@ async function login() {
 
     // Verificación del estado de respuesta del servidor
     if (!response.ok) {
+      console.warn("Login fallido - respuesta del servidor:", response.status, data);
       showMessage("loginMessage", data.message || "Error al iniciar sesión");
       return;
     }
@@ -128,8 +133,12 @@ async function login() {
 
     // Redirección hacia el gestor de libros/biblioteca una vez logueado
     window.location.href = "books.html";
-  } catch {
-    // Manejo de errores de conexión de red
+  } catch (error) {
+    // Captura del error exacto para depuración en la consola del navegador
+    console.error("Error completo en login:", error);
+    console.error("Tipo de error:", error.name);
+    console.error("Mensaje:", error.message);
+    console.error("URL intentada:", `${API_URL}/auth/login`);
     showMessage("loginMessage", "No se pudo conectar con el servidor");
   }
 }
@@ -158,7 +167,10 @@ async function register() {
     // Solicitud POST hacia el endpoint de registro del backend
     const response = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
       body: JSON.stringify({
         name,
         email: contact,
@@ -170,6 +182,7 @@ async function register() {
 
     // Verificación del estado de respuesta del servidor
     if (!response.ok) {
+      console.warn("Registro fallido - respuesta del servidor:", response.status, data);
       showMessage("registerMessage", data.message || "Error al registrar");
       return;
     }
@@ -187,8 +200,12 @@ async function register() {
       switchToLogin();
       document.getElementById("loginContact").value = contact;
     }, 1200);
-  } catch {
-    // Manejo de errores de conexión de red
+  } catch (error) {
+    // Captura del error exacto para depuración en la consola del navegador
+    console.error("Error completo en registro:", error);
+    console.error("Tipo de error:", error.name);
+    console.error("Mensaje:", error.message);
+    console.error("URL intentada:", `${API_URL}/auth/register`);
     showMessage("registerMessage", "No se pudo conectar con el servidor");
   }
 }

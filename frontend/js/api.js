@@ -1,3 +1,5 @@
+// URL base del backend en Render (HTTPS obligatorio para evitar contenido mixto en Vercel)
+// El prefijo /api coincide con app.use("/api", routes) del backend
 const API_URL = "https://tercero-sofware.onrender.com/api";
 
 /**
