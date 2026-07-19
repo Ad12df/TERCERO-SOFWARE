@@ -558,21 +558,32 @@ function logout() {
 }
 
 /**
- * Abre el PDF del libro en una nueva pestaña
+ * Abre el lector de PDF (reader.html) pasando exclusivamente el ID del libro.
+ * El lector se encarga de obtener el PDF vía el proxy del backend + IndexedDB.
+ * NUNCA se debe usar directamente currentBook.pdf_url (Cloudinary da 401).
  */
 function openReader() {
     console.log("🔍 openReader() llamado, currentBook:", currentBook);
-    
-    const pdfUrl = currentBook?.pdf_url;
-    
-    if (!pdfUrl) {
-        console.error("❌ No se encontró pdf_url en el libro actual:", currentBook);
+
+    const bookId = currentBook?.id;
+
+    if (!bookId) {
+        console.error("❌ No se encontró el ID del libro actual:", currentBook);
+        alert("Lo sentimos, no se pudo identificar el libro.");
+        return;
+    }
+
+    // Validar que el libro tenga un PDF asociado (sin exponer la URL cruda)
+    if (!currentBook?.pdf_url) {
+        console.error("❌ El libro no tiene pdf_url asociada:", currentBook);
         alert("Lo sentimos, este libro aún no tiene un archivo PDF disponible.");
         return;
     }
-    
-    console.log("📖 Abriendo PDF:", pdfUrl);
-    window.open(pdfUrl, "_blank");
+
+    console.log("📖 Abriendo lector para libro ID:", bookId);
+    // Redirige al lector pasando solo el ID por query string.
+    // reader.js → loadBook() → loadPDF() → proxy backend + IndexedDB
+    window.location.href = `reader.html?id=${bookId}`;
 }
 
 /**
