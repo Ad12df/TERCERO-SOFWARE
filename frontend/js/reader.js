@@ -87,12 +87,20 @@
     // INICIALIZACIÓN
     // ===================================
     function init() {
+        // 1. Capturar el ID dinámicamente desde la URL (?id=)
         const urlParams = new URLSearchParams(window.location.search);
         state.bookId = urlParams.get('id');
 
         if (!state.bookId) {
             showToast('Error: No se especificó el libro');
             setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+            return;
+        }
+
+        // 2. Validar que API_URL esté definida (proviene de js/api.js)
+        if (typeof API_URL === 'undefined') {
+            console.error('API_URL no está definida. Falta cargar js/api.js antes de js/reader.js');
+            showToast('Error de configuración del lector');
             return;
         }
 
@@ -236,6 +244,18 @@
             return;
         }
 
+        if (!state.bookId) {
+            console.error('loadPDF: state.bookId no está definido');
+            showToast('Error: No se identificó el libro');
+            return;
+        }
+
+        if (typeof API_URL === 'undefined') {
+            console.error('loadPDF: API_URL no está definida (falta js/api.js)');
+            showToast('Error de configuración del lector');
+            return;
+        }
+
         // 1. Verificar caché de IndexedDB
         const cachedBlob = await getCachedPDF(state.bookId);
 
@@ -248,10 +268,14 @@
         }
 
         // 2. No está en caché — descargar desde el proxy del backend
+        //    URL final: https://tercero-sofware.onrender.com/api/books/${bookId}/download
         showDownloadIndicator(true, 'Preparando descarga y almacenamiento local...');
 
         try {
-            const response = await fetch(`${API_URL}/books/${state.bookId}/download`);
+            const downloadUrl = `${API_URL}/books/${state.bookId}/download`;
+            console.log('Descargando PDF desde proxy:', downloadUrl);
+
+            const response = await fetch(downloadUrl);
 
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
