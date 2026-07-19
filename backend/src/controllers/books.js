@@ -10,7 +10,7 @@ class BookController {
   static async createBook(req, res) {
     try {
       // ─── 1. Recibir campos de texto ──────────────────────────
-      const { nombre, autor, direccion, descripcion } = req.body;
+      const { nombre, autor, categoria, direccion, descripcion } = req.body;
 
       // Validaciones básicas
       if (!nombre) {
@@ -49,6 +49,7 @@ class BookController {
       const newBook = await Book.create({
         nombre,
         autor: autor || null,
+        categoria: categoria || null,
         direccion: direccion || null,
         descripcion: descripcion || null,
         foto: fotoUrl, // 👈 secure_url de la imagen
@@ -117,6 +118,65 @@ class BookController {
       return res.status(500).json({
         success: false,
         message: error.message || "Error al obtener el libro",
+      });
+    }
+  }
+
+  // ─── PUT /api/books/:id (solo admin) ──────────────────────
+  // Actualiza un libro existente (parcial, con subida opcional de archivos)
+  static async updateBook(req, res) {
+    try {
+      const { id } = req.params;
+      const book = await Book.findByPk(id);
+
+      if (!book) {
+        return res.status(404).json({
+          success: false,
+          message: "Libro no encontrado",
+        });
+      }
+
+      const { nombre, autor, categoria, direccion, descripcion } = req.body;
+
+      // Actualizar campos de texto solo si se envían
+      if (nombre !== undefined) book.nombre = nombre;
+      if (autor !== undefined) book.autor = autor;
+      if (categoria !== undefined) book.categoria = categoria;
+      if (direccion !== undefined) book.direccion = direccion;
+      if (descripcion !== undefined) book.descripcion = descripcion;
+
+      // Subir nueva portada si se envía
+      if (req.files && req.files.foto && req.files.foto[0]) {
+        const fotoFile = req.files.foto[0];
+        const result = await uploadImageFromBuffer(
+          fotoFile.buffer,
+          fotoFile.originalname
+        );
+        book.foto = result.secure_url;
+      }
+
+      // Subir nuevo PDF si se envía
+      if (req.files && req.files.pdf && req.files.pdf[0]) {
+        const pdfFile = req.files.pdf[0];
+        const result = await uploadPdfFromBuffer(
+          pdfFile.buffer,
+          pdfFile.originalname
+        );
+        book.pdf_url = result.secure_url;
+      }
+
+      await book.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Libro actualizado exitosamente",
+        data: book,
+      });
+    } catch (error) {
+      console.error("❌ Error al actualizar libro:", error);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "Error al actualizar el libro",
       });
     }
   }

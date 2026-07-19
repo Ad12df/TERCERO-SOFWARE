@@ -23,6 +23,14 @@ router.post(
   BookController.createBook
 );
 
+// PUT /api/books/:id - Actualizar un libro
+router.put(
+  "/:id",
+  authenticate,
+  uploadBookFiles,
+  BookController.updateBook
+);
+
 // DELETE /api/books/:id - Eliminar un libro (solo admin)
 router.delete(
   "/:id",

@@ -43,6 +43,10 @@ const Book = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    categoria: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     created_by: {
       type: DataTypes.INTEGER,
       allowNull: true,

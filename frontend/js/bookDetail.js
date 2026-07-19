@@ -3,26 +3,18 @@
 // ==========================================================================
 
 let selectedBookId = null;
-let books = [];
+let currentBook = null; // Almacena el libro actual obtenido de la API
 
-/**
- * Carga los libros de localStorage
- */
-function loadBooksData() {
-    const storedBooks = localStorage.getItem("bibliotech_books");
-    if (storedBooks) {
-        books = JSON.parse(storedBooks);
-    }
-    return books;
-}
+// ─── INICIALIZACIÓN ────────────────────────────────────────────────────────
 
 /**
  * Inicializa la página de detalle leyendo el ID de la URL
+ * y obtiene los datos del libro desde la API
  */
-function initializeDetailPage() {
+async function initializeDetailPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const bookId = urlParams.get('id');
-    
+
     if (!bookId) {
         document.getElementById('bookDetailPage').innerHTML = `
             <div style="text-align: center; padding: 60px; color: #666;">
@@ -34,107 +26,171 @@ function initializeDetailPage() {
         `;
         return;
     }
-    
-    const bookIdNum = parseInt(bookId);
-    loadBooksData();
-    
-    const book = books.find(b => b.id === bookIdNum);
-    
-    if (!book) {
+
+    selectedBookId = parseInt(bookId);
+
+    try {
+        // Obtener el libro desde la API
+        const response = await fetch(`${API_URL}/books/${bookId}`);
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                document.getElementById('bookDetailPage').innerHTML = `
+                    <div style="text-align: center; padding: 60px; color: #666;">
+                        <h2>Libro no encontrado</h2>
+                        <p style="margin-top: 16px;">
+                            <a href="books.html" style="color: #1E4B65; text-decoration: underline;">Volver al catálogo</a>
+                        </p>
+                    </div>
+                `;
+            } else {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            return;
+        }
+
+        const result = await response.json();
+
+        // El backend devuelve { success: true, data: book }
+        // Algunos endpoints pueden devolver el libro directamente
+        const book = result.data || result;
+
+        // Guardar el libro actual para usar en openReader()
+        currentBook = book;
+
+        // Mostrar los datos del libro
+        showBookDetail(book);
+
+        // Verificar estado de Mi Lista
+        checkMyListStatus();
+
+        // Cargar notas guardadas de localStorage
+        const notesKey = `bibliotech_notes_${book.id}`;
+        const savedNotes = localStorage.getItem(notesKey);
+        const notesTextarea = document.getElementById("detailNotes");
+        if (notesTextarea && savedNotes) {
+            notesTextarea.value = savedNotes;
+        }
+
+        // Cargar comentarios guardados de localStorage
+        const commentsKey = `bibliotech_comments_${book.id}`;
+        const savedComments = JSON.parse(localStorage.getItem(commentsKey) || "[]");
+        renderComments(savedComments);
+
+    } catch (error) {
+        console.error('❌ Error al cargar el libro:', error);
         document.getElementById('bookDetailPage').innerHTML = `
             <div style="text-align: center; padding: 60px; color: #666;">
-                <h2>Libro no encontrado</h2>
+                <h2>Error al cargar el libro</h2>
+                <p style="margin-top: 16px; color: #999;">${escapeHtml(error.message)}</p>
                 <p style="margin-top: 16px;">
                     <a href="books.html" style="color: #1E4B65; text-decoration: underline;">Volver al catálogo</a>
                 </p>
             </div>
         `;
-        return;
     }
-    
-    selectedBookId = bookIdNum;
-    showBookDetail(book);
 }
 
 /**
  * Muestra la información completa del libro en la página
- * @param {Object} book - Objeto del libro
+ * @param {Object} book - Objeto del libro (formato backend)
  */
 function showBookDetail(book) {
+    // ── Campos del backend → frontend ──
+    // nombre → bookTitle
+    // autor → bookAuthor
+    // descripcion → synopsisText
+    // foto → cover image
+    // pdf_url → openReader()
+    // categoria → categoryBadge / categoryPill
+    // puntuacion_media → rating
+    // total_resenas → ratingVotes
+    // createdAt → metaDate
+    // updatedAt → metaUpdate
+
     // Llenar información básica
-    document.getElementById("bookTitle").textContent = book.title || "Sin título";
-    document.getElementById("bookAuthor").textContent = book.author ? `por ${book.author}` : "Autor desconocido";
-    
+    document.getElementById("bookTitle").textContent = book.nombre || "Sin título";
+    document.getElementById("bookAuthor").textContent = book.autor ? `por ${book.autor}` : "Autor desconocido";
+
+    // Imagen de portada (foto de Cloudinary)
+    const bookCover = document.getElementById("bookCover");
+    if (bookCover) {
+        if (book.foto) {
+            bookCover.style.backgroundImage = `url(${book.foto})`;
+            bookCover.style.backgroundSize = "cover";
+            bookCover.style.backgroundPosition = "center";
+            console.log("🖼️ Portada configurada:", book.foto);
+        } else {
+            bookCover.style.backgroundImage = "none";
+            bookCover.style.backgroundColor = "#e0e0e0";
+            console.warn("⚠️ El libro no tiene foto de portada");
+        }
+    }
+
     // Sinopsis
     const synopsisEl = document.getElementById("synopsisText");
     if (synopsisEl) {
-        synopsisEl.textContent = book.synopsis || "Sinopsis no disponible.";
+        synopsisEl.textContent = book.descripcion || "Sinopsis no disponible.";
     }
-    
+
     // Metadatos
     const metaAuthor = document.getElementById("metaAuthor");
-    if (metaAuthor) metaAuthor.textContent = book.author || "-";
-    
+    if (metaAuthor) metaAuthor.textContent = book.autor || "-";
+
     const metaDate = document.getElementById("metaDate");
-    if (metaDate) metaDate.textContent = book.year || "-";
-    
+    if (metaDate) metaDate.textContent = book.createdAt ? formatDate(book.createdAt) : "-";
+
     const metaUpdate = document.getElementById("metaUpdate");
     if (metaUpdate) metaUpdate.textContent = book.updatedAt ? formatDate(book.updatedAt) : "-";
-    
+
     const metaLanguage = document.getElementById("metaLanguage");
-    if (metaLanguage) metaLanguage.textContent = book.language || "Español";
-    
+    if (metaLanguage) metaLanguage.textContent = "Español";
+
     // Categoría
     const categoryBadge = document.getElementById("categoryBadge");
-    if (categoryBadge) categoryBadge.textContent = book.genre || "Ficción";
-    
+    if (categoryBadge) categoryBadge.textContent = book.categoria || "Ficción";
+
     const categoryPill = document.getElementById("categoryPill");
-    if (categoryPill) categoryPill.textContent = book.genre || "Ficción";
-    
-    // Tags
+    if (categoryPill) categoryPill.textContent = book.categoria || "Ficción";
+
+    // Tags (el backend no tiene tags, dejar vacío)
     const tagsContainer = document.getElementById("tagsContainer");
-    if (tagsContainer && book.tags) {
-        tagsContainer.innerHTML = book.tags.map(tag => `<span class="tag-pill">${escapeHtml(tag)}</span>`).join('');
-    }
-    
-    // Estado
+    if (tagsContainer) tagsContainer.innerHTML = '';
+
+    // Estado (disponible si tiene pdf_url)
     const statusBadge = document.getElementById("statusBadge");
     if (statusBadge) {
-        const isAvailable = book.available !== false;
-        statusBadge.innerHTML = `<span class="status-dot"></span>${isAvailable ? "Disponible" : "Prestado"}`;
+        const hasPdf = !!book.pdf_url;
+        statusBadge.innerHTML = `<span class="status-dot"></span>${hasPdf ? "Disponible" : "Sin PDF"}`;
     }
-    
+
     // Calificación
-    const rating = book.rating || 0;
+    const rating = book.puntuacion_media || 0;
     updateStarDisplay(rating);
-    
+
     const ratingNumber = document.getElementById("ratingNumber");
     if (ratingNumber) ratingNumber.textContent = rating.toFixed(1);
-    
+
     const ratingScore = document.getElementById("ratingScore");
     if (ratingScore) ratingScore.textContent = rating.toFixed(1);
-    
+
     const ratingBarFill = document.getElementById("ratingBarFill");
     if (ratingBarFill) ratingBarFill.style.width = `${(rating / 5) * 100}%`;
-    
+
     const ratingVotes = document.getElementById("ratingVotes");
-    if (ratingVotes) ratingVotes.textContent = `${book.ratingCount || 0} votos`;
+    if (ratingVotes) ratingVotes.textContent = `${book.total_resenas || 0} votos`;
     
     const ratingUsers = document.getElementById("ratingUsers");
-    if (ratingUsers) ratingUsers.textContent = `${book.ratingCount || 0} usuarios`;
+    if (ratingUsers) ratingUsers.textContent = `${book.total_resenas || 0} usuarios`;
     
-    // Visitas
+    // Visitas (el backend no proporciona contador de visitas)
     const visitsCounter = document.getElementById("visitsCounter");
-    if (visitsCounter) visitsCounter.textContent = `${book.views || 0} visitas`;
+    if (visitsCounter) visitsCounter.textContent = `0 visitas`;
     
-    // Comentarios
-    renderComments(book.comments || []);
+    // Comentarios (se cargan desde localStorage en initializeDetailPage)
     
     // Cargar sugerencias
     loadSuggestions(book);
-    
-    // Verificar si está en Mi Lista
-    checkMyListStatus();
 }
 
 /**
@@ -193,41 +249,45 @@ function renderComments(comments) {
 }
 
 /**
- * Guarda las notas personales del libro
+ * Guarda las notas personales del libro en localStorage
  */
 function saveBookNotes() {
-    if (!selectedBookId) return;
+    if (!currentBook?.id) {
+        console.error("❌ No hay libro actual para guardar notas");
+        return;
+    }
     
     const notes = document.getElementById("detailNotes").value;
-    const bookIndex = books.findIndex(b => b.id === selectedBookId);
+    const notesKey = `bibliotech_notes_${currentBook.id}`;
+    localStorage.setItem(notesKey, notes);
+    console.log("📝 Notas guardadas para libro", currentBook.id);
     
-    if (bookIndex !== -1) {
-        books[bookIndex].notes = notes;
-        localStorage.setItem("bibliotech_books", JSON.stringify(books));
-        
-        // Feedback visual
-        const btn = document.querySelector(".btn-save-notes");
-        const originalText = btn.innerHTML;
-        btn.innerHTML = `
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-            ¡Guardado!
-        `;
-        btn.style.background = "#27ae60";
-        
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.style.background = "";
-        }, 1500);
-    }
+    // Feedback visual
+    const btn = document.querySelector(".btn-save-notes");
+    if (!btn) return;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        ¡Guardado!
+    `;
+    btn.style.background = "#27ae60";
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.background = "";
+    }, 1500);
 }
 
 /**
- * Envía un nuevo comentario
+ * Envía un nuevo comentario y lo guarda en localStorage
  */
 function submitComment() {
-    if (!selectedBookId) return;
+    if (!currentBook?.id) {
+        console.error("❌ No hay libro actual para añadir comentario");
+        return;
+    }
     
     const input = document.getElementById("commentInput");
     if (!input) return;
@@ -239,91 +299,102 @@ function submitComment() {
         return;
     }
     
-    const bookIndex = books.findIndex(b => b.id === selectedBookId);
-    
-    if (bookIndex !== -1) {
-        if (!books[bookIndex].comments) {
-            books[bookIndex].comments = [];
-        }
-        
-        // Obtener nombre de usuario
-        const userStr = localStorage.getItem("user");
-        let authorName = "Anónimo";
-        if (userStr) {
-            try {
-                const user = JSON.parse(userStr);
-                if (user && user.name) {
-                    authorName = user.name;
-                } else if (user && user.email) {
-                    authorName = user.email.split("@")[0];
-                }
-            } catch (e) {
-                console.error("Error al parsear el usuario:", e);
+    // Obtener nombre de usuario
+    const userStr = localStorage.getItem("user");
+    let authorName = "Anónimo";
+    if (userStr) {
+        try {
+            const user = JSON.parse(userStr);
+            if (user && user.name) {
+                authorName = user.name;
+            } else if (user && user.email) {
+                authorName = user.email.split("@")[0];
             }
+        } catch (e) {
+            console.error("Error al parsear el usuario:", e);
         }
-        
-        books[bookIndex].comments.push({
-            author: authorName,
-            text: text,
-            date: new Date().toISOString()
-        });
-        
-        localStorage.setItem("bibliotech_books", JSON.stringify(books));
-        renderComments(books[bookIndex].comments);
-        input.value = "";
-        showToast("Comentario añadido", "success");
     }
+    
+    // Guardar comentario en localStorage por libro
+    const commentsKey = `bibliotech_comments_${currentBook.id}`;
+    const comments = JSON.parse(localStorage.getItem(commentsKey) || "[]");
+    
+    comments.push({
+        author: authorName,
+        text: text,
+        date: new Date().toISOString()
+    });
+    
+    localStorage.setItem(commentsKey, JSON.stringify(comments));
+    console.log("💬 Comentario guardado para libro", currentBook.id);
+    
+    renderComments(comments);
+    input.value = "";
+    showToast("Comentario añadido", "success");
 }
 
 /**
- * Carga las sugerencias de libros relacionados
+ * Carga las sugerencias de libros relacionados desde la API
  * @param {Object} currentBook - Libro actual
  */
 function loadSuggestions(currentBook) {
     const container = document.getElementById("suggestionsGrid");
     if (!container) return;
     
-    // Filtrar libros del mismo género, excluyendo el actual
-    const suggestions = books
-        .filter(book => 
-            book.id !== currentBook.id && 
-            (book.genre === currentBook.genre || 
-             (book.tags && currentBook.tags && 
-              book.tags.some(tag => currentBook.tags.includes(tag))))
-        )
-        .slice(0, 4);
+    console.log("🔍 Cargando sugerencias para:", currentBook.nombre);
     
-    // Si no hay suficientes, completar con otros libros
-    if (suggestions.length < 4) {
-        const additionalBooks = books
-            .filter(book => 
-                book.id !== currentBook.id && 
-                !suggestions.find(s => s.id === book.id)
-            )
-            .slice(0, 4 - suggestions.length);
-        suggestions.push(...additionalBooks);
-    }
-    
-    if (suggestions.length === 0) {
-        container.innerHTML = '<p class="no-suggestions">No hay sugerencias disponibles</p>';
-        return;
-    }
-    
-    container.innerHTML = suggestions.map(book => `
-        <a href="book-detail.html?id=${book.id}" class="mini-book-card">
-            <div class="mini-book-cover">
-                <span class="mini-book-initial">${(book.title || "L").charAt(0)}</span>
-            </div>
-            <div class="mini-book-info">
-                <h4 class="mini-book-title">${escapeHtml(book.title || "Sin título")}</h4>
-                <p class="mini-book-author">${escapeHtml(book.author || "Autor")}</p>
-                <div class="mini-book-rating">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                    <span>${(book.rating || 0).toFixed(1)}</span>
-                </div>
-            </div>
-        </a>
-    `).join('');
+    fetch(`${API_URL}/books`)
+        .then(res => res.json())
+        .then(result => {
+            const allBooks = result.data || result || [];
+            console.log("📚 Total libros recibidos:", allBooks.length);
+            
+            // Filtrar por categoría, excluyendo el actual
+            const suggestions = allBooks
+                .filter(book => 
+                    book.id !== currentBook.id && 
+                    book.categoria === currentBook.categoria
+                )
+                .slice(0, 4);
+            
+            // Si no hay suficientes, completar con otros libros
+            if (suggestions.length < 4) {
+                const additionalBooks = allBooks
+                    .filter(book => 
+                        book.id !== currentBook.id && 
+                        !suggestions.find(s => s.id === book.id)
+                    )
+                    .slice(0, 4 - suggestions.length);
+                suggestions.push(...additionalBooks);
+            }
+            
+            if (suggestions.length === 0) {
+                container.innerHTML = '<p class="no-suggestions">No hay sugerencias disponibles</p>';
+                return;
+            }
+            
+            container.innerHTML = suggestions.map(book => `
+                <a href="book-detail.html?id=${book.id}" class="mini-book-card">
+                    <div class="mini-book-cover" style="${book.foto ? `background-image: url(${book.foto}); background-size: cover; background-position: center;` : `background: #e0e0e0`}">
+                        ${!book.foto ? `<span class="mini-book-initial">${(book.nombre || "L").charAt(0)}</span>` : ""}
+                    </div>
+                    <div class="mini-book-info">
+                        <h4 class="mini-book-title">${escapeHtml(book.nombre || "Sin título")}</h4>
+                        <p class="mini-book-author">${escapeHtml(book.autor || "Autor")}</p>
+                        <div class="mini-book-rating">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <span>${(book.puntuacion_media || 0).toFixed(1)}</span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+            
+            console.log("✅ Sugerencias renderizadas:", suggestions.length);
+        })
+        .catch(err => {
+            console.error("❌ Error cargando sugerencias:", err);
+            container.innerHTML = '<p class="no-suggestions">No se pudieron cargar las sugerencias</p>';
+        });
 }
 
 /**
@@ -487,21 +558,21 @@ function logout() {
 }
 
 /**
- * Abre el lector de PDF con el libro actual
+ * Abre el PDF del libro en una nueva pestaña
  */
 function openReader() {
-    if (selectedBookId) {
-        window.location.href = `reader.html?id=${selectedBookId}`;
-    } else {
-        // Si no hay libro seleccionado, intentar obtenerlo de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const bookId = urlParams.get('id');
-        if (bookId) {
-            window.location.href = `reader.html?id=${bookId}`;
-        } else {
-            alert('No se pudo abrir el lector. Libro no encontrado.');
-        }
+    console.log("🔍 openReader() llamado, currentBook:", currentBook);
+    
+    const pdfUrl = currentBook?.pdf_url;
+    
+    if (!pdfUrl) {
+        console.error("❌ No se encontró pdf_url en el libro actual:", currentBook);
+        alert("Lo sentimos, este libro aún no tiene un archivo PDF disponible.");
+        return;
     }
+    
+    console.log("📖 Abriendo PDF:", pdfUrl);
+    window.open(pdfUrl, "_blank");
 }
 
 /**

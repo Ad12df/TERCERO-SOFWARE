@@ -4,18 +4,14 @@
 
 let editId = null;
 let books = [];
-let activeGenre = 'Todos'; // Género actualmente seleccionado para filtrar
+let activeGenre = 'Todos';
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Verificar autenticación antes de cargar
     if (!isAuthenticated()) {
         window.location.href = "index.html";
         return;
     }
-    
-    // Inicializar perfil de usuario
     initializeProfile();
-    // Cargar biblioteca (con datos de prueba por defecto)
     loadBooks();
 });
 
@@ -32,15 +28,12 @@ function initializeProfile() {
         profileEmail.textContent = user.email;
         profileName.textContent = user.name || user.email;
         avatarLetter.textContent = (user.name || user.email).charAt(0).toUpperCase();
-        
-        // Si es admin, mostrar botón de gestión
         if (user.role === "admin") {
             const adminBadge = document.getElementById("adminBadge");
             if (adminBadge) adminBadge.style.display = "inline-block";
         }
         return;
     }
-    // Valores por defecto
     profileEmail.textContent = "visitante@bibliotech.com";
     profileName.textContent = "Visitante";
     avatarLetter.textContent = "V";
@@ -56,97 +49,50 @@ function logout() {
 }
 
 /**
- * Carga los libros de localStorage. Si no hay ninguno, inserta datos de prueba.
+ * Carga los libros desde el backend (API)
  */
-function loadBooks() {
-    const storedBooks = localStorage.getItem("bibliotech_books");
-    
-    if (storedBooks) {
-        books = JSON.parse(storedBooks);
-    } else {
-        // Libros de prueba iniciales (con por lo menos uno tal como pide el usuario)
-        books = [
-            {
-                id: 1,
-                title: "Cien años de soledad",
-                author: "Gabriel García Márquez",
-                genre: "Realismo Mágico",
-                year: 1967,
-                available: true,
-                synopsis: "La saga de la familia Buendía a lo largo de siete generaciones, en el pueblo ficticio de Macondo, con elementos de realismo mágico que mezclan lo cotidiano con lo extraordinario.",
-                rating: 4.8,
-                comments: [
-                    { author: "María García", text: "Una obra maestra del realismo mágico. La forma en que García Márquez maneja el tiempo es simplemente fascinante.", date: "2024-01-15T10:30:00Z" },
-                    { author: "Carlos Ruiz", text: "Me costó un poco al principio pero luego no pude soltar el libro. Recomendado al 100%.", date: "2024-02-20T15:45:00Z" }
-                ],
-                notes: ""
-            },
-            {
-                id: 2,
-                title: "Don Quijote de la Mancha",
-                author: "Miguel de Cervantes",
-                genre: "Clásico",
-                year: 1605,
-                available: true,
-                synopsis: "Las aventuras de un hidalgo que enloquece leyendo libros de caballerías y decide convertirse en caballero andante, acompañado por su escudero Sancho Panza.",
-                rating: 4.5,
-                comments: [
-                    { author: "Ana Martínez", text: "Un clásico que todo el mundo debería leer al menos una vez en la vida.", date: "2024-01-08T09:15:00Z" }
-                ],
-                notes: ""
-            },
-            {
-                id: 3,
-                title: "El Principito",
-                author: "Antoine de Saint-Exupéry",
-                genre: "Infantil / Fantasía",
-                year: 1943,
-                available: false,
-                synopsis: "Un piloto cae en el desierto del Sahara y allí encuentra a un pequeño príncipe de otro planeta, con quien entabla una profunda amistad mientras descubre los secretos de la vida.",
-                rating: 4.9,
-                comments: [
-                    { author: "Laura Sánchez", text: "Parece un libro infantil pero tiene capas profundas de significado. Me encanta releerlo.", date: "2024-03-01T14:20:00Z" },
-                    { author: "Pedro López", text: "Mi libro favorito desde que era niño. Las ilustraciones son perfectas.", date: "2024-03-10T11:00:00Z" }
-                ],
-                notes: ""
-            },
-            {
-                id: 4,
-                title: "Ficciones",
-                author: "Jorge Luis Borges",
-                genre: "Ficción / Filosofía",
-                year: 1944,
-                available: true,
-                synopsis: "Colección de cuentos que exploran temas como laberintos, bibliotecas infinitas, libros que contienen todos los libros posibles, y la naturaleza misma de la ficción.",
-                rating: 4.7,
-                comments: [],
-                notes: ""
-            }
-        ];
-        saveToStorage();
-    }
-    
-    renderBooks(books);
-}
+async function loadBooks() {
+    const grid = document.getElementById("booksGrid");
+    grid.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #888;">
+            <div class="spinner" style="margin: 0 auto 16px;"></div>
+            <p>Cargando biblioteca...</p>
+        </div>
+    `;
 
-/**
- * Guarda el arreglo de libros actual en localStorage
- */
-function saveToStorage() {
-    localStorage.setItem("bibliotech_books", JSON.stringify(books));
+    try {
+        const response = await fetch(`${API_URL}/books`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Error al cargar los libros");
+        }
+
+        books = data.data || [];
+        renderBooks(books);
+    } catch (error) {
+        console.error("❌ Error al cargar libros:", error);
+        grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #e74c3c;">
+                <p style="font-size: 1.2rem; font-weight: 600;">Error al cargar los libros</p>
+                <p style="font-size: 0.9rem; margin-top: 8px;">${error.message}</p>
+            </div>
+        `;
+    }
 }
 
 /**
  * Renderiza la colección de libros en la grid de la interfaz
+ * Usa los nombres de campo del backend: nombre, autor, categoria, foto, pdf_url, etc.
  * @param {Array} booksList - Lista de libros a renderizar
  */
 function renderBooks(booksList) {
     const grid = document.getElementById("booksGrid");
     grid.innerHTML = "";
 
-    if (booksList.length === 0) {
+    if (!booksList || booksList.length === 0) {
         grid.innerHTML = `
-            <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #888;">
                 <p style="font-size: 1.2rem; font-weight: 600;">No se encontraron libros</p>
                 <p style="font-size: 0.9rem; margin-top: 8px;">Haz clic en "Añadir Libro" para registrar uno nuevo.</p>
             </div>
@@ -155,30 +101,34 @@ function renderBooks(booksList) {
     }
 
     booksList.forEach((book, index) => {
-        const availabilityClass = book.available ? "disponible" : "no-disponible";
-        const availabilityText = book.available ? "Disponible" : "Prestado";
-        
         const card = document.createElement("div");
         card.className = "book-card";
-        // Aplicar delay escalonado para la animación de entrada
         card.style.animationDelay = `${index * 0.08}s`;
+
+        // Usar foto del backend o placeholder
+        const coverStyle = book.foto
+            ? `background-image: url('${book.foto}'); background-size: cover; background-position: center;`
+            : "";
+
         card.innerHTML = `
             <div class="book-card-header">
-                <span class="book-badge ${availabilityClass}">${availabilityText}</span>
-                <div class="book-cover-placeholder">
+                <span class="book-badge disponible">Disponible</span>
+                <div class="book-cover-placeholder" style="${coverStyle}">
+                    ${!book.foto ? `
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                     </svg>
-                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">${book.genre}</span>
+                    ` : ""}
+                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">${book.categoria || "Sin categoría"}</span>
                 </div>
             </div>
             <div class="book-card-body">
-                <h4 class="book-title">${book.title}</h4>
-                <p class="book-author">por ${book.author}</p>
+                <h4 class="book-title">${book.nombre}</h4>
+                <p class="book-author">por ${book.autor || "Autor desconocido"}</p>
                 <div class="book-meta">
-                    <span>Publicado: <strong>${book.year}</strong></span>
-                    <span>ID: #<strong>${book.id}</strong></span>
+                    <span>ID: <strong>#${book.id}</strong></span>
+                    ${book.puntuacion_media ? `<span>★ <strong>${book.puntuacion_media}</strong></span>` : ""}
                 </div>
                 <div class="book-actions">
                     <button class="book-btn book-btn-edit" onclick="event.stopPropagation(); editBook(${book.id})">
@@ -212,23 +162,21 @@ function renderBooks(booksList) {
  */
 function filterBooks() {
     const query = document.getElementById("searchInput").value.toLowerCase().trim();
-    
+
     let filtered = books;
-    
-    // Filtrar por género si no es "Todos"
+
     if (activeGenre !== 'Todos') {
-        filtered = filtered.filter(book => book.genre === activeGenre);
+        filtered = filtered.filter(book => book.categoria === activeGenre);
     }
-    
-    // Filtrar por texto de búsqueda
+
     if (query) {
-        filtered = filtered.filter(book => 
-            book.title.toLowerCase().includes(query) || 
-            book.author.toLowerCase().includes(query) || 
-            book.genre.toLowerCase().includes(query)
+        filtered = filtered.filter(book =>
+            (book.nombre && book.nombre.toLowerCase().includes(query)) ||
+            (book.autor && book.autor.toLowerCase().includes(query)) ||
+            (book.categoria && book.categoria.toLowerCase().includes(query))
         );
     }
-    
+
     renderBooks(filtered);
 }
 
@@ -238,8 +186,6 @@ function filterBooks() {
  */
 function filterByGenre(genre) {
     activeGenre = genre;
-    
-    // Actualizar botones activos visualmente
     const filterBtns = document.querySelectorAll('.filter-btn');
     filterBtns.forEach(btn => {
         if (btn.getAttribute('data-genre') === genre) {
@@ -248,8 +194,6 @@ function filterByGenre(genre) {
             btn.classList.remove('active');
         }
     });
-    
-    // Aplicar el filtro combinado (género + búsqueda)
     filterBooks();
 }
 
@@ -269,13 +213,10 @@ function updateFileLabel(input, labelId) {
     if (input.files && input.files.length > 0) {
         const file = input.files[0];
         const fileSize = (file.size / (1024 * 1024)).toFixed(2);
-
-        // Marcar label como "tiene archivo"
         label.classList.add("has-file");
         label.querySelector("span").textContent = file.name;
         label.querySelector("small").textContent = `${fileSize} MB`;
 
-        // Mostrar preview
         if (preview) {
             preview.style.display = "flex";
             preview.innerHTML = `
@@ -287,7 +228,6 @@ function updateFileLabel(input, labelId) {
             `;
         }
     } else {
-        // Restaurar label por defecto
         label.classList.remove("has-file");
         const isCover = labelId === "coverLabel";
         label.querySelector("span").textContent = isCover ? "Subir portada" : "Subir PDF";
@@ -309,19 +249,16 @@ function openAddModal() {
     document.getElementById("bookForm").reset();
     document.getElementById("serverError").style.display = "none";
     document.getElementById("uploadStatus").style.display = "none";
-
-    // Restaurar labels de archivo
     updateFileLabel(document.getElementById("bookCover"), "coverLabel");
     updateFileLabel(document.getElementById("bookPdf"), "pdfLabel");
-
     document.getElementById("bookModal").classList.add("active");
 }
 
 /**
- * Abre el modal para editar un libro existente
+ * Abre el modal para editar un libro existente — carga datos desde el backend
  * @param {number} id - ID del libro a editar
  */
-function editBook(id) {
+async function editBook(id) {
     const book = books.find(b => b.id === id);
     if (!book) return;
 
@@ -330,14 +267,13 @@ function editBook(id) {
     document.getElementById("serverError").style.display = "none";
     document.getElementById("uploadStatus").style.display = "none";
 
-    // Rellenar campos de texto
-    document.getElementById("bookTitle").value = book.title || "";
-    document.getElementById("bookAuthor").value = book.author || "";
-    document.getElementById("bookGenre").value = book.genre || "";
+    // Rellenar campos con datos del backend
+    document.getElementById("bookTitle").value = book.nombre || "";
+    document.getElementById("bookAuthor").value = book.autor || "";
+    document.getElementById("bookGenre").value = book.categoria || "";
     document.getElementById("bookAddress").value = book.direccion || "";
-    document.getElementById("bookDescription").value = book.synopsis || "";
+    document.getElementById("bookDescription").value = book.descripcion || "";
 
-    // Restaurar labels de archivo (en edición no se pre-seleccionan archivos)
     updateFileLabel(document.getElementById("bookCover"), "coverLabel");
     updateFileLabel(document.getElementById("bookPdf"), "pdfLabel");
 
@@ -389,7 +325,8 @@ function showServerError(message) {
 }
 
 /**
- * Guarda (crea o actualiza) un libro — conecta con backend para subir archivos a Cloudinary
+ * Guarda (crea o actualiza) un libro conectando con el backend
+ * Usa FormData para enviar archivos a Cloudinary
  */
 async function saveBook() {
     const title = document.getElementById("bookTitle").value.trim();
@@ -406,41 +343,13 @@ async function saveBook() {
         return;
     }
 
-    // Referencias a elementos de UI
     const saveBtn = document.getElementById("saveButton");
     const saveBtnText = document.getElementById("saveButtonText");
 
-    // Desactivar botón y mostrar estado
     saveBtn.disabled = true;
-    saveBtnText.textContent = "Guardando y Subiendo Archivos...";
+    saveBtnText.textContent = editId ? "Actualizando..." : "Guardando y Subiendo Archivos...";
     document.getElementById("serverError").style.display = "none";
 
-    // ─── Si estamos en modo edición, usar localStorage (sin subida de archivos) ───
-    if (editId) {
-        try {
-            const index = books.findIndex(b => b.id === editId);
-            if (index !== -1) {
-                books[index].title = title;
-                books[index].author = author;
-                books[index].genre = genre || books[index].genre;
-                books[index].direccion = address || books[index].direccion;
-                books[index].synopsis = description || books[index].synopsis;
-            }
-            saveToStorage();
-            renderBooks(books);
-            closeModal();
-            return;
-        } catch (err) {
-            console.error("Error al editar localmente:", err);
-            showServerError("Error al guardar los cambios. Intenta de nuevo.");
-        } finally {
-            saveBtn.disabled = false;
-            saveBtnText.textContent = "Guardar Libro";
-        }
-        return;
-    }
-
-    // ─── Crear FormData para enviar al backend con archivos ───
     const formData = new FormData();
     formData.append("nombre", title);
     formData.append("autor", author);
@@ -450,17 +359,18 @@ async function saveBook() {
     if (coverFile) formData.append("foto", coverFile);
     if (pdfFile) formData.append("pdf", pdfFile);
 
-    // Obtener token de autenticación
     const token = getAuthToken();
+    const isEdit = !!editId;
+    const method = isEdit ? "PUT" : "POST";
+    const url = isEdit ? `${API_URL}/books/${editId}` : `${API_URL}/books`;
 
-    setUploadStatus("Subiendo archivos a Cloudinary...", true);
+    setUploadStatus(isEdit ? "Actualizando libro..." : "Subiendo archivos a Cloudinary...", true);
 
     try {
-        const response = await fetch(`${API_URL}/books`, {
-            method: "POST",
+        const response = await fetch(url, {
+            method,
             headers: token ? { "Authorization": `Bearer ${token}` } : {},
-            body: formData,
-            credentials: "include"
+            body: formData
         });
 
         const data = await response.json();
@@ -469,26 +379,8 @@ async function saveBook() {
             throw new Error(data.message || `Error del servidor (${response.status})`);
         }
 
-        // ─── Éxito: agregar a localStorage y re-renderizar ───
-        const newId = books.length > 0 ? Math.max(...books.map(b => b.id)) + 1 : 1;
-        books.push({
-            id: newId,
-            title,
-            author,
-            genre: genre || "Sin categoría",
-            year: new Date().getFullYear(),
-            available: true,
-            synopsis: description,
-            direccion: address,
-            portada: data.data?.foto || null,
-            pdf_url: data.data?.pdf_url || null,
-            rating: 0,
-            comments: [],
-            notes: ""
-        });
-
-        saveToStorage();
-        renderBooks(books);
+        // Recargar la lista completa desde el backend
+        await loadBooks();
         closeModal();
 
     } catch (error) {
@@ -502,17 +394,36 @@ async function saveBook() {
 }
 
 /**
- * Elimina un libro de la lista con confirmación previa
+ * Elimina un libro del backend con confirmación
  * @param {number} id - ID del libro a eliminar
  */
-function deleteBook(id) {
-    if (confirm("¿Estás seguro de que deseas eliminar este libro?")) {
-        books = books.filter(b => b.id !== id);
-        saveToStorage();
-        renderBooks(books);
-        if (selectedBookId === id) {
-            closeBookDetail();
+async function deleteBook(id) {
+    if (!confirm("¿Estás seguro de que deseas eliminar este libro?")) return;
+
+    const token = getAuthToken();
+    if (!token) {
+        alert("Debes iniciar sesión para eliminar libros.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/books/${id}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || `Error del servidor (${response.status})`);
         }
+
+        // Recargar la lista desde el backend
+        await loadBooks();
+
+    } catch (error) {
+        console.error("❌ Error al eliminar libro:", error);
+        alert(error.message || "No se pudo eliminar el libro. Intenta de nuevo.");
     }
 }
 
@@ -521,22 +432,18 @@ function deleteBook(id) {
  * @param {string} tabName - Nombre de la pestaña seleccionada
  */
 function switchTab(tabName) {
-    // Si es configuración, redirigir a settings.html
     if (tabName === 'configuracion') {
         window.location.href = 'settings.html';
         return;
     }
 
-    // Limpiar clases activas en los ítems del menú de la barra lateral
     const menuItems = document.querySelectorAll(".menu-item");
     menuItems.forEach(item => item.classList.remove("active"));
 
-    // Establecer elemento activo basado en el atributo onclick de la UI
     if (event && event.currentTarget) {
         event.currentTarget.classList.add("active");
     }
 
-    // Actualizar título de la sección superior (Topbar)
     const titles = {
         'libros': 'Catálogo de Libros',
         'prestamos': 'Gestión de Préstamos',
@@ -546,11 +453,9 @@ function switchTab(tabName) {
 
     document.getElementById("currentSectionTitle").textContent = titles[tabName] || "Dashboard";
 
-    // Si cambiamos a Libros, recargamos la colección
     if (tabName === 'libros') {
-        renderBooks(books);
+        loadBooks();
     } else {
-        // Para las otras secciones estáticas, mostramos un placeholder bien diseñado
         const grid = document.getElementById("booksGrid");
         grid.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #1E4B65; background: #FFFFFF; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
@@ -574,9 +479,3 @@ function toggleSidebar() {
     sidebar.classList.toggle("active");
 }
 
-/**
- * Borra la sesión local y redirige al login
- */
-function logout() {
-    localStorage.removeItem("user");
-}
