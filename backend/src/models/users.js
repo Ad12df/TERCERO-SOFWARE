@@ -34,24 +34,13 @@ const User = sequelize.define(
   },
   {
     timestamps: true,
-    hooks: {
-      beforeCreate: async (user) => {
-        if (user.password) {
-          const salt = await bcrypt.genSalt(10);
-          user.password = await bcrypt.hash(user.password, salt);
-        }
-      },
-      beforeUpdate: async (user) => {
-        if (user.changed("password")) {
-          const salt = await bcrypt.genSalt(10);
-          user.password = await bcrypt.hash(user.password, salt);
-        }
-      },
-    },
+    // ⚠️ Se eliminaron los hooks de encriptación del modelo.
+    // La encriptación ahora se hace en el controlador con bcrypt.hash (10 salts)
+    // para evitar doble encriptación.
   }
 );
 
-// Método para comparar contraseñas
+// Método para comparar contraseñas usando bcrypt.compare
 User.prototype.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };

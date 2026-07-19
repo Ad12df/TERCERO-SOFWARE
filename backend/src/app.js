@@ -9,20 +9,36 @@ const routes = require("./routes");
 const app = express();
 
 // ─── 1. Configuración CORS ────────────────────────────────────
-// ⚠️ REEMPLAZA 'TU_URL_DE_VERCEL' con tu URL de Vercel
-const VERCEL_URL = "https://tercero-sofware.vercel.app";
+// ⚠️ REEMPLAZA la URL de abajo con tu URL de Vercel
+//    Ejemplo: "https://mi-libreria.vercel.app"
+const VERCEL_URL = "https://tercero-sofware.vercel.app"; // 👈 Coloca aquí tu URL de Vercel
+
+// Lista de orígenes permitidos (Vercel + localhost para desarrollo)
+const allowedOrigins = [
+  VERCEL_URL,
+  "http://localhost:5500",
+  "http://127.0.0.1:5500",
+];
 
 app.use(
   cors({
-    origin: VERCEL_URL,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
+    origin: function (origin, callback) {
+      // Permite peticiones sin origen (como curl o Postman) y los orígenes listados
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("No permitido por CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // 👈 Permite envío de credenciales/cookies
   })
 );
 
 // ─── 2. Middlewares esenciales ─────────────────────────────────
+// ⚠️ express.json() DEBE ir ANTES de declarar las rutas
 app.use(helmet());
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json({ limit: "50mb" })); // 👈 Parsea bodies JSON
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(morgan("dev"));
 
