@@ -32,35 +32,57 @@ const uploadBookFiles = multer({
 ]);
 
 // ─── Helpers de subida a Supabase Storage ────────────────────
-// Genera un nombre de archivo único conservando la extensión original.
-// ⚠️ CRÍTICO: Se sanitiza agresivamente para evitar "Invalid path" en Supabase.
-//   - En Windows, req.files[].originalname puede incluir la ruta completa
-//     del archivo (ej. "C:\Users\javi\Documents\libro.pdf") con backslashes.
-//   - Supabase interpreta cualquier slash/backslash como separador de ruta
-//     dentro del bucket, causando el error 400 "Invalid path specified".
-//   - La solución es extraer SOLO el nombre del archivo y eliminar todos
-//     los caracteres que no sean alfanuméricos, guiones o puntos.
+// Genera un nombre de archivo ÚNICO, PLANO y SEGURO para Supabase Storage.
+//
+// ⚠️ CRÍTICO — Evita el error 400/500 "Invalid path specified in request URL":
+//   - En Windows, `req.files[].originalname` puede llegar con la ruta COMPLETA
+//     del archivo (ej. "C:\Users\javi\Documents\libro.pdf") incluyendo
+//     backslashes y forward slashes.
+//   - Supabase Storage interpreta CUALQUIER slash/backslash como separador
+//     de "carpeta" dentro del bucket. Si el path contiene "C:\" el servidor
+//     rechaza la petición con "Invalid path specified".
+//   - Además, caracteres especiales (acentos, espacios, símbolos) pueden
+//     romper la URL pública generada.
+//
+// SOLUCIÓN: extraer SOLO el nombre del archivo, eliminar todo carácter no
+// seguro y devolver un nombre plano tipo "1721423456-libro.pdf".
 function buildUniqueName(originalName) {
-  // 1. Extraer solo el nombre del archivo (sin ruta)
+  // 1. Extraer solo el nombre del archivo (sin ruta de Windows/Unix)
   let base = originalName || "file";
-  // En Windows, la ruta puede venir con backslashes o forward slashes
-  base = base.split(/[\\/]/).pop();
-  // 2. Separar nombre y extensión
-  const ext = base.includes(".") ? base.split(".").pop() : "";
-  base = base.includes(".") ? base.substring(0, base.lastIndexOf(".")) : base;
-  // 3. Eliminar TODO lo que no sea letra, número, guión o espacio
-  base = base.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s-]/g, "");
+  base = base.split(/[\\/]/).pop(); // quita "C:\Users\...\"
+
+  // 2. Separar nombre y extensión (solo la última extensión)
+  const lastDot = base.lastIndexOf(".");
+  let namePart = lastDot !== -1 ? base.substring(0, lastDot) : base;
+  let extPart = lastDot !== -1 ? base.substring(lastDot + 1) : "";
+
+  // 3. Sanitizar agresivamente: SOLO alfanuméricos, guiones y guiones bajos.
+  //    Se eliminan espacios, acentos, símbolos y cualquier carácter raro.
+  namePart = namePart.replace(/[^a-zA-Z0-9._-]/g, "");
+  extPart = extPart.replace(/[^a-zA-Z0-9._-]/g, "");
+
   // 4. Si quedó vacío, usar un nombre genérico
-  if (!base.trim()) base = "archivo";
-  // 5. Ensamblar nombre único con timestamp
+  if (!namePart) namePart = "archivo";
+  if (!extPart) extPart = "bin";
+
+  // 5. Ensamblar nombre único con timestamp (ej: "1721423456-libro.pdf")
   const stamp = Date.now();
-  return ext ? `${base.trim()}-${stamp}.${ext}` : `${base.trim()}-${stamp}`;
+  const finalName = `${stamp}-${namePart}.${extPart}`;
+
+  // 6. Última red de seguridad: garantizar que NO contenga slashes ni
+  //    empiece con "/" o "\". Si por algún motivo se colara, se elimina.
+  return finalName.replace(/[\\/]/g, "").replace(/^\.+/, "");
 }
 
 // Sube una imagen de portada al bucket 'portadas' desde un buffer.
 // Devuelve la URL pública del archivo subido.
+//
+// ⚠️ SDK Supabase JS v2: `getPublicUrl()` devuelve
+//    { data: { publicUrl } }  (con 'u' minúscula).
+//    La API antigua `publicURL` (mayúscula) ya NO existe y devuelve undefined.
 async function uploadImageFromBuffer(buffer, originalName) {
   const fileName = buildUniqueName(originalName);
+
   const { error } = await supabase.storage
     .from(BUCKET_PORTADAS)
     .upload(fileName, buffer, {
@@ -70,17 +92,24 @@ async function uploadImageFromBuffer(buffer, originalName) {
 
   if (error) throw error;
 
-  const { publicURL } = supabase.storage
+  // ✅ API correcta en Supabase JS v2
+  const { data } = supabase.storage
     .from(BUCKET_PORTADAS)
     .getPublicUrl(fileName);
 
-  return { secure_url: publicURL, public_id: fileName };
+  const publicUrl = data?.publicUrl;
+  if (!publicUrl) {
+    throw new Error("No se pudo obtener la URL pública de la portada.");
+  }
+
+  return { secure_url: publicUrl, public_id: fileName };
 }
 
 // Sube un PDF al bucket 'pdfs' desde un buffer.
 // Devuelve la URL pública del archivo subido.
 async function uploadPdfFromBuffer(buffer, originalName) {
   const fileName = buildUniqueName(originalName);
+
   const { error } = await supabase.storage
     .from(BUCKET_PDFS)
     .upload(fileName, buffer, {
@@ -90,11 +119,17 @@ async function uploadPdfFromBuffer(buffer, originalName) {
 
   if (error) throw error;
 
-  const { publicURL } = supabase.storage
+  // ✅ API correcta en Supabase JS v2
+  const { data } = supabase.storage
     .from(BUCKET_PDFS)
     .getPublicUrl(fileName);
 
-  return { secure_url: publicURL, public_id: fileName };
+  const publicUrl = data?.publicUrl;
+  if (!publicUrl) {
+    throw new Error("No se pudo obtener la URL pública del PDF.");
+  }
+
+  return { secure_url: publicUrl, public_id: fileName };
 }
 
 module.exports = {
