@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const BookController = require("../../controllers/books");
-const { downloadBookPdf } = require("../../controllers/download");
+const { downloadBookPDF } = require("../../controllers/download");
 const { authenticate, authorize } = require("../../middleware/auth");
 const { uploadBookFiles } = require("../../config/cloudinary");
 
@@ -22,7 +22,7 @@ router.options("/:id/download", (req, res) => {
   res.setHeader("Access-Control-Max-Age", "86400");
   return res.status(200).end();
 });
-router.get("/:id/download", downloadBookPdf);
+router.get("/:id/download", downloadBookPDF);
 
 // POST /api/books - Crear un libro
 // ⚠️ El middleware de Multer va ANTES del controlador
