@@ -1,17 +1,50 @@
 const { Book } = require('../models');
 const axios = require('axios');
+const cloudinary = require('cloudinary').v2;
+
+// ─── Configuración de Cloudinary ─────────────────────────────
+// Necesario para generar URLs firmadas válidas para recursos 'raw' (PDFs)
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'ditggsmd',
+  api_key: process.env.CLOUDINARY_API_KEY || '878829813274737',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'yO3x3WrCQ7MwDgLMgz5-aAemoYs',
+});
+
+/**
+ * Extrae el public_id de una URL de Cloudinary.
+ * Ejemplo:
+ *   https://res.cloudinary.com/ditggsmd/raw/upload/v123/bibliotech/pdfs/libro-abc.pdf
+ *   → bibliotech/pdfs/libro-abc
+ */
+function extractPublicId(url) {
+  try {
+    // Quita la query string si existe
+    const cleanUrl = url.split('?')[0];
+    // Elimina la extensión final (.pdf)
+    const noExt = cleanUrl.replace(/\.pdf$/i, '');
+    // Toma todo lo que está después de '/upload/' y elimina versiones (v123456/)
+    const parts = noExt.split('/upload/');
+    if (parts.length < 2) return null;
+    let publicId = parts[1];
+    // Elimina el segmento de versión si existe (v seguido de números)
+    publicId = publicId.replace(/^v\d+\//, '');
+    return publicId;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Descarga un PDF de libro como proxy autenticado de Cloudinary.
  *
  * Estrategia:
  * 1. Obtiene el ID del libro de req.params.
- * 2. Busca el libro en la BD con Book.findByPk e imprime el resultado
- *    para verificar qué campos trae (console.log del objeto completo).
- * 3. Usa directamente el campo pdf_url almacenado en la BD.
- * 4. Hace un GET con axios (responseType: 'stream') a esa URL con
- *    autenticación Basic Auth para evitar el 401 de Cloudinary.
- * 5. Pipe del stream al response del cliente con las cabeceras correctas.
+ * 2. Busca el libro en la BD con Book.findByPk.
+ * 3. Usa el campo pdf_url almacenado en la BD.
+ * 4. Genera una URL firmada con el SDK oficial de Cloudinary
+ *    (resource_type: 'raw' para PDFs) — esto evita el 401.
+ * 5. Hace un GET con axios (responseType: 'stream') a la URL firmada.
+ * 6. Pipe del stream al response del cliente con las cabeceras correctas.
  */
 exports.downloadBookPDF = async (req, res) => {
     try {
@@ -46,16 +79,34 @@ exports.downloadBookPDF = async (req, res) => {
             });
         }
 
-        // ── 6. Credenciales de Cloudinary para Basic Auth ────────────
-        const API_KEY = process.env.CLOUDINARY_API_KEY || '878829813274737';
-        const API_SECRET = process.env.CLOUDINARY_API_SECRET || 'yO3x3WrCQ7MwDgLMgz5-aAemoYs';
-        const authToken = Buffer.from(`${API_KEY}:${API_SECRET}`).toString('base64');
+        // ── 6. Generar URL firmada con el SDK de Cloudinary ──────────
+        // Los PDFs se suben como resource_type: 'raw', por lo que la URL
+        // firmada debe generarse con el mismo resource_type para evitar 401.
+        const publicId = extractPublicId(pdfUrl);
+        console.log(`🔑 public_id extraído: ${publicId}`);
+
+        let finalUrl = pdfUrl;
+        if (publicId) {
+            try {
+                finalUrl = cloudinary.utils.url(publicId, {
+                    resource_type: 'raw',
+                    type: 'upload',
+                    sign_url: true,
+                    attachment: true, // fuerza descarga (Content-Disposition: attachment)
+                });
+                console.log(`✅ URL firmada generada: ${finalUrl}`);
+            } catch (signErr) {
+                console.warn('⚠️ No se pudo firmar la URL, usando la original:', signErr.message);
+                finalUrl = pdfUrl;
+            }
+        }
 
         // ── 7. Descargar el PDF con axios usando responseType stream ──
-        const response = await axios.get(pdfUrl, {
+        // ⚠️ NO enviamos header Authorization porque la URL ya está firmada
+        //    y Cloudinary rechaza Basic Auth en URLs públicas/firmadas (401).
+        const response = await axios.get(finalUrl, {
             responseType: 'stream',
             headers: {
-                'Authorization': `Basic ${authToken}`,
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept': 'application/pdf,*/*',
             },
