@@ -2,7 +2,7 @@ const { Book } = require("../models");
 const {
   uploadImageFromBuffer,
   uploadPdfFromBuffer,
-} = require("../config/cloudinary");
+} = require("../config/supabase");
 
 class BookController {
   // ─── POST /api/books (solo admin) ──────────────────────────

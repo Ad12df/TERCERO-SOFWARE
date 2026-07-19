@@ -2,7 +2,7 @@ const router = require("express").Router();
 const BookController = require("../../controllers/books");
 const { downloadBookPDF } = require("../../controllers/download");
 const { authenticate, authorize } = require("../../middleware/auth");
-const { uploadBookFiles } = require("../../config/cloudinary");
+const { uploadBookFiles } = require("../../config/supabase");
 
 // ─── Rutas de libros ─────────────────────────────────────────
 
