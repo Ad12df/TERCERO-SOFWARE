@@ -53,6 +53,10 @@ function logout() {
  */
 async function loadBooks() {
     const grid = document.getElementById("booksGrid");
+    if (!grid) {
+        console.error("❌ booksGrid no encontrado en el DOM");
+        return;
+    }
     grid.innerHTML = `
         <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #888;">
             <div class="spinner" style="margin: 0 auto 16px;"></div>
@@ -72,12 +76,14 @@ async function loadBooks() {
         renderBooks(books);
     } catch (error) {
         console.error("❌ Error al cargar libros:", error);
-        grid.innerHTML = `
-            <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #e74c3c;">
-                <p style="font-size: 1.2rem; font-weight: 600;">Error al cargar los libros</p>
-                <p style="font-size: 0.9rem; margin-top: 8px;">${error.message}</p>
-            </div>
-        `;
+        if (grid) {
+            grid.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #e74c3c;">
+                    <p style="font-size: 1.2rem; font-weight: 600;">Error al cargar los libros</p>
+                    <p style="font-size: 0.9rem; margin-top: 8px;">${error.message}</p>
+                </div>
+            `;
+        }
     }
 }
 
@@ -88,6 +94,10 @@ async function loadBooks() {
  */
 function renderBooks(booksList) {
     const grid = document.getElementById("booksGrid");
+    if (!grid) {
+        console.error("❌ booksGrid no encontrado en el DOM");
+        return;
+    }
     grid.innerHTML = "";
 
     if (!booksList || booksList.length === 0) {

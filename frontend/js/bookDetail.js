@@ -14,16 +14,19 @@ let currentBook = null; // Almacena el libro actual obtenido de la API
 async function initializeDetailPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const bookId = urlParams.get('id');
+    const detailPage = document.getElementById('bookDetailPage');
 
     if (!bookId) {
-        document.getElementById('bookDetailPage').innerHTML = `
-            <div style="text-align: center; padding: 60px; color: #666;">
-                <h2>No se especificó un libro</h2>
-                <p style="margin-top: 16px;">
-                    <a href="books.html" style="color: #1E4B65; text-decoration: underline;">Volver al catálogo</a>
-                </p>
-            </div>
-        `;
+        if (detailPage) {
+            detailPage.innerHTML = `
+                <div style="text-align: center; padding: 60px; color: #666;">
+                    <h2>No se especificó un libro</h2>
+                    <p style="margin-top: 16px;">
+                        <a href="books.html" style="color: #1E4B65; text-decoration: underline;">Volver al catálogo</a>
+                    </p>
+                </div>
+            `;
+        }
         return;
     }
 
@@ -35,14 +38,16 @@ async function initializeDetailPage() {
 
         if (!response.ok) {
             if (response.status === 404) {
-                document.getElementById('bookDetailPage').innerHTML = `
-                    <div style="text-align: center; padding: 60px; color: #666;">
-                        <h2>Libro no encontrado</h2>
-                        <p style="margin-top: 16px;">
-                            <a href="books.html" style="color: #1E4B65; text-decoration: underline;">Volver al catálogo</a>
-                        </p>
-                    </div>
-                `;
+                if (detailPage) {
+                    detailPage.innerHTML = `
+                        <div style="text-align: center; padding: 60px; color: #666;">
+                            <h2>Libro no encontrado</h2>
+                            <p style="margin-top: 16px;">
+                                <a href="books.html" style="color: #1E4B65; text-decoration: underline;">Volver al catálogo</a>
+                            </p>
+                        </div>
+                    `;
+                }
             } else {
                 throw new Error(`Error HTTP: ${response.status}`);
             }
@@ -79,15 +84,18 @@ async function initializeDetailPage() {
 
     } catch (error) {
         console.error('❌ Error al cargar el libro:', error);
-        document.getElementById('bookDetailPage').innerHTML = `
-            <div style="text-align: center; padding: 60px; color: #666;">
-                <h2>Error al cargar el libro</h2>
-                <p style="margin-top: 16px; color: #999;">${escapeHtml(error.message)}</p>
-                <p style="margin-top: 16px;">
-                    <a href="books.html" style="color: #1E4B65; text-decoration: underline;">Volver al catálogo</a>
-                </p>
-            </div>
-        `;
+        const detailPage = document.getElementById('bookDetailPage');
+        if (detailPage) {
+            detailPage.innerHTML = `
+                <div style="text-align: center; padding: 60px; color: #666;">
+                    <h2>Error al cargar el libro</h2>
+                    <p style="margin-top: 16px; color: #999;">${escapeHtml(error.message)}</p>
+                    <p style="margin-top: 16px;">
+                        <a href="books.html" style="color: #1E4B65; text-decoration: underline;">Volver al catálogo</a>
+                    </p>
+                </div>
+            `;
+        }
     }
 }
 
@@ -109,8 +117,11 @@ function showBookDetail(book) {
     // updatedAt → metaUpdate
 
     // Llenar información básica
-    document.getElementById("bookTitle").textContent = book.nombre || "Sin título";
-    document.getElementById("bookAuthor").textContent = book.autor ? `por ${book.autor}` : "Autor desconocido";
+    const bookTitleEl = document.getElementById("bookTitle");
+    if (bookTitleEl) bookTitleEl.textContent = book.nombre || "Sin título";
+
+    const bookAuthorEl = document.getElementById("bookAuthor");
+    if (bookAuthorEl) bookAuthorEl.textContent = book.autor ? `por ${book.autor}` : "Autor desconocido";
 
     // Imagen de portada (foto de Cloudinary)
     const bookCover = document.getElementById("bookCover");
