@@ -745,6 +745,22 @@ body.users-page {
     color: #888;
 }
 
+.user-email {
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.admin-badge {
+    display: inline-block;
+    background: #1E4B65;
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-top: 4px;
+    font-weight: 600;
+}
+
 /* ==========================================================================
    BARRA DE HERRAMIENTAS COMBINADA: BUSCADOR + FILTROS
    ========================================================================== */

@@ -2,6 +2,7 @@ const sequelize = require("../config/database");
 const User = require("./users");
 const Book = require("./books");
 const Review = require("./reviews");
+const UserSetting = require("./userSettings");
 
 // ─── Relaciones ───────────────────────────────────────────────
 
@@ -22,6 +23,12 @@ User.hasMany(Book, { foreignKey: "created_by", as: "libros" });
 
 // Book → User (cada libro tiene un creador)
 Book.belongsTo(User, { foreignKey: "created_by", as: "creador" });
+
+// User → UserSetting (un usuario tiene una configuración)
+User.hasOne(UserSetting, { foreignKey: "user_id", as: "settings" });
+
+// UserSetting → User (la configuración pertenece a un usuario)
+UserSetting.belongsTo(User, { foreignKey: "user_id", as: "user" });
 
 // ─── Conexión y Sincronización ─────────────────────────────────
 
@@ -47,4 +54,5 @@ module.exports = {
   User,
   Book,
   Review,
+  UserSetting,
 };

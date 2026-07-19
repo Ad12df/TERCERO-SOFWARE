@@ -69,29 +69,54 @@ function showMessage(elementId, text, isSuccess = false) {
 }
 
 /**
- * Simulación de la función de Login
+ * Función asíncrona para iniciar sesión conectando con el backend
  */
-function login() {
+async function login() {
   const contact = document.getElementById("loginContact").value.trim();
   const password = document.getElementById("loginPassword").value;
 
-  /*
-       Aquí posteriormente conectarás
-       con /auth/login cuando exista JWT
-  */
+  // Validación de campos completos en el formulario de login
+  if (!contact || !password) {
+    showMessage("loginMessage", "Complete los campos");
+    return;
+  }
 
-  if (contact && password) {
-    // Almacena datos temporales del usuario autenticado
+  try {
+    // Solicitud POST hacia el endpoint de login del backend
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: contact,
+        password: password,
+      }),
+    });
+
+    const data = await response.json();
+
+    // Verificación del estado de respuesta del servidor
+    if (!response.ok) {
+      showMessage("loginMessage", data.message || "Error al iniciar sesión");
+      return;
+    }
+
+    // Login exitoso - almacenar token y datos del usuario
+    localStorage.setItem("token", data.token);
     localStorage.setItem(
       "user",
-      JSON.stringify({ email: contact }),
+      JSON.stringify({
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+      }),
     );
 
     // Redirección hacia el gestor de libros/biblioteca una vez logueado
     window.location.href = "books.html";
-  } else {
-    // Validación rápida de campos vacíos
-    showMessage("loginMessage", "Complete los campos");
+  } catch {
+    // Manejo de errores de conexión de red
+    showMessage("loginMessage", "No se pudo conectar con el servidor");
   }
 }
 
@@ -109,15 +134,21 @@ async function register() {
     return;
   }
 
+  // Validación de longitud mínima de contraseña
+  if (password.length < 6) {
+    showMessage("registerMessage", "La contraseña debe tener al menos 6 caracteres");
+    return;
+  }
+
   try {
-    // Solicitud POST hacia el endpoint correspondiente del backend
-    const response = await fetch(`${API_URL}/user`, {
+    // Solicitud POST hacia el endpoint de registro del backend
+    const response = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name,
         email: contact,
-        password,
+        password: password,
       }),
     });
 

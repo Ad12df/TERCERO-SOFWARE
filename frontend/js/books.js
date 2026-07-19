@@ -7,6 +7,12 @@ let books = [];
 let activeGenre = 'Todos'; // Género actualmente seleccionado para filtrar
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Verificar autenticación antes de cargar
+    if (!isAuthenticated()) {
+        window.location.href = "index.html";
+        return;
+    }
+    
     // Inicializar perfil de usuario
     initializeProfile();
     // Cargar biblioteca (con datos de prueba por defecto)
@@ -17,25 +23,36 @@ document.addEventListener("DOMContentLoaded", () => {
  * Recupera el usuario logueado desde localStorage y actualiza la UI
  */
 function initializeProfile() {
-    const userStr = localStorage.getItem("user");
+    const user = getUserData();
     const profileEmail = document.getElementById("profileEmail");
     const avatarLetter = document.getElementById("avatarLetter");
+    const profileName = document.getElementById("profileName");
 
-    if (userStr) {
-        try {
-            const user = JSON.parse(userStr);
-            if (user && user.email) {
-                profileEmail.textContent = user.email;
-                avatarLetter.textContent = user.email.charAt(0).toUpperCase();
-                return;
-            }
-        } catch (e) {
-            console.error("Error al parsear el usuario:", e);
+    if (user) {
+        profileEmail.textContent = user.email;
+        profileName.textContent = user.name || user.email;
+        avatarLetter.textContent = (user.name || user.email).charAt(0).toUpperCase();
+        
+        // Si es admin, mostrar botón de gestión
+        if (user.role === "admin") {
+            const adminBadge = document.getElementById("adminBadge");
+            if (adminBadge) adminBadge.style.display = "inline-block";
         }
+        return;
     }
     // Valores por defecto
     profileEmail.textContent = "visitante@bibliotech.com";
+    profileName.textContent = "Visitante";
     avatarLetter.textContent = "V";
+}
+
+/**
+ * Cierra la sesión del usuario y redirige al login
+ */
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "index.html";
 }
 
 /**
