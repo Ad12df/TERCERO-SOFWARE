@@ -687,6 +687,55 @@
 }
 
 /* ===================================
+   INDICADOR DE DESCARGA / ALMACENAMIENTO LOCAL
+   =================================== */
+.download-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: var(--reader-pill-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--reader-pill-border);
+    border-radius: 20px;
+    padding: 28px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    box-shadow: var(--reader-shadow);
+    z-index: 3500;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--reader-transition);
+    max-width: 90vw;
+    text-align: center;
+}
+
+.download-indicator.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.download-indicator-spinner {
+    width: 44px;
+    height: 44px;
+    border: 3px solid var(--reader-pill-border);
+    border-top-color: var(--reader-accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.download-indicator-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--reader-text);
+    line-height: 1.4;
+}
+
+/* ===================================
    ANIMACIONES
    =================================== */
 @keyframes fadeIn {
@@ -708,6 +757,10 @@
 @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 /* ===================================

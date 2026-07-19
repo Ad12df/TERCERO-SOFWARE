@@ -103,39 +103,112 @@
     }
 
     // ===================================
+    // INDEXEDDB - Caché local de PDFs
+    // ===================================
+    const DB_NAME = 'bibliotech_pdf_cache';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'pdfs';
+
+    function openDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+            request.onupgradeneeded = function(e) {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME);
+                }
+            };
+
+            request.onsuccess = function(e) {
+                resolve(e.target.result);
+            };
+
+            request.onerror = function(e) {
+                console.warn('IndexedDB no disponible:', e.target.error);
+                resolve(null);
+            };
+        });
+    }
+
+    async function getCachedPDF(bookId) {
+        const db = await openDB();
+        if (!db) return null;
+
+        return new Promise((resolve) => {
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.get('pdf_cache_book_' + bookId);
+
+            req.onsuccess = () => resolve(req.result || null);
+            req.onerror = () => resolve(null);
+        });
+    }
+
+    async function setCachedPDF(bookId, blob) {
+        const db = await openDB();
+        if (!db) return;
+
+        return new Promise((resolve) => {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            store.put(blob, 'pdf_cache_book_' + bookId);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+        });
+    }
+
+    // ===================================
     // CARGAR DATOS DEL LIBRO
     // ===================================
-    function loadBook() {
-        const books = JSON.parse(localStorage.getItem('bibliotech_books') || '[]');
-        state.book = books.find(b => b.id == state.bookId);
+    async function loadBook() {
+        try {
+            // Obtener datos del libro desde la API
+            const response = await fetch(`${API_URL}/books/${state.bookId}`);
+            const result = await response.json();
 
-        if (!state.book) {
+            if (result.success && result.data) {
+                state.book = result.data;
+            } else {
+                state.book = {
+                    id: state.bookId,
+                    nombre: 'Libro no encontrado',
+                    autor: 'Desconocido',
+                    totalPages: 0,
+                    currentPage: 1,
+                    lastRead: new Date().toISOString()
+                };
+            }
+        } catch (err) {
+            console.warn('Error al obtener datos del libro:', err);
             state.book = {
                 id: state.bookId,
-                title: 'El Título del Libro',
-                author: 'Autor Desconocido',
+                nombre: 'El Título del Libro',
+                autor: 'Autor Desconocido',
                 totalPages: 0,
                 currentPage: 1,
                 lastRead: new Date().toISOString()
             };
         }
 
-        updateBookInfo();
-
-        if (state.book.currentPage) {
-            state.currentPage = state.book.currentPage;
+        // Restaurar progreso de lectura guardado localmente
+        const savedBooks = JSON.parse(localStorage.getItem('bibliotech_books') || '[]');
+        const savedBook = savedBooks.find(b => b.id == state.bookId);
+        if (savedBook && savedBook.currentPage) {
+            state.currentPage = savedBook.currentPage;
         }
 
-        loadPDF();
+        updateBookInfo();
+        await loadPDF();
     }
 
     function updateBookInfo() {
-        elements.readerTitle.textContent = state.book.title || 'Sin título';
+        elements.readerTitle.textContent = state.book.nombre || state.book.title || 'Sin título';
         elements.currentPage.textContent = state.currentPage;
         elements.totalPages.textContent = state.book.totalPages || state.totalPages || '...';
 
-        elements.infoBookTitle.textContent = state.book.title || 'Sin título';
-        elements.infoBookAuthor.textContent = state.book.author || 'Autor desconocido';
+        elements.infoBookTitle.textContent = state.book.nombre || state.book.title || 'Sin título';
+        elements.infoBookAuthor.textContent = state.book.autor || state.book.author || 'Autor desconocido';
         elements.infoTotalPages.textContent = state.book.totalPages || state.totalPages || '?';
 
         updateProgress();
@@ -155,15 +228,55 @@
     }
 
     // ===================================
-    // CARGAR PDF CON PDF.js
+    // CARGAR PDF CON PDF.js (vía proxy + IndexedDB)
     // ===================================
-    function loadPDF() {
+    async function loadPDF() {
         if (!window.pdfjsLib) {
             showToast('Error: PDF.js no está disponible');
             return;
         }
 
-        const loadingTask = pdfjsLib.getDocument('prueba.pdf');
+        // 1. Verificar caché de IndexedDB
+        const cachedBlob = await getCachedPDF(state.bookId);
+
+        if (cachedBlob) {
+            // PDF ya está en caché local — cargar directamente
+            showDownloadIndicator(false);
+            const blobUrl = URL.createObjectURL(cachedBlob);
+            renderPDFFromSource(blobUrl);
+            return;
+        }
+
+        // 2. No está en caché — descargar desde el proxy del backend
+        showDownloadIndicator(true, 'Preparando descarga y almacenamiento local...');
+
+        try {
+            const response = await fetch(`${API_URL}/books/${state.bookId}/download`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const blob = await response.blob();
+
+            // 3. Guardar en IndexedDB para futuras lecturas
+            await setCachedPDF(state.bookId, blob);
+
+            // 4. Cargar el PDF desde el blob
+            showDownloadIndicator(false);
+            const blobUrl = URL.createObjectURL(blob);
+            renderPDFFromSource(blobUrl);
+        } catch (error) {
+            console.error('Error al descargar el PDF:', error);
+            showDownloadIndicator(false);
+            elements.pdfPlaceholder.querySelector('.placeholder-title').textContent = 'Error al cargar';
+            elements.pdfPlaceholder.querySelector('.placeholder-subtitle').textContent = 'No se pudo descargar el documento';
+            showToast('Error al descargar el documento');
+        }
+    }
+
+    function renderPDFFromSource(source) {
+        const loadingTask = pdfjsLib.getDocument(source);
 
         loadingTask.promise.then(function(pdf) {
             state.pdfDoc = pdf;
@@ -189,6 +302,21 @@
             elements.pdfPlaceholder.querySelector('.placeholder-subtitle').textContent = 'No se pudo abrir el documento';
             showToast('Error al cargar el documento');
         });
+    }
+
+    // ===================================
+    // INDICADOR DE DESCARGA FLOTANTE
+    // ===================================
+    function showDownloadIndicator(show, message) {
+        const indicator = document.getElementById('downloadIndicator');
+        if (!indicator) return;
+
+        if (show) {
+            indicator.querySelector('.download-indicator-text').textContent = message || 'Descargando...';
+            indicator.classList.add('active');
+        } else {
+            indicator.classList.remove('active');
+        }
     }
 
     // ===================================
@@ -445,10 +573,20 @@
             const books = JSON.parse(localStorage.getItem('bibliotech_books') || '[]');
             const index = books.findIndex(b => b.id == state.bookId);
 
+            // Guardar solo metadatos de progreso (no el blob)
+            const progressData = {
+                id: state.book.id,
+                nombre: state.book.nombre,
+                autor: state.book.autor,
+                currentPage: state.currentPage,
+                totalPages: state.totalPages,
+                lastRead: state.book.lastRead
+            };
+
             if (index >= 0) {
-                books[index] = state.book;
+                books[index] = { ...books[index], ...progressData };
             } else {
-                books.push(state.book);
+                books.push(progressData);
             }
 
             localStorage.setItem('bibliotech_books', JSON.stringify(books));

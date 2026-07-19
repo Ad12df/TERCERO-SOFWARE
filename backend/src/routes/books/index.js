@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const BookController = require("../../controllers/books");
+const { downloadBookPdf } = require("../../controllers/download");
 const { authenticate, authorize } = require("../../middleware/auth");
 const { uploadBookFiles } = require("../../config/cloudinary");
 
@@ -10,6 +11,10 @@ router.get("/", BookController.getBooks);
 
 // GET /api/books/:id - Obtener un libro por ID (público)
 router.get("/:id", BookController.getBookById);
+
+// GET /api/books/:id/download - Proxy de descarga de PDF (público)
+// Descarga el PDF desde Cloudinary del lado del servidor y se lo envía al cliente
+router.get("/:id/download", downloadBookPdf);
 
 // POST /api/books - Crear un libro
 // ⚠️ El middleware de Multer va ANTES del controlador
