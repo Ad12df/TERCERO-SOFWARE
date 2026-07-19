@@ -1346,6 +1346,325 @@ body.users-page {
     margin-bottom: 20px;
 }
 
+/* ==========================================================================
+   MODAL DE LIBRO — FORMULARIO EXPANDIDO CON SUBIDA DE ARCHIVOS
+   ========================================================================== */
+
+/* Contenedor del modal más amplio para el formulario de libro */
+.modal-book-form {
+    width: 640px;
+    max-width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px 32px 24px;
+}
+
+/* Scrollbar personalizado para el modal */
+.modal-book-form::-webkit-scrollbar {
+    width: 6px;
+}
+.modal-book-form::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+.modal-book-form::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+/* Área de estado de subida (spinner + texto) */
+.upload-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 0.875rem;
+    color: #1E40AF;
+    font-weight: 500;
+}
+
+.upload-status .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid #BFDBFE;
+    border-top-color: #1E40AF;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Mensaje de error del servidor */
+.server-error {
+    padding: 12px 16px;
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 0.875rem;
+    color: #991B1B;
+    font-weight: 500;
+}
+
+/* Formulario de libro */
+.book-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Fila de dos campos lado a lado */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+/* Fila de archivos */
+.file-row {
+    gap: 14px;
+}
+
+/* Grupo de campo (label + input) */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group label .required {
+    color: #EF4444;
+    margin-left: 2px;
+}
+
+/* Input pill con textarea */
+.input-pill {
+    background: #F9FAFB;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 10px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-pill:focus-within {
+    border-color: #3A6B82;
+    box-shadow: 0 0 0 3px rgba(58, 107, 130, 0.1);
+    background: #FFFFFF;
+}
+
+.input-pill input,
+.input-pill textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    font-size: 0.9rem;
+    color: #1a1a1a;
+    padding: 0;
+}
+
+.input-pill input::placeholder,
+.input-pill textarea::placeholder {
+    color: #9CA3AF;
+}
+
+.input-pill textarea {
+    resize: vertical;
+    min-height: 72px;
+    line-height: 1.5;
+}
+
+/* Wrapper del input de archivo (oculta el input real) */
+.file-input-wrapper {
+    position: relative;
+}
+
+.file-input-wrapper input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+}
+
+/* Label estilizado del archivo (botón de subida) */
+.file-input-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 18px 12px;
+    background: #F9FAFB;
+    border: 2px dashed #D1D5DB;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    text-align: center;
+    color: #6B7280;
+}
+
+.file-input-label svg {
+    color: #9CA3AF;
+    transition: color 0.2s;
+}
+
+.file-input-label span {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.file-input-label small {
+    font-size: 0.75rem;
+    color: #9CA3AF;
+}
+
+.file-input-wrapper input[type="file"]:hover + .file-input-label,
+.file-input-wrapper input[type="file"]:focus + .file-input-label {
+    border-color: #3A6B82;
+    background: #EFF6FF;
+}
+
+.file-input-wrapper input[type="file"]:hover + .file-input-label svg,
+.file-input-wrapper input[type="file"]:focus + .file-input-label svg {
+    color: #3A6B82;
+}
+
+/* Label cuando ya hay archivo seleccionado */
+.file-input-label.has-file {
+    border-style: solid;
+    border-color: #10B981;
+    background: #F0FDF4;
+}
+
+.file-input-label.has-file svg {
+    color: #10B981;
+}
+
+.file-input-label.has-file span {
+    color: #065F46;
+}
+
+/* Preview del archivo seleccionado */
+.file-preview {
+    margin-top: 6px;
+    padding: 8px 12px;
+    background: #F0FDF4;
+    border: 1px solid #A7F3D0;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: #065F46;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.file-preview .file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+}
+
+/* Botones de acción del formulario */
+.btn-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.btn-cancel {
+    padding: 10px 20px;
+    background: transparent;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6B7280;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.btn-cancel:hover {
+    border-color: #9CA3AF;
+    color: #374151;
+}
+
+.btn-save {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: #1E4B65;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, opacity 0.2s;
+    font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.btn-save:hover {
+    background: #2A5F7E;
+}
+
+.btn-save:active {
+    transform: scale(0.97);
+}
+
+.btn-save:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Responsividad: en pantallas pequeñas, los campos ocupan toda la fila */
+@media (max-width: 520px) {
+    .modal-book-form {
+        width: 95%;
+        padding: 20px 18px 18px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-row {
+        flex-direction: column-reverse;
+    }
+
+    .btn-cancel,
+    .btn-save {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 /* Menú Móvil Hamburguesa */
 .menu-toggle {
     display: none;

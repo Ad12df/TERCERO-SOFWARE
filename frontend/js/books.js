@@ -254,12 +254,66 @@ function filterByGenre(genre) {
 }
 
 /**
+ * Actualiza el label del input de archivo cuando se selecciona un archivo
+ * @param {HTMLInputElement} input - El input file
+ * @param {string} labelId - ID del label a actualizar
+ */
+function updateFileLabel(input, labelId) {
+    const label = document.getElementById(labelId);
+    if (!label) return;
+
+    const preview = labelId === "coverLabel"
+        ? document.getElementById("coverPreview")
+        : document.getElementById("pdfPreview");
+
+    if (input.files && input.files.length > 0) {
+        const file = input.files[0];
+        const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+
+        // Marcar label como "tiene archivo"
+        label.classList.add("has-file");
+        label.querySelector("span").textContent = file.name;
+        label.querySelector("small").textContent = `${fileSize} MB`;
+
+        // Mostrar preview
+        if (preview) {
+            preview.style.display = "flex";
+            preview.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; flex-shrink:0;">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span class="file-name">${file.name}</span>
+                <span style="color:#9CA3AF; margin-left:auto;">${fileSize} MB</span>
+            `;
+        }
+    } else {
+        // Restaurar label por defecto
+        label.classList.remove("has-file");
+        const isCover = labelId === "coverLabel";
+        label.querySelector("span").textContent = isCover ? "Subir portada" : "Subir PDF";
+        label.querySelector("small").textContent = isCover ? "(JPG, PNG — máx. 5 MB)" : "(PDF — máx. 50 MB)";
+
+        if (preview) {
+            preview.style.display = "none";
+            preview.innerHTML = "";
+        }
+    }
+}
+
+/**
  * Abre el modal para añadir un nuevo libro
  */
 function openAddModal() {
     editId = null;
     document.getElementById("modalTitle").textContent = "Registrar Nuevo Libro";
     document.getElementById("bookForm").reset();
+    document.getElementById("serverError").style.display = "none";
+    document.getElementById("uploadStatus").style.display = "none";
+
+    // Restaurar labels de archivo
+    updateFileLabel(document.getElementById("bookCover"), "coverLabel");
+    updateFileLabel(document.getElementById("bookPdf"), "pdfLabel");
+
     document.getElementById("bookModal").classList.add("active");
 }
 
@@ -273,11 +327,20 @@ function editBook(id) {
 
     editId = id;
     document.getElementById("modalTitle").textContent = "Editar Libro";
-    document.getElementById("bookTitle").value = book.title;
-    document.getElementById("bookAuthor").value = book.author;
-    document.getElementById("bookGenre").value = book.genre;
-    document.getElementById("bookYear").value = book.year;
-    
+    document.getElementById("serverError").style.display = "none";
+    document.getElementById("uploadStatus").style.display = "none";
+
+    // Rellenar campos de texto
+    document.getElementById("bookTitle").value = book.title || "";
+    document.getElementById("bookAuthor").value = book.author || "";
+    document.getElementById("bookGenre").value = book.genre || "";
+    document.getElementById("bookAddress").value = book.direccion || "";
+    document.getElementById("bookDescription").value = book.synopsis || "";
+
+    // Restaurar labels de archivo (en edición no se pre-seleccionan archivos)
+    updateFileLabel(document.getElementById("bookCover"), "coverLabel");
+    updateFileLabel(document.getElementById("bookPdf"), "pdfLabel");
+
     document.getElementById("bookModal").classList.add("active");
 }
 
@@ -287,48 +350,155 @@ function editBook(id) {
 function closeModal() {
     document.getElementById("bookModal").classList.remove("active");
     document.getElementById("bookForm").reset();
+    document.getElementById("serverError").style.display = "none";
+    document.getElementById("uploadStatus").style.display = "none";
     editId = null;
 }
 
 /**
- * Guarda (crea o actualiza) un libro
+ * Muestra/oculta el estado de subida con spinner
+ * @param {string} message - Mensaje a mostrar
+ * @param {boolean} show - true = mostrar, false = ocultar
  */
-function saveBook() {
+function setUploadStatus(message, show) {
+    const el = document.getElementById("uploadStatus");
+    if (show) {
+        el.innerHTML = `<div class="spinner"></div><span>${message}</span>`;
+        el.style.display = "flex";
+    } else {
+        el.style.display = "none";
+        el.innerHTML = "";
+    }
+}
+
+/**
+ * Muestra el mensaje de error del servidor
+ * @param {string} message - Mensaje de error
+ */
+function showServerError(message) {
+    const el = document.getElementById("serverError");
+    el.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px; flex-shrink:0;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>${message}</span>
+    `;
+    el.style.display = "flex";
+}
+
+/**
+ * Guarda (crea o actualiza) un libro — conecta con backend para subir archivos a Cloudinary
+ */
+async function saveBook() {
     const title = document.getElementById("bookTitle").value.trim();
     const author = document.getElementById("bookAuthor").value.trim();
     const genre = document.getElementById("bookGenre").value.trim();
-    const year = parseInt(document.getElementById("bookYear").value);
+    const address = document.getElementById("bookAddress").value.trim();
+    const description = document.getElementById("bookDescription").value.trim();
+    const coverFile = document.getElementById("bookCover").files[0];
+    const pdfFile = document.getElementById("bookPdf").files[0];
 
-    if (!title || !author || !genre || !year) {
-        alert("Por favor, complete todos los campos requeridos.");
+    // Validación básica
+    if (!title || !author) {
+        showServerError("Por favor, completa al menos el título y el autor.");
         return;
     }
 
+    // Referencias a elementos de UI
+    const saveBtn = document.getElementById("saveButton");
+    const saveBtnText = document.getElementById("saveButtonText");
+
+    // Desactivar botón y mostrar estado
+    saveBtn.disabled = true;
+    saveBtnText.textContent = "Guardando y Subiendo Archivos...";
+    document.getElementById("serverError").style.display = "none";
+
+    // ─── Si estamos en modo edición, usar localStorage (sin subida de archivos) ───
     if (editId) {
-        // Edición de libro existente
-        const index = books.findIndex(b => b.id === editId);
-        if (index !== -1) {
-            books[index].title = title;
-            books[index].author = author;
-            books[index].genre = genre;
-            books[index].year = year;
+        try {
+            const index = books.findIndex(b => b.id === editId);
+            if (index !== -1) {
+                books[index].title = title;
+                books[index].author = author;
+                books[index].genre = genre || books[index].genre;
+                books[index].direccion = address || books[index].direccion;
+                books[index].synopsis = description || books[index].synopsis;
+            }
+            saveToStorage();
+            renderBooks(books);
+            closeModal();
+            return;
+        } catch (err) {
+            console.error("Error al editar localmente:", err);
+            showServerError("Error al guardar los cambios. Intenta de nuevo.");
+        } finally {
+            saveBtn.disabled = false;
+            saveBtnText.textContent = "Guardar Libro";
         }
-    } else {
-        // Creación de nuevo libro
+        return;
+    }
+
+    // ─── Crear FormData para enviar al backend con archivos ───
+    const formData = new FormData();
+    formData.append("nombre", title);
+    formData.append("autor", author);
+    if (genre) formData.append("categoria", genre);
+    if (address) formData.append("direccion", address);
+    if (description) formData.append("descripcion", description);
+    if (coverFile) formData.append("foto", coverFile);
+    if (pdfFile) formData.append("pdf", pdfFile);
+
+    // Obtener token de autenticación
+    const token = getAuthToken();
+
+    setUploadStatus("Subiendo archivos a Cloudinary...", true);
+
+    try {
+        const response = await fetch(`${API_URL}/books`, {
+            method: "POST",
+            headers: token ? { "Authorization": `Bearer ${token}` } : {},
+            body: formData,
+            credentials: "include"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || `Error del servidor (${response.status})`);
+        }
+
+        // ─── Éxito: agregar a localStorage y re-renderizar ───
         const newId = books.length > 0 ? Math.max(...books.map(b => b.id)) + 1 : 1;
         books.push({
             id: newId,
             title,
             author,
-            genre,
-            year,
-            available: true // Disponible por defecto al registrarse
+            genre: genre || "Sin categoría",
+            year: new Date().getFullYear(),
+            available: true,
+            synopsis: description,
+            direccion: address,
+            portada: data.data?.foto || null,
+            pdf_url: data.data?.pdf_url || null,
+            rating: 0,
+            comments: [],
+            notes: ""
         });
-    }
 
-    saveToStorage();
-    renderBooks(books);
-    closeModal();
+        saveToStorage();
+        renderBooks(books);
+        closeModal();
+
+    } catch (error) {
+        console.error("❌ Error al guardar libro:", error);
+        showServerError(error.message || "No se pudo conectar con el servidor. Intenta de nuevo.");
+    } finally {
+        saveBtn.disabled = false;
+        saveBtnText.textContent = "Guardar Libro";
+        setUploadStatus("", false);
+    }
 }
 
 /**
