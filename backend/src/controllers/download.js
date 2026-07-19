@@ -11,23 +11,28 @@ cloudinary.config({
 });
 
 /**
- * Extrae el public_id de una URL de Cloudinary.
+ * Extrae el public_id de una URL de Cloudinary para recursos 'raw' (PDFs).
+ *
+ * ⚠️ IMPORTANTE: Para recursos 'raw', Cloudinary exige que el public_id
+ * mantenga la extensión del archivo (por ejemplo '.pdf'). Si se corta,
+ * Cloudinary devuelve 404 al generar la URL firmada.
+ *
  * Ejemplo:
- *   https://res.cloudinary.com/ditggsmd/raw/upload/v123/bibliotech/pdfs/libro-abc.pdf
- *   → bibliotech/pdfs/libro-abc
+ *   https://res.cloudinary.com/ditggsmd/raw/upload/v1234567890/bibliotech/pdfs/libro-abc.pdf
+ *   → bibliotech/pdfs/libro-abc.pdf   (CON la extensión .pdf)
  */
 function extractPublicId(url) {
   try {
-    // Quita la query string si existe
+    // Quita la query string si existe (parámetros de firma, versión, etc.)
     const cleanUrl = url.split('?')[0];
-    // Elimina la extensión final (.pdf)
-    const noExt = cleanUrl.replace(/\.pdf$/i, '');
-    // Toma todo lo que está después de '/upload/' y elimina versiones (v123456/)
-    const parts = noExt.split('/upload/');
+    // Toma todo lo que está después de '/upload/'
+    const parts = cleanUrl.split('/upload/');
     if (parts.length < 2) return null;
     let publicId = parts[1];
     // Elimina el segmento de versión si existe (v seguido de números)
+    // Ejemplo: v1234567890/bibliotech/pdfs/libro.pdf → bibliotech/pdfs/libro.pdf
     publicId = publicId.replace(/^v\d+\//, '');
+    // ⚠️ NO eliminar la extensión .pdf — Cloudinary la requiere para recursos 'raw'
     return publicId;
   } catch {
     return null;
@@ -83,7 +88,11 @@ exports.downloadBookPDF = async (req, res) => {
         // Los PDFs se suben como resource_type: 'raw', por lo que la URL
         // firmada debe generarse con el mismo resource_type para evitar 401.
         const publicId = extractPublicId(pdfUrl);
-        console.log(`🔑 public_id extraído: ${publicId}`);
+        console.log('─────────────────────────────────────────────');
+        console.log('🔎 URL original de la BD:', pdfUrl);
+        console.log('🔑 public_id extraído:', publicId);
+        console.log('   ¿termina en .pdf?', publicId ? publicId.toLowerCase().endsWith('.pdf') : 'N/A');
+        console.log('─────────────────────────────────────────────');
 
         let finalUrl = pdfUrl;
         if (publicId) {
