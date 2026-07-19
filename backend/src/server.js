@@ -6,11 +6,20 @@ const { connectDB } = require("./models");
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
-  await connectDB();
+  try {
+    // ─── Conectar a la base de datos primero ─────────────────
+    await connectDB();
 
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-  });
+    // ─── Solo si la conexión es exitosa, iniciar el servidor ──
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`📖 API disponible en: http://localhost:${PORT}/api`);
+    });
+  } catch (error) {
+    console.error("❌ No se pudo iniciar el servidor:");
+    console.error(error.message);
+    process.exit(1);
+  }
 };
 
 startServer();
