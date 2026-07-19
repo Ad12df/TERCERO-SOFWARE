@@ -7,32 +7,38 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-336791.svg)](https://www.postgresql.org/)
 [![Sequelize](https://img.shields.io/badge/Sequelize-6.x-blue)](https://sequelize.org/)
 
----
+## 🚀 Demo
 
-## 📖 Descripción del Proyecto
-
-**BiblioTech** es una aplicación web full-stack para la gestión integral de una biblioteca. Permite a los usuarios autenticarse, explorar un catálogo de libros, ver detalles, gestionar su lista de lectura personal y leer documentos PDF directamente en el navegador.
-
-El sistema sigue una arquitectura **cliente-servidor** clara:
-
-- **Backend**: API REST con Node.js, Express y Sequelize (PostgreSQL)
-- **Frontend**: Aplicación web con HTML5, CSS3 y JavaScript vanilla
-
-El backend **no sirve** las páginas HTML; solo expone datos en JSON. El frontend **no tiene** base de datos propia; solo consume la API mediante `fetch`. Esta separación facilita escalar, desplegar por partes y, en el futuro, añadir una app móvil u otro cliente sin tocar el servidor.
+- **Frontend**: https://tercero-sofware.vercel.app/
+- **Backend API**: https://tercero-sofware.onrender.com/
 
 ---
 
 ## ✨ Características Principales
 
-### 🔐 Autenticación de Usuarios
+### 🔐 Sistema de Autenticación y Roles
 - Registro e inicio de sesión con email y contraseña
 - Contraseñas cifradas con bcrypt (10 rondas de salt)
-- Sesiones simuladas con localStorage
+- Tokens de autenticación personalizados (Base64)
+- **Dos roles de usuario**: `admin` y `user`
+- Permisos diferenciados según el rol
+
+### ⚙️ Preferencias de Usuario
+- Tema visual: claro / oscuro
+- Selector de idioma
+- Tamaño de letra personalizable
+- Preferencias de notificaciones
 
 ### 📚 Catálogo de Libros
-- Visualización del catálogo completo de libros
+- Visualización del catálogo completo
 - Vista detallada de cada libro (título, autor, descripción, portada)
 - Búsqueda y filtrado de libros
+- Gestión de libros (solo admin)
+
+### ⭐ Sistema de Reseñas
+- Reseñas con puntuación de 1-5 estrellas
+- Recalculación automática de la puntuación media
+- Historial de reseñas por libro
 
 ### 📖 Lector de PDF
 - Visor de documentos PDF integrado con PDF.js
@@ -43,12 +49,7 @@ El backend **no sirve** las páginas HTML; solo expone datos en JSON. El fronten
 ### 📋 Gestión Personal
 - **Mi Lista**: Libros guardados para leer después
 - **Leídos**: Historial de libros completados
-- Perfil de usuario con avatar e información
-
-### ⚙️ Configuración
-- Preferencias de lectura
-- Tema visual (claro/oscuro)
-- Gestión de cuenta
+- Perfil de usuario con nombre y badge de rol
 
 ---
 
@@ -131,12 +132,16 @@ Edita el archivo `.env` con tu configuración:
 
 ```env
 PORT=3000
-DB_HOST=localhost
+DB_HOST=tu-host
 DB_PORT=5432
-DB_NAME=bibliotech
-DB_USER=tu_usuario
-DB_PASSWORD=tu_contraseña
+DB_NAME=neondb
+DB_USER=tu-usuario
+DB_PASSWORD=tu-contraseña
+DB_SSL=true
+FRONTEND_URL=http://localhost:5500
 ```
+
+> **Nota:** Si usas Neon (PostgreSQL cloud), activa `DB_SSL=true` para la conexión.
 
 ### 4. Iniciar el Servidor
 
@@ -181,75 +186,234 @@ TERCERO-SOFWARE/
 │   ├── package.json
 │   └── src/
 │       ├── app.js            # Configuración de Express
-│       ├── server.js         # Punto de entrada del servidor
+│       ├── server.js         # Punto de entrada
 │       ├── config/
-│       │   └── database.js   # Configuración de Sequelize
+│       │   └── database.js   # Configuración de Sequelize + SSL
 │       ├── controllers/
-│       │   └── index.js     # Controladores de la API
+│       │   ├── auth.js       # Endpoints de autenticación
+│       │   └── user.js       # Endpoints de usuario/configuración
 │       ├── middleware/       # Middlewares personalizados
 │       ├── models/
-│       │   ├── index.js     # Modelos cargados
-│       │   └── users.js     # Modelo de usuarios
+│       │   ├── index.js      # Modelos y relaciones
+│       │   ├── users.js      # Modelo de usuarios (bcrypt)
+│       │   ├── books.js      # Modelo de libros
+│       │   ├── reviews.js    # Modelo de reseñas
+│       │   └── userSettings.js # Modelo de preferencias
 │       ├── routes/
-│       │   ├── index.js     # Rutas principales (/api)
-│       │   └── user/
-│       │       └── index.js # Rutas de usuarios
+│       │   ├── index.js      # Router principal (/api)
+│       │   ├── auth/         # Rutas de autenticación
+│       │   │   └── index.js
+│       │   └── user/         # Rutas de usuario
+│       │       └── index.js
 │       ├── services/
-│       │   └── users.js     # Lógica de negocio
+│       │   └── auth.js       # Lógica de autenticación
 │       └── utils/
-│           └── password.js  # Utilidades de cifrado
+│           └── password.js   # Utilidades de contraseña
 │
 └── frontend/                 # Interfaz Web
-    ├── index.html            # Login / Registro
-    ├── books.html            # Dashboard / Catálogo de libros
-    ├── book-detail.html      # Detalle de libro
-    ├── reader.html           # Lector de PDF
-    ├── settings.html         # Configuración
+    ├── index.html             # Login / Registro
+    ├── books.html             # Dashboard / Catálogo
+    ├── book-detail.html       # Detalle de libro
+    ├── reader.html            # Lector de PDF
+    ├── settings.html          # Configuración de usuario
     ├── css/
-    │   ├── style.css         # Estilos principales
-    │   ├── book-detail.css   # Estilos detalle libro
-    │   ├── reader.css        # Estilos lector PDF
-    │   └── settings.css      # Estilos configuración
+    │   ├── style.css          # Estilos principales
+    │   ├── book-detail.css    # Estilos detalle libro
+    │   ├── reader.css         # Estilos lector PDF
+    │   └── settings.css       # Estilos configuración
     └── js/
-        ├── api.js            # Configuración de la API
-        ├── login.js          # Lógica de autenticación
-        ├── books.js          # Lógica del catálogo
-        ├── bookDetail.js     # Lógica detalle libro
-        ├── reader.js         # Lógica del lector PDF
-        └── settings.js       # Lógica de configuración
+        ├── api.js             # Configuración API + auth helpers
+        ├── login.js           # Lógica de autenticación
+        ├── books.js           # Lógica del catálogo
+        ├── bookDetail.js      # Lógica detalle libro
+        ├── reader.js          # Lógica del lector PDF
+        └── settings.js        # Lógica de configuración
 ```
 
 ---
 
 ## 🔌 API Endpoints
 
-### Autenticación
+### Autenticación (`/api/auth`)
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | `/api/users/register` | Registrar nuevo usuario |
-| POST | `/api/users/login` | Iniciar sesión |
-| GET | `/api/users/profile` | Obtener perfil del usuario |
-| PUT | `/api/users/profile` | Actualizar perfil |
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/auth/register` | Registrar nuevo usuario | No |
+| POST | `/api/auth/login` | Iniciar sesión | No |
+| GET | `/api/auth/me` | Obtener usuario actual | Sí |
 
-### Catálogo de Libros
+#### POST /api/auth/register
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/api/books` | Listar todos los libros |
-| GET | `/api/books/:id` | Obtener detalle de un libro |
-| POST | `/api/books` | Crear nuevo libro (admin) |
-| PUT | `/api/books/:id` | Actualizar libro (admin) |
-| DELETE | `/api/books/:id` | Eliminar libro (admin) |
+**Body:**
+```json
+{
+  "name": "Nombre del usuario",
+  "email": "correo@ejemplo.com",
+  "password": "contraseña123"
+}
+```
 
-### Lista Personal
+**Respuesta:**
+```json
+{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "name": "Nombre del usuario",
+    "email": "correo@ejemplo.com",
+    "role": "user"
+  }
+}
+```
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/api/user-books` | Obtener libros del usuario |
-| POST | `/api/user-books` | Agregar libro a la lista |
-| PUT | `/api/user-books/:id` | Marcar como leído |
-| DELETE | `/api/user-books/:id` | Quitar de la lista |
+#### POST /api/auth/login
+
+**Body:**
+```json
+{
+  "email": "correo@ejemplo.com",
+  "password": "contraseña123"
+}
+```
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "name": "Nombre del usuario",
+    "email": "correo@ejemplo.com",
+    "role": "user"
+  }
+}
+```
+
+#### GET /api/auth/me
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "user": {
+    "id": 1,
+    "name": "Nombre del usuario",
+    "email": "correo@ejemplo.com",
+    "role": "user"
+  }
+}
+```
+
+---
+
+### Usuario (`/api/user`)
+
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/user/profile` | Obtener perfil | Sí |
+| PUT | `/api/user/profile` | Actualizar perfil | Sí |
+| GET | `/api/user/settings` | Obtener preferencias | Sí |
+| PUT | `/api/user/settings` | Actualizar preferencias | Sí |
+
+#### GET /api/user/profile
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "profile": {
+    "id": 1,
+    "name": "Nombre del usuario",
+    "email": "correo@ejemplo.com",
+    "role": "user",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+#### PUT /api/user/profile
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Body:**
+```json
+{
+  "name": "Nuevo nombre"
+}
+```
+
+#### GET /api/user/settings
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "settings": {
+    "tema": "oscuro",
+    "idioma": "es",
+    "notificaciones": true,
+    "tamano_letra": 16
+  }
+}
+```
+
+#### PUT /api/user/settings
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Body:**
+```json
+{
+  "tema": "claro",
+  "idioma": "es",
+  "notificaciones": false,
+  "tamano_letra": 18
+}
+```
+
+---
+
+### Catálogo de Libros (`/api/books`)
+
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/books` | Listar todos los libros | No |
+| GET | `/api/books/:id` | Obtener detalle de un libro | No |
+| POST | `/api/books` | Crear nuevo libro | Admin |
+| PUT | `/api/books/:id` | Actualizar libro | Admin |
+| DELETE | `/api/books/:id` | Eliminar libro | Admin |
+
+---
+
+### Reseñas (`/api/reviews`)
+
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/reviews/book/:bookId` | Reseñas de un libro | No |
+| POST | `/api/reviews` | Crear reseña | Sí |
+| PUT | `/api/reviews/:id` | Actualizar reseña | Dueño |
+| DELETE | `/api/reviews/:id` | Eliminar reseña | Dueño/Admin |
+
+---
+
+### Lista Personal (`/api/user-books`)
+
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/user-books` | Obtener libros del usuario | Sí |
+| POST | `/api/user-books` | Agregar libro a la lista | Sí |
+| PUT | `/api/user-books/:id` | Marcar como leído | Sí |
+| DELETE | `/api/user-books/:id` | Quitar de la lista | Sí |
+
+---
 
 ### Health Check
 
@@ -263,24 +427,70 @@ TERCERO-SOFWARE/
 
 ### Tabla `users`
 
-| Campo | Tipo | Notas |
-|-------|------|-------|
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
 | `id` | INTEGER | Clave primaria, autoincremental |
 | `name` | STRING | Nombre del usuario (obligatorio) |
 | `email` | STRING | Email único (obligatorio) |
 | `password` | TEXT | Hash bcrypt (nunca texto plano) |
+| `role` | ENUM | `admin` o `user` (default: `user`) |
 | `createdAt` | TIMESTAMP | Automático (Sequelize) |
 | `updatedAt` | TIMESTAMP | Automático (Sequelize) |
+
+### Tabla `user_settings`
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | INTEGER | Clave primaria, autoincremental |
+| `user_id` | INTEGER | FK a users (único) |
+| `tema` | STRING | `claro` o `oscuro` (default: `oscuro`) |
+| `idioma` | STRING | Código ISO (default: `es`) |
+| `notificaciones` | BOOLEAN | Notificaciones habilitadas |
+| `tamano_letra` | INTEGER | Tamaño en px (default: 16) |
+| `createdAt` | TIMESTAMP | Automático |
+| `updatedAt` | TIMESTAMP | Automático |
+
+### Tabla `books`
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | INTEGER | Clave primaria |
+| `nombre` | STRING | Título del libro |
+| `autor` | STRING | Autor del libro |
+| `direccion` | STRING | Ubicación/estante |
+| `foto` | TEXT | URL de la portada |
+| `pdf_url` | TEXT | URL del PDF |
+| `descripcion` | TEXT | Descripción del libro |
+| `puntuacion_media` | FLOAT | Promedio de reseñas (0-5) |
+| `total_resenas` | INTEGER | Cantidad de reseñas |
+| `created_by` | INTEGER | FK a users (creador) |
+| `createdAt` | TIMESTAMP | Automático |
+| `updatedAt` | TIMESTAMP | Automático |
+
+### Tabla `reviews`
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | INTEGER | Clave primaria |
+| `contenido` | TEXT | Texto de la reseña |
+| `puntuacion` | INTEGER | 1-5 estrellas |
+| `user_id` | INTEGER | FK a users |
+| `book_id` | INTEGER | FK a books |
+| `createdAt` | TIMESTAMP | Automático |
+| `updatedAt` | TIMESTAMP | Automático |
+
+> **Nota:** Las tablas se crean automáticamente al iniciar el servidor gracias a `sequelize.sync({ alter: true })`.
 
 ---
 
 ## 🔒 Seguridad
 
-- Contraseñas cifradas con **bcrypt** (10 rondas de salt)
-- Cabeceras HTTP seguras con **Helmet**
-- CORS configurado para permitir peticiones del frontend
-- Validación de datos en todos los endpoints
-- Variables de entorno para datos sensibles
+- **Contraseñas**: cifradas con **bcrypt** (10 rondas de salt)
+- **Tokens**: codificados en Base64 (contienen userId, role, exp)
+- **Cabeceras**: HTTP seguras con **Helmet**
+- **CORS**: configurado para dominios específicos
+- **Validación**: de datos en todos los endpoints
+- **Variables de entorno**: para datos sensibles
 - El campo `password` **nunca** se incluye en las respuestas JSON
 
 ---
@@ -299,8 +509,9 @@ Formulario de inicio de sesión y registro con diseño moderno tipo "píldora". 
 
 ### Detalle del Libro (`book-detail.html`)
 - Información completa del libro
-- Portada y metadatos
-- Botón para abrir el lector de PDF
+- Lector de PDF embebido
+- Sistema de reseñas con estrellas
+- Promedio de puntuación visible
 
 ### Lector PDF (`reader.html`)
 - Visor de documentos PDF con PDF.js
@@ -310,9 +521,10 @@ Formulario de inicio de sesión y registro con diseño moderno tipo "píldora". 
 - Barra de control flotante
 
 ### Configuración (`settings.html`)
-- Preferencias de lectura
-- Cambio de tema
-- Gestión de cuenta
+- Cambio de tema (claro/oscuro)
+- Selector de idioma
+- Tamaño de letra
+- Preferencias de notificaciones
 
 ---
 
@@ -350,25 +562,29 @@ Petición HTTP
 
 ---
 
+## 📝 Notas de Desarrollo
+
+- El backend crea automáticamente todas las tablas en la base de datos al iniciar
+- El rol `admin` es necesario para crear/editar/eliminar libros
+- Las reseñas recalculan automáticamente la puntuación media del libro
+- Los tokens expiran después de 7 días
+- Las preferencias del usuario se crean automáticamente al registrarse
+
+---
+
 ## 🤝 Contribuir
 
-1. Haz un fork del repositorio
-2. Crea una rama para tu característica (`git checkout -b feature/nueva-funcion`)
-3. Realiza tus cambios y haz commit (`git commit -m 'Agregar nueva función'`)
-4. Haz push a la rama (`git push origin feature/nueva-funcion`)
-5. Abre un Pull Request
+1. Fork el repositorio
+2. Crear una rama (`git checkout -b feature/nueva-funcion`)
+3. Commit los cambios (`git commit -m 'Agregar nueva función'`)
+4. Push a la rama (`git push origin feature/nueva-funcion`)
+5. Abrir un Pull Request
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto está bajo la licencia **ISC**.
-
----
-
-## 👤 Autor
-
-Desarrollado como proyecto de tercero de Software.
+Este proyecto está bajo la licencia **MIT**.
 
 ---
 
