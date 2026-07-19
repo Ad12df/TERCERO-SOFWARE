@@ -33,13 +33,28 @@ const uploadBookFiles = multer({
 
 // ─── Helpers de subida a Supabase Storage ────────────────────
 // Genera un nombre de archivo único conservando la extensión original.
+// ⚠️ CRÍTICO: Se sanitiza agresivamente para evitar "Invalid path" en Supabase.
+//   - En Windows, req.files[].originalname puede incluir la ruta completa
+//     del archivo (ej. "C:\Users\javi\Documents\libro.pdf") con backslashes.
+//   - Supabase interpreta cualquier slash/backslash como separador de ruta
+//     dentro del bucket, causando el error 400 "Invalid path specified".
+//   - La solución es extraer SOLO el nombre del archivo y eliminar todos
+//     los caracteres que no sean alfanuméricos, guiones o puntos.
 function buildUniqueName(originalName) {
-  const ext = originalName ? originalName.split(".").pop() : "";
-  const base = originalName
-    ? originalName.split(".")[0].replace(/[^a-zA-Z0-9-_]/g, "")
-    : "file";
+  // 1. Extraer solo el nombre del archivo (sin ruta)
+  let base = originalName || "file";
+  // En Windows, la ruta puede venir con backslashes o forward slashes
+  base = base.split(/[\\/]/).pop();
+  // 2. Separar nombre y extensión
+  const ext = base.includes(".") ? base.split(".").pop() : "";
+  base = base.includes(".") ? base.substring(0, base.lastIndexOf(".")) : base;
+  // 3. Eliminar TODO lo que no sea letra, número, guión o espacio
+  base = base.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s-]/g, "");
+  // 4. Si quedó vacío, usar un nombre genérico
+  if (!base.trim()) base = "archivo";
+  // 5. Ensamblar nombre único con timestamp
   const stamp = Date.now();
-  return ext ? `${base}-${stamp}.${ext}` : `${base}-${stamp}`;
+  return ext ? `${base.trim()}-${stamp}.${ext}` : `${base.trim()}-${stamp}`;
 }
 
 // Sube una imagen de portada al bucket 'portadas' desde un buffer.

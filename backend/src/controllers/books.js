@@ -25,7 +25,7 @@ class BookController {
       let fotoUrl = null;
       let pdfUrl = null;
 
-      // Subir imagen de portada a Cloudinary si existe
+      // Subir imagen de portada a Supabase Storage si existe
       if (req.files && req.files.foto && req.files.foto[0]) {
         const fotoFile = req.files.foto[0];
         const result = await uploadImageFromBuffer(
@@ -35,7 +35,7 @@ class BookController {
         fotoUrl = result.secure_url;
       }
 
-      // Subir PDF a Cloudinary como 'raw' si existe
+      // Subir PDF a Supabase Storage si existe
       if (req.files && req.files.pdf && req.files.pdf[0]) {
         const pdfFile = req.files.pdf[0];
         const result = await uploadPdfFromBuffer(
