@@ -278,7 +278,10 @@
             const response = await fetch(downloadUrl);
 
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                // Leer el cuerpo de la respuesta para ver qué devuelve Render
+                const errorText = await response.text();
+                console.log('Respuesta de error del servidor:', errorText);
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
 
             const blob = await response.blob();
@@ -291,7 +294,11 @@
             const blobUrl = URL.createObjectURL(blob);
             renderPDFFromSource(blobUrl);
         } catch (error) {
-            console.error('Error al descargar el PDF:', error);
+            console.error('❌ Error detallado en loadPDF:', error);
+            console.error('   - URL intentada:', `${API_URL}/books/${state.bookId}/download`);
+            console.error('   - bookId:', state.bookId);
+            console.error('   - Mensaje:', error.message);
+            console.error('   - Stack:', error.stack);
             showDownloadIndicator(false);
             elements.pdfPlaceholder.querySelector('.placeholder-title').textContent = 'Error al cargar';
             elements.pdfPlaceholder.querySelector('.placeholder-subtitle').textContent = 'No se pudo descargar el documento';

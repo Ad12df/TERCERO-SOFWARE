@@ -14,6 +14,14 @@ router.get("/:id", BookController.getBookById);
 
 // GET /api/books/:id/download - Proxy de descarga de PDF (público)
 // Descarga el PDF desde Cloudinary del lado del servidor y se lo envía al cliente
+// Manejo explícito de preflight OPTIONS para CORS cruzado Vercel → Render
+router.options("/:id/download", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Max-Age", "86400");
+  return res.status(200).end();
+});
 router.get("/:id/download", downloadBookPdf);
 
 // POST /api/books - Crear un libro
