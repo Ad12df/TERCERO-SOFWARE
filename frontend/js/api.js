@@ -1,4 +1,4 @@
-const API_URL = "https://tercero-sofware.onrender.com";
+const API_URL = "https://tercero-sofware.onrender.com/api";
 
 /**
  * Obtiene el token de autenticación del localStorage
