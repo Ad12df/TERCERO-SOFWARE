@@ -1,4 +1,5 @@
 const { Book } = require("../models");
+const axios = require("axios");
 
 /**
  * GET /api/books/:id/download
@@ -27,27 +28,21 @@ async function downloadBookPdf(req, res) {
       });
     }
 
-    // 2. Descargar el PDF desde Cloudinary (server-side)
-    const response = await fetch(book.pdf_url);
-
-    if (!response.ok) {
-      console.error("Error al descargar desde Cloudinary:", response.status);
-      return res.status(502).json({
-        success: false,
-        message: "No se pudo descargar el PDF desde el almacenamiento",
-      });
-    }
+    // 2. Descargar el PDF desde Cloudinary (server-side) usando axios
+    const response = await axios.get(book.pdf_url, {
+      responseType: "arraybuffer",
+    });
 
     // 3. Enviar el PDF al cliente con headers apropiados
     const contentType =
-      response.headers.get("content-type") || "application/pdf";
+      response.headers["content-type"] || "application/pdf";
 
     res.setHeader("Content-Type", contentType);
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Cache-Control", "public, max-age=86400");
 
-    // 4. Stream del cuerpo de la respuesta directamente al cliente
-    const buffer = Buffer.from(await response.arrayBuffer());
+    // 4. Enviar el buffer directamente al cliente
+    const buffer = Buffer.from(response.data);
     return res.send(buffer);
   } catch (error) {
     console.error("Error en downloadBookPdf:", error);
