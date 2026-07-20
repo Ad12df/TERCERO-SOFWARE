@@ -2083,18 +2083,21 @@ body.users-page {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 9px 16px;
+    padding: 6px 14px;
     background: #F1F5F9;
-    border: 1px solid #E2E8F0;
+    border: 1px solid #CBD5E1;
     outline: none;
-    border-radius: 10px;
+    border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 600;
-    color: #64748B;
+    color: #334155;
     cursor: pointer;
     transition: color 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
     font-family: "Segoe UI", system-ui, sans-serif;
     margin-bottom: 12px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 .mod-tab i.fas {
@@ -2110,9 +2113,9 @@ body.users-page {
 
 .mod-tab.active {
     color: #FFFFFF;
-    background: #6366F1;
-    border-color: #6366F1;
-    box-shadow: 0 3px 10px rgba(99, 102, 241, 0.3);
+    background: #1E4B65;
+    border-color: #1E4B65;
+    box-shadow: 0 3px 10px rgba(30, 75, 101, 0.3);
 }
 
 .tab-badge {
@@ -2359,9 +2362,23 @@ body.users-page {
 }
 
 /* --- Estado vacío --- */
-.mod-empty {
+.mod-empty,
+.mod-empty-state {
     text-align: center;
     padding: 48px 20px;
+    color: #94A3B8;
+}
+
+.mod-empty-state svg,
+.mod-empty-state i,
+#pendingBooksList svg,
+#writerRequestsList svg {
+    width: 56px !important;
+    height: 56px !important;
+    max-width: 56px !important;
+    max-height: 56px !important;
+    margin: 1rem auto;
+    display: block;
     color: #94A3B8;
 }
 
@@ -2372,7 +2389,8 @@ body.users-page {
     opacity: 0.5;
 }
 
-.mod-empty p {
+.mod-empty p,
+.mod-empty-state p {
     font-size: 0.9rem;
     font-weight: 500;
     margin: 0;
