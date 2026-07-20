@@ -6,6 +6,7 @@ const UserSetting = require("./userSettings");
 const Comment = require("./Comment");
 const UserList = require("./UserList");
 const UserRead = require("./UserRead");
+const WriterRequest = require("./WriterRequest");
 
 // ─── Relaciones ───────────────────────────────────────────────
 
@@ -75,6 +76,14 @@ Book.hasMany(UserRead, { foreignKey: "book_id", as: "bookRead", onDelete: "CASCA
 // UserRead → Book (cada entrada de leídos apunta a un libro)
 UserRead.belongsTo(Book, { foreignKey: "book_id", as: "book" });
 
+// ─── WriterRequest Relations ──────────────────────────────────
+
+// User → WriterRequests (un usuario puede tener muchas solicitudes)
+User.hasMany(WriterRequest, { foreignKey: "user_id", as: "writerRequests" });
+
+// WriterRequest → User (cada solicitud pertenece a un usuario)
+WriterRequest.belongsTo(User, { foreignKey: "user_id", as: "user" });
+
 // ─── Conexión y Sincronización ─────────────────────────────────
 
 const connectDB = async () => {
@@ -103,4 +112,5 @@ module.exports = {
   Comment,
   UserList,
   UserRead,
+  WriterRequest,
 };

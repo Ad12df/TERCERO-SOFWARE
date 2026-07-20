@@ -64,6 +64,11 @@ const Book = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    status: {
+      type: DataTypes.ENUM("PENDIENTE", "APROBADO"),
+      defaultValue: "PENDIENTE",
+      allowNull: false,
+    },
   },
   {
     timestamps: true,

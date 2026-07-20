@@ -45,9 +45,23 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
     initializeProfile();
+    applyRoleVisibility();
     populateCategorySelect();
     loadBooks();
+    // Si el usuario es admin, cargar el contador de solicitudes pendientes
+    if (getUserRole() === "admin") {
+        loadModerationCounts();
+    }
 });
+
+/**
+ * Devuelve el rol del usuario autenticado ("admin", "escritor", "user")
+ * o null si no hay sesión.
+ */
+function getUserRole() {
+    const user = getUserData();
+    return user ? (user.role || "user") : null;
+}
 
 /**
  * Recupera el usuario logueado desde localStorage y actualiza la UI
@@ -74,6 +88,31 @@ function initializeProfile() {
     if (profileEmail) profileEmail.textContent = "visitante@bibliotech.com";
     if (profileName) profileName.textContent = "Visitante";
     if (avatarLetter) avatarLetter.textContent = "V";
+}
+
+/**
+ * Aplica la visibilidad de los botones de cabecera según el rol del usuario:
+ *  - ADMIN:    ve únicamente "📬 Solicitudes"
+ *  - ESCRITOR:  ve únicamente "+ Añadir Libro"
+ *  - USUARIO:  no ve ningún botón de cabecera
+ */
+function applyRoleVisibility() {
+    const role = getUserRole();
+    const btnRequests = document.getElementById("btnRequests");
+    const btnAddBook = document.getElementById("btnAddBook");
+
+    // Por defecto, ocultar ambos
+    if (btnRequests) btnRequests.style.display = "none";
+    if (btnAddBook) btnAddBook.style.display = "none";
+
+    if (role === "admin") {
+        // Admin: solo Solicitudes
+        if (btnRequests) btnRequests.style.display = "inline-flex";
+    } else if (role === "escritor") {
+        // Escritor: solo Añadir Libro
+        if (btnAddBook) btnAddBook.style.display = "inline-flex";
+    }
+    // user: no ve ninguno
 }
 
 /**
@@ -186,22 +225,7 @@ function renderBooks(booksList) {
                     ${book.puntuacion_media ? `<span>★ <strong>${book.puntuacion_media}</strong></span>` : ""}
                 </div>
                 <div class="book-actions">
-                    <button class="book-btn book-btn-edit" onclick="event.stopPropagation(); editBook(${book.id})">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                        <span>Editar</span>
-                    </button>
-                    <button class="book-btn book-btn-delete" onclick="event.stopPropagation(); deleteBook(${book.id})">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            <line x1="10" y1="11" x2="10" y2="17"></line>
-                            <line x1="14" y1="11" x2="14" y2="17"></line>
-                        </svg>
-                        <span>Eliminar</span>
-                    </button>
+                    ${renderBookCardActions(book)}
                 </div>
             </div>
         `;
@@ -210,6 +234,102 @@ function renderBooks(booksList) {
         });
         grid.appendChild(card);
     });
+}
+
+/**
+ * Genera el HTML de los botones de acción de cada tarjeta de libro
+ * según el rol del usuario autenticado:
+ *  - ADMIN:    [✏️ Editar] + [🗑️ Eliminar]
+ *  - ESCRITOR: [➕ Añadir a Mi Lista] + [📖 Leer]
+ *  - USUARIO:  [➕ Añadir a Mi Lista] + [📖 Leer]
+ * @param {Object} book - El libro a renderizar
+ * @returns {string} HTML de los botones
+ */
+function renderBookCardActions(book) {
+    const role = getUserRole();
+
+    const addToListBtn = `
+        <button class="book-btn book-btn-add-list" onclick="event.stopPropagation(); addBookToMyList(${book.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Añadir a Mi Lista</span>
+        </button>
+    `;
+
+    const readBtn = `
+        <button class="book-btn book-btn-read" onclick="event.stopPropagation(); readBook(${book.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+            <span>Leer</span>
+        </button>
+    `;
+
+    const editBtn = `
+        <button class="book-btn book-btn-edit" onclick="event.stopPropagation(); editBook(${book.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            <span>Editar</span>
+        </button>
+    `;
+
+    const deleteBtn = `
+        <button class="book-btn book-btn-delete" onclick="event.stopPropagation(); deleteBook(${book.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+            <span>Eliminar</span>
+        </button>
+    `;
+
+    if (role === "admin") {
+        return editBtn + deleteBtn;
+    }
+    // escritor y user ven los mismos botones en las tarjetas
+    return addToListBtn + readBtn;
+}
+
+/**
+ * Añade un libro a la lista personal del usuario (Mi Lista)
+ * @param {number} bookId - ID del libro a añadir
+ */
+async function addBookToMyList(bookId) {
+    const token = getAuthToken();
+    if (!token) {
+        alert("Debes iniciar sesión para añadir libros a tu lista.");
+        return;
+    }
+    try {
+        const response = await authFetch(`${API_URL}/user/userList`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ bookId })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || "No se pudo añadir el libro a tu lista.");
+        }
+        alert("✅ Libro añadido a tu lista.");
+    } catch (error) {
+        console.error("❌ Error al añadir a Mi Lista:", error);
+        alert(error.message || "No se pudo añadir el libro. Intenta de nuevo.");
+    }
+}
+
+/**
+ * Redirige al lector de PDF para leer un libro
+ * @param {number} bookId - ID del libro a leer
+ */
+function readBook(bookId) {
+    window.location.href = `reader.html?id=${bookId}`;
 }
 
 /**
@@ -466,6 +586,11 @@ function updateFileLabel(input, labelId) {
  * Abre el modal para añadir un nuevo libro
  */
 function openAddModal() {
+    // Solo ESCRITOR puede añadir libros (el admin no publica, solo modera)
+    if (getUserRole() !== "escritor") {
+        alert("No tienes permisos para añadir libros.");
+        return;
+    }
     editId = null;
     document.getElementById("modalTitle").textContent = "Registrar Nuevo Libro";
     document.getElementById("bookForm").reset();
@@ -482,6 +607,11 @@ function openAddModal() {
  * @param {number} id - ID del libro a editar
  */
 async function editBook(id) {
+    // Solo ADMIN puede editar libros
+    if (getUserRole() !== "admin") {
+        alert("No tienes permisos para editar libros.");
+        return;
+    }
     const book = books.find(b => b.id === id);
     if (!book) return;
 
@@ -555,6 +685,12 @@ function showServerError(message) {
  * Usa FormData para enviar archivos a Supabase Storage
  */
 async function saveBook() {
+    // Solo ADMIN (edición) o ESCRITOR (nuevo) pueden guardar libros
+    const role = getUserRole();
+    if (role !== "admin" && role !== "escritor") {
+        alert("No tienes permisos para guardar libros.");
+        return;
+    }
     const title = document.getElementById("bookTitle").value.trim();
     const author = document.getElementById("bookAuthor").value.trim();
     const genre = document.getElementById("bookGenre").value;
@@ -624,6 +760,11 @@ async function saveBook() {
  * @param {number} id - ID del libro a eliminar
  */
 async function deleteBook(id) {
+    // Solo ADMIN puede eliminar libros
+    if (getUserRole() !== "admin") {
+        alert("No tienes permisos para eliminar libros.");
+        return;
+    }
     if (!confirm("¿Estás seguro de que deseas eliminar este libro?")) return;
 
     const token = getAuthToken();
@@ -703,5 +844,330 @@ function switchTab(tabName) {
 function toggleSidebar() {
     const sidebar = document.getElementById("sidebar");
     sidebar.classList.toggle("active");
+}
+
+// ==========================================================================
+// MODERACIÓN — CENTRO DE SOLICITUDES (solo ADMIN)
+// ==========================================================================
+
+let currentModTab = "books"; // "books" | "writers"
+
+/**
+ * Carga los conteos de solicitudes pendientes y actualiza los badges
+ */
+async function loadModerationCounts() {
+    try {
+        const response = await authFetch(`${API_URL}/moderation/counts`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Error al cargar conteos");
+
+        const pendingBooks = data.pendingBooks || 0;
+        const pendingWriters = data.pendingWriters || 0;
+        const total = pendingBooks + pendingWriters;
+
+        // Badge del botón de cabecera
+        const requestsBadge = document.getElementById("requestsBadge");
+        if (requestsBadge) {
+            if (total > 0) {
+                requestsBadge.textContent = total;
+                requestsBadge.style.display = "inline-flex";
+            } else {
+                requestsBadge.style.display = "none";
+            }
+        }
+
+        // Badges de las pestañas
+        const tabBooksBadge = document.getElementById("tabBooksBadge");
+        if (tabBooksBadge) {
+            if (pendingBooks > 0) {
+                tabBooksBadge.textContent = pendingBooks;
+                tabBooksBadge.style.display = "inline-flex";
+            } else {
+                tabBooksBadge.style.display = "none";
+            }
+        }
+
+        const tabWritersBadge = document.getElementById("tabWritersBadge");
+        if (tabWritersBadge) {
+            if (pendingWriters > 0) {
+                tabWritersBadge.textContent = pendingWriters;
+                tabWritersBadge.style.display = "inline-flex";
+            } else {
+                tabWritersBadge.style.display = "none";
+            }
+        }
+    } catch (error) {
+        console.error("❌ Error al cargar conteos de moderación:", error);
+    }
+}
+
+/**
+ * Abre el modal del Centro de Moderación
+ */
+function openRequestsModal() {
+    if (getUserRole() !== "admin") {
+        alert("No tienes permisos para acceder al Centro de Moderación.");
+        return;
+    }
+    document.getElementById("requestsModal").classList.add("active");
+    currentModTab = "books";
+    switchModTab("books");
+}
+
+/**
+ * Cierra el modal del Centro de Moderación
+ */
+function closeRequestsModal() {
+    const modal = document.getElementById("requestsModal");
+    if (modal) modal.classList.remove("active");
+}
+
+/**
+ * Cambia entre la pestaña de libros pendientes y solicitudes de escritor
+ * @param {string} tab - "books" | "writers"
+ */
+function switchModTab(tab) {
+    currentModTab = tab;
+
+    // Actualizar botones de pestaña
+    document.querySelectorAll(".mod-tab").forEach(btn => btn.classList.remove("active"));
+    document.querySelectorAll(".mod-tab-content").forEach(c => c.classList.remove("active"));
+
+    if (tab === "books") {
+        document.getElementById("tabBooks").classList.add("active");
+        document.getElementById("contentBooks").classList.add("active");
+        loadPendingBooks();
+    } else {
+        document.getElementById("tabWriters").classList.add("active");
+        document.getElementById("contentWriters").classList.add("active");
+        loadWriterRequests();
+    }
+}
+
+/**
+ * Carga la lista de libros pendientes de aprobación
+ */
+async function loadPendingBooks() {
+    const list = document.getElementById("pendingBooksList");
+    if (!list) return;
+    list.innerHTML = `<div class="mod-loading">Cargando libros pendientes...</div>`;
+
+    try {
+        const response = await authFetch(`${API_URL}/moderation/books/pending`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Error al cargar libros pendientes");
+
+        const pending = data.data || [];
+        if (pending.length === 0) {
+            list.innerHTML = renderModEmpty("No hay libros pendientes de aprobación.");
+            return;
+        }
+
+        list.innerHTML = pending.map(book => `
+            <div class="mod-item">
+                ${book.foto
+                    ? `<img src="${book.foto}" alt="${book.nombre}" class="mod-item-cover">`
+                    : `<div class="mod-item-cover-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></div>`}
+                <div class="mod-item-body">
+                    <p class="mod-item-title">${book.nombre}</p>
+                    <p class="mod-item-subtitle">por ${book.autor || "Autor desconocido"}</p>
+                    <p class="mod-item-meta">${book.categoria || "Sin categoría"} · ID #${book.id}</p>
+                </div>
+                <div class="mod-item-actions">
+                    <button class="mod-item-btn mod-item-approve" title="Aprobar" onclick="approveBook(${book.id})">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </button>
+                    <button class="mod-item-btn mod-item-reject" title="Rechazar" onclick="rejectBook(${book.id})">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+            </div>
+        `).join("");
+    } catch (error) {
+        console.error("❌ Error al cargar libros pendientes:", error);
+        list.innerHTML = `<div class="mod-empty"><p style="color:#EF4444;">${error.message}</p></div>`;
+    }
+}
+
+/**
+ * Carga la lista de solicitudes de ascenso a escritor
+ */
+async function loadWriterRequests() {
+    const list = document.getElementById("writerRequestsList");
+    if (!list) return;
+    list.innerHTML = `<div class="mod-loading">Cargando solicitudes de escritor...</div>`;
+
+    try {
+        const response = await authFetch(`${API_URL}/moderation/writer-requests`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Error al cargar solicitudes");
+
+        const requests = data.data || [];
+        if (requests.length === 0) {
+            list.innerHTML = renderModEmpty("No hay solicitudes de ascenso pendientes.");
+            return;
+        }
+
+        list.innerHTML = requests.map(req => `
+            <div class="mod-item">
+                <div class="mod-item-cover-placeholder" style="border-radius:50%;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+                <div class="mod-item-body">
+                    <p class="mod-item-title">${req.User?.name || req.User?.email || "Usuario #" + req.user_id}</p>
+                    <p class="mod-item-subtitle">${req.User?.email || ""}</p>
+                    <p class="mod-item-meta">Solicitud #${req.id}${req.mensaje ? " · " + req.mensaje : ""}</p>
+                </div>
+                <div class="mod-item-actions">
+                    <button class="mod-item-btn mod-item-approve" title="Aprobar" onclick="approveWriterRequest(${req.id})">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </button>
+                    <button class="mod-item-btn mod-item-reject" title="Rechazar" onclick="rejectWriterRequest(${req.id})">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+            </div>
+        `).join("");
+    } catch (error) {
+        console.error("❌ Error al cargar solicitudes de escritor:", error);
+        list.innerHTML = `<div class="mod-empty"><p style="color:#EF4444;">${error.message}</p></div>`;
+    }
+}
+
+/**
+ * Genera el HTML del estado vacío de una lista de moderación
+ * @param {string} message - Mensaje a mostrar
+ * @returns {string} HTML
+ */
+function renderModEmpty(message) {
+    return `
+        <div class="mod-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <p>${message}</p>
+        </div>
+    `;
+}
+
+/**
+ * Aprueba un libro pendiente
+ * @param {number} id - ID del libro
+ */
+async function approveBook(id) {
+    if (!confirm("¿Aprobar este libro y publicarlo en el catálogo?")) return;
+    try {
+        const response = await authFetch(`${API_URL}/moderation/books/${id}/approve`, { method: "PUT" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Error al aprobar");
+        await refreshAfterModeration();
+    } catch (error) {
+        console.error("❌ Error al aprobar libro:", error);
+        alert(error.message);
+    }
+}
+
+/**
+ * Rechaza (elimina) un libro pendiente
+ * @param {number} id - ID del libro
+ */
+async function rejectBook(id) {
+    if (!confirm("¿Rechazar y eliminar este libro pendiente?")) return;
+    try {
+        const response = await authFetch(`${API_URL}/moderation/books/${id}/reject`, { method: "PUT" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Error al rechazar");
+        await refreshAfterModeration();
+    } catch (error) {
+        console.error("❌ Error al rechazar libro:", error);
+        alert(error.message);
+    }
+}
+
+/**
+ * Aprueba una solicitud de ascenso a escritor
+ * @param {number} id - ID de la solicitud
+ */
+async function approveWriterRequest(id) {
+    if (!confirm("¿Aprobar esta solicitud y ascender al usuario a escritor?")) return;
+    try {
+        const response = await authFetch(`${API_URL}/moderation/writer-requests/${id}/approve`, { method: "PUT" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Error al aprobar");
+        await refreshAfterModeration();
+    } catch (error) {
+        console.error("❌ Error al aprobar solicitud:", error);
+        alert(error.message);
+    }
+}
+
+/**
+ * Rechaza una solicitud de ascenso a escritor
+ * @param {number} id - ID de la solicitud
+ */
+async function rejectWriterRequest(id) {
+    if (!confirm("¿Rechazar esta solicitud de ascenso?")) return;
+    try {
+        const response = await authFetch(`${API_URL}/moderation/writer-requests/${id}/reject`, { method: "PUT" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Error al rechazar");
+        await refreshAfterModeration();
+    } catch (error) {
+        console.error("❌ Error al rechazar solicitud:", error);
+        alert(error.message);
+    }
+}
+
+/**
+ * Aprueba todos los elementos de la pestaña activa
+ */
+async function approveAllCurrentTab() {
+    const endpoint = currentModTab === "books"
+        ? `${API_URL}/moderation/books/approve-all`
+        : `${API_URL}/moderation/writer-requests/approve-all`;
+    if (!confirm("¿Aprobar TODOS los elementos de esta pestaña?")) return;
+    try {
+        const response = await authFetch(endpoint, { method: "PUT" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Error al aprobar todo");
+        await refreshAfterModeration();
+    } catch (error) {
+        console.error("❌ Error al aprobar todo:", error);
+        alert(error.message);
+    }
+}
+
+/**
+ * Rechaza todos los elementos de la pestaña activa
+ */
+async function rejectAllCurrentTab() {
+    const endpoint = currentModTab === "books"
+        ? `${API_URL}/moderation/books/reject-all`
+        : `${API_URL}/moderation/writer-requests/reject-all`;
+    if (!confirm("¿Rechazar TODOS los elementos de esta pestaña?")) return;
+    try {
+        const response = await authFetch(endpoint, { method: "PUT" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Error al rechazar todo");
+        await refreshAfterModeration();
+    } catch (error) {
+        console.error("❌ Error al rechazar todo:", error);
+        alert(error.message);
+    }
+}
+
+/**
+ * Refresca las listas y conteos tras una acción de moderación
+ */
+async function refreshAfterModeration() {
+    await loadModerationCounts();
+    if (currentModTab === "books") {
+        await loadPendingBooks();
+    } else {
+        await loadWriterRequests();
+    }
+    // Recargar el catálogo por si cambiaron los libros aprobados
+    await loadBooks();
 }
 

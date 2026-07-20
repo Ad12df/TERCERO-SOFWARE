@@ -4,6 +4,7 @@ const authRoutes = require("./auth");
 const userRoutes = require("./user");
 const bookRoutes = require("./books");
 const userListRoutes = require("./user/userList");
+const moderationRoutes = require("./moderation");
 
 // ─── Rutas de autenticación ──────────────────────────────────
 router.use("/auth", authRoutes);
@@ -16,6 +17,9 @@ router.use("/lists", userListRoutes);
 
 // ─── Rutas de libros ─────────────────────────────────────────
 router.use("/books", bookRoutes);
+
+// ─── Rutas de moderación ────────────────────────────────────
+router.use("/moderation", moderationRoutes);
 
 // ─── Rutas legacy (mantener compatibilidad) ───────────────────
 const userLegacyRoutes = require("./user/");

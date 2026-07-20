@@ -75,10 +75,11 @@ class BookController {
   }
 
   // ─── GET /api/books ─────────────────────────────────────────
-  // Obtiene todos los libros (público)
+  // Obtiene todos los libros aprobados (público)
   static async getBooks(req, res) {
     try {
       const books = await Book.findAll({
+        where: { status: "APROBADO" },
         order: [["createdAt", "DESC"]],
       });
 
