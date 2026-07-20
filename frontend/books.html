@@ -8,6 +8,8 @@
     <!-- Importación de las hojas de estilo personalizadas -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/book-detail.css">
+    <!-- Font Awesome (iconos) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWWn2YksIqtL5o6B+L1lA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body class="users-page">
@@ -102,19 +104,13 @@
                 <div class="section-header">
                     <h2 class="section-title">Todos los Libros</h2>
                     <div class="section-header-actions">
-                        <button class="btn-requests" id="btnRequests" onclick="openRequestsModal()" style="display: none;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
+                        <button id="btnRequests" class="btn-add btn-requests" onclick="openRequestsModal()" style="display: none;">
+                            <i class="fas fa-inbox"></i>
                             <span>Solicitudes</span>
-                            <span class="requests-badge" id="requestsBadge" style="display: none;">0</span>
+                            <span id="requestsBadge" class="badge">0</span>
                         </button>
                         <button class="btn-add" id="btnAddBook" onclick="openAddModal()" style="display: none;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="5" x2="12" y2="19"></line>
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                            </svg>
+                            <i class="fas fa-plus"></i>
                             <span>Añadir Libro</span>
                         </button>
                     </div>
@@ -417,40 +413,33 @@
             </span>
             <h3 class="modal-title">Centro de Moderación</h3>
 
-            <!-- Tabs de moderación -->
-            <div class="moderation-tabs">
-                <button class="mod-tab active" id="tabBooks" onclick="switchModTab('books')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                    </svg>
-                    <span>Libros Pendientes</span>
-                    <span class="tab-badge" id="tabBooksBadge" style="display:none;">0</span>
-                </button>
-                <button class="mod-tab" id="tabWriters" onclick="switchModTab('writers')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                    </svg>
-                    <span>Ascensos a Escritor</span>
-                    <span class="tab-badge" id="tabWritersBadge" style="display:none;">0</span>
-                </button>
-            </div>
+            <!-- Cabecera de pestañas + acciones globales -->
+            <div class="mod-header">
+                <!-- Tabs de moderación -->
+                <div class="mod-tabs">
+                    <button class="mod-tab active" data-tab="books" id="tabBooks" onclick="switchModTab('books')">
+                        <i class="fas fa-book"></i>
+                        <span>Libros Pendientes</span>
+                        <span class="tab-badge" id="tabBooksBadge" style="display:none;">0</span>
+                    </button>
+                    <button class="mod-tab" data-tab="writers" id="tabWriters" onclick="switchModTab('writers')">
+                        <i class="fas fa-user-pen"></i>
+                        <span>Ascensos a Escritor</span>
+                        <span class="tab-badge" id="tabWritersBadge" style="display:none;">0</span>
+                    </button>
+                </div>
 
-            <!-- Acciones globales -->
-            <div class="moderation-actions">
-                <button class="mod-btn mod-btn-approve" onclick="approveAllCurrentTab()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    Aceptar Todo
-                </button>
-                <button class="mod-btn mod-btn-reject" onclick="rejectAllCurrentTab()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                    Denegar Todo
-                </button>
+                <!-- Acciones globales -->
+                <div class="mod-actions">
+                    <button class="mod-pill mod-pill-approve" onclick="approveAllCurrentTab()">
+                        <i class="fas fa-check"></i>
+                        <span>Aceptar Todo</span>
+                    </button>
+                    <button class="mod-pill mod-pill-reject" onclick="rejectAllCurrentTab()">
+                        <i class="fas fa-times"></i>
+                        <span>Denegar Todo</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Contenido de tabs -->
