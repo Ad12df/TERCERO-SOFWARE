@@ -2,7 +2,7 @@
 // Modelo UserList — Asocia un usuario con un libro en su lista
 // ─────────────────────────────────────────────────────────────
 const { DataTypes } = require("sequelize");
-const { sequelize } = require("../config/database");
+const sequelize = require("../config/database");
 
 const UserList = sequelize.define("UserList", {
   id: {
