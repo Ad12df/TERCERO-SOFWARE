@@ -1020,9 +1020,12 @@ async function loadPendingBooks() {
  * Carga la lista de solicitudes de ascenso a escritor
  */
 async function loadWriterRequests() {
-    const list = document.getElementById("writerRequestsList");
-    if (!list) return;
-    list.innerHTML = `<div class="mod-loading">Cargando solicitudes de escritor...</div>`;
+    const container = document.getElementById("writerRequestsList");
+    if (!container) return;
+
+    // LIMPIAR el contenedor antes de cualquier renderizado
+    container.innerHTML = "";
+    container.innerHTML = `<div class="mod-loading">Cargando solicitudes de escritor...</div>`;
 
     try {
         const response = await authFetch(`${API_URL}/moderation/writer-requests`);
@@ -1030,12 +1033,18 @@ async function loadWriterRequests() {
         if (!response.ok) throw new Error(data.message || "Error al cargar solicitudes");
 
         const requests = data.data || [];
+
+        // LIMPIAR nuevamente antes de renderizar el resultado final
+        container.innerHTML = "";
+
         if (requests.length === 0) {
-            list.innerHTML = renderModEmpty("No hay solicitudes pendientes en este momento.");
+            // Solo mostrar el empty state si NO hay solicitudes
+            container.innerHTML = renderModEmpty("No hay solicitudes pendientes en este momento.");
             return;
         }
 
-        list.innerHTML = requests.map(req => {
+        // Si HAY solicitudes, renderizar las tarjetas horizontales (sin empty state)
+        container.innerHTML = requests.map(req => {
             const fullName = req.User?.name || req.user_name || "Usuario #" + (req.user_id || req.id);
             const email = req.User?.email || req.user_email || "";
             const currentRole = req.User?.role || req.user_role || "user";
@@ -1072,7 +1081,8 @@ async function loadWriterRequests() {
         }).join("");
     } catch (error) {
         console.error("❌ Error al cargar solicitudes de escritor:", error);
-        list.innerHTML = `<div class="mod-empty"><p style="color:#EF4444;">${error.message}</p></div>`;
+        container.innerHTML = "";
+        container.innerHTML = `<div class="mod-empty"><p style="color:#EF4444;">${error.message}</p></div>`;
     }
 }
 
