@@ -6,12 +6,46 @@ let editId = null;
 let books = [];
 let activeTags = []; // Array de categorías seleccionadas (multi-selección)
 
+// ==========================================================================
+// CATÁLOGO GLOBAL DE CATEGORÍAS
+// Lista maestra usada para el dropdown de filtros y el selector del formulario
+// ==========================================================================
+const CATEGORIES = [
+    "Arqueología", "Arquitectura", "Arte", "Astrología", "Astronomía",
+    "Autoayuda", "Autobiográfico", "Aventuras", "Biografía", "Biología",
+    "Bélico", "Ciencia", "Ciencia ficción", "Ciencias exactas",
+    "Ciencias naturales", "Ciencias sociales", "Cine", "Cinematografía",
+    "Clásico", "Comunicación", "Costumbrista", "Crítica",
+    "Crítica y teoría literaria", "Crónica", "Crónicas", "Cuentos",
+    "Cultura", "Cómic", "Deporte", "Deportes", "Deportes y juegos",
+    "Dibujo", "Diccionarios y enciclopedias", "Didáctico", "Distopía",
+    "Divulgación", "Divulgación científica", "Drama", "Ecología",
+    "Economía", "Educación", "Ensayo", "Erótico", "Esoterismo",
+    "Espectáculos", "Espionaje", "Espiritualidad", "Fantasía",
+    "Fantástico", "Ficción", "Filosofía", "Filosófico", "Fotografía",
+    "Física", "Gastronomía", "Geografía", "Guion", "Historia",
+    "Histórico", "Hogar", "Humor", "Idiomas", "Infantil",
+    "Infantil y juvenil", "Informática", "Interactivo", "Intriga",
+    "Juegos", "Juvenil", "Magia", "Manuales y cursos", "Matemáticas",
+    "Medicina", "Medieval", "Memorias", "Misterio", "Mitos", "Musical",
+    "Música", "Nazis", "Negocios", "No Ficción", "Novela",
+    "Novela Negra", "Novela del Oeste", "Obras completas", "Otros",
+    "Padres e hijos", "Periodismo", "Pintura", "Poesía", "Policial",
+    "Policíaco", "Política", "Psicología", "Psicológico",
+    "Publicaciónes periódicas", "Química", "Realista",
+    "Recetas de cocina", "Recopilación", "Referencia", "Relato",
+    "Religión", "Romántico", "Salud y Bienestar", "Sexualidad",
+    "Sociología", "Sátira", "Teatro", "Tecnología", "Terror",
+    "Terrorismo", "Thriller", "Ucronía", "Viajes"
+];
+
 document.addEventListener("DOMContentLoaded", () => {
     if (!isAuthenticated()) {
         window.location.href = "index.html";
         return;
     }
     initializeProfile();
+    populateCategorySelect();
     loadBooks();
 });
 
@@ -206,17 +240,38 @@ function filterBooks() {
 }
 
 /**
- * Obtiene todas las categorías únicas presentes en la colección de libros
- * @returns {Array} Lista de categorías únicas
+ * Obtiene todas las categorías disponibles para mostrar en los filtros.
+ * Combina el catálogo global (CATEGORIES) con cualquier categoría extra
+ * que exista en los libros cargados desde el backend, para no perder
+ * categorías históricas que no estén en la lista maestra.
+ * @returns {Array} Lista de categorías únicas ordenadas alfabéticamente
  */
 function getAvailableCategories() {
-    const cats = new Set();
+    const cats = new Set(CATEGORIES);
     books.forEach(book => {
         if (book.categoria) {
             cats.add(book.categoria);
         }
     });
     return Array.from(cats).sort((a, b) => a.localeCompare(b, "es"));
+}
+
+/**
+ * Rellena el <select> de categoría del formulario de añadir/editar libro
+ * con todas las categorías del catálogo global.
+ */
+function populateCategorySelect() {
+    const select = document.getElementById("bookGenre");
+    if (!select) return;
+
+    const currentValue = select.value;
+    select.innerHTML = `<option value="">Selecciona una categoría...</option>` +
+        CATEGORIES.map(cat => `<option value="${cat}">${cat}</option>`).join("");
+
+    // Conservar el valor seleccionado si ya estaba elegido (edición)
+    if (currentValue) {
+        select.value = currentValue;
+    }
 }
 
 /**
@@ -416,6 +471,7 @@ function openAddModal() {
     document.getElementById("bookForm").reset();
     document.getElementById("serverError").style.display = "none";
     document.getElementById("uploadStatus").style.display = "none";
+    populateCategorySelect();
     updateFileLabel(document.getElementById("bookCover"), "coverLabel");
     updateFileLabel(document.getElementById("bookPdf"), "pdfLabel");
     document.getElementById("bookModal").classList.add("active");
@@ -433,6 +489,9 @@ async function editBook(id) {
     document.getElementById("modalTitle").textContent = "Editar Libro";
     document.getElementById("serverError").style.display = "none";
     document.getElementById("uploadStatus").style.display = "none";
+
+    // Repoblar el select con el catálogo completo antes de seleccionar
+    populateCategorySelect();
 
     // Rellenar campos con datos del backend
     document.getElementById("bookTitle").value = book.nombre || "";

@@ -1013,6 +1013,7 @@ body.users-page {
     flex-wrap: wrap;
     gap: 8px;
     padding: 16px 20px;
+    max-height: 250px;
     overflow-y: auto;
     flex: 1;
 }
