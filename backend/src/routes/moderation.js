@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const ModerationController = require("../../controllers/moderation");
-const { authenticate, authorize } = require("../../middleware/auth");
+const ModerationController = require("../controllers/moderation");
+const { authenticate, authorize } = require("../middleware/auth");
 
 // ─── Rutas de moderación (solo admin) ────────────────────────
 
