@@ -414,7 +414,7 @@
             <h3 class="modal-title">Centro de Moderación</h3>
 
             <!-- Cabecera de pestañas + acciones globales -->
-            <div class="mod-header">
+            <div class="modal-header-actions">
                 <!-- Tabs de moderación -->
                 <div class="mod-tabs">
                     <button class="mod-tab active" data-tab="books" id="tabBooks" onclick="switchModTab('books')">
@@ -430,12 +430,12 @@
                 </div>
 
                 <!-- Acciones globales -->
-                <div class="mod-actions">
-                    <button class="mod-pill mod-pill-approve" onclick="approveAllCurrentTab()">
+                <div class="global-actions">
+                    <button class="btn-pill btn-pill-success" onclick="approveAllRequests()">
                         <i class="fas fa-check"></i>
                         <span>Aceptar Todo</span>
                     </button>
-                    <button class="mod-pill mod-pill-reject" onclick="rejectAllCurrentTab()">
+                    <button class="btn-pill btn-pill-danger" onclick="denyAllRequests()">
                         <i class="fas fa-times"></i>
                         <span>Denegar Todo</span>
                     </button>

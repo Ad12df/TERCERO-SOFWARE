@@ -985,23 +985,26 @@ async function loadPendingBooks() {
                 day: "2-digit", month: "short", year: "numeric"
             }) : "";
             return `
-            <div class="mod-item">
-                ${book.foto
-                    ? `<img src="${book.foto}" alt="${book.nombre}" class="mod-item-cover">`
-                    : `<div class="mod-item-cover-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></div>`}
-                <div class="mod-item-body">
-                    <p class="mod-item-title">${book.nombre}</p>
-                    <p class="mod-item-subtitle">por ${book.autor || "Autor desconocido"}</p>
-                    <p class="mod-item-meta">${book.categoria || "Sin categoría"} · ID #${book.id}</p>
-                    <p class="mod-item-meta">Propuesto por: <strong style="color:#E2E8F0;">${writerName}</strong>${writerEmail ? ` <${writerEmail}>` : ""}</p>
-                    ${formattedDate ? `<p class="mod-item-date">📅 ${formattedDate}</p>` : ""}
+            <div class="request-card-horizontal">
+                <div class="request-card-left">
+                    ${book.foto
+                        ? `<img src="${book.foto}" alt="${book.nombre}" class="request-card-cover">`
+                        : `<div class="request-card-cover-placeholder"><i class="fas fa-file-pdf"></i></div>`}
                 </div>
-                <div class="mod-item-actions">
-                    <button class="mod-item-btn mod-item-approve" title="Aprobar" onclick="approveBook(${book.id})">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <div class="request-card-body">
+                    <p class="request-card-title">${book.nombre}</p>
+                    <span class="request-card-badge">${book.categoria || "Sin categoría"}</span>
+                    <p class="request-card-requester">
+                        <i class="fas fa-user"></i> ${writerName}${writerEmail ? ` · ${writerEmail}` : ""}
+                    </p>
+                    ${formattedDate ? `<p class="request-card-date"><i class="fas fa-calendar"></i> ${formattedDate}</p>` : ""}
+                </div>
+                <div class="request-card-actions">
+                    <button class="btn-pill btn-pill-success" title="Aprobar" onclick="approveBook(${book.id})">
+                        <i class="fas fa-check"></i>
                     </button>
-                    <button class="mod-item-btn mod-item-reject" title="Rechazar" onclick="rejectBook(${book.id})">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <button class="btn-pill btn-pill-danger" title="Rechazar" onclick="rejectBook(${book.id})">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
             </div>
@@ -1041,23 +1044,27 @@ async function loadWriterRequests() {
                 day: "2-digit", month: "short", year: "numeric"
             }) : "";
             return `
-            <div class="mod-item">
-                <div class="mod-item-cover-placeholder" style="border-radius:50%;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <div class="request-card-horizontal">
+                <div class="request-card-left">
+                    <div class="request-card-cover-placeholder" style="border-radius:50%;">
+                        <i class="fas fa-user-pen"></i>
+                    </div>
                 </div>
-                <div class="mod-item-body">
-                    <p class="mod-item-title">${fullName}</p>
-                    <p class="mod-item-subtitle">${email}</p>
-                    <p class="mod-item-meta">Solicitud #${req.id}${req.mensaje ? " · " + req.mensaje : ""}</p>
-                    <span class="mod-item-role">Rol actual: ${String(currentRole).toLowerCase()}</span>
-                    ${formattedDate ? `<p class="mod-item-date">📅 ${formattedDate}</p>` : ""}
+                <div class="request-card-body">
+                    <p class="request-card-title">${fullName}</p>
+                    <span class="request-card-badge">Solicitud #${req.id}</span>
+                    <p class="request-card-requester">
+                        <i class="fas fa-envelope"></i> ${email}
+                    </p>
+                    <span class="request-card-role">Rol actual: ${String(currentRole).toLowerCase()}</span>
+                    ${formattedDate ? `<p class="request-card-date"><i class="fas fa-calendar"></i> ${formattedDate}</p>` : ""}
                 </div>
-                <div class="mod-item-actions">
-                    <button class="mod-item-btn mod-item-approve" title="Aprobar" onclick="approveWriterRequest(${req.id})">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <div class="request-card-actions">
+                    <button class="btn-pill btn-pill-success" title="Aprobar" onclick="approveWriterRequest(${req.id})">
+                        <i class="fas fa-check"></i>
                     </button>
-                    <button class="mod-item-btn mod-item-reject" title="Rechazar" onclick="rejectWriterRequest(${req.id})">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <button class="btn-pill btn-pill-danger" title="Rechazar" onclick="rejectWriterRequest(${req.id})">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
             </div>
@@ -1157,7 +1164,7 @@ async function rejectWriterRequest(id) {
 /**
  * Aprueba todos los elementos de la pestaña activa
  */
-async function approveAllCurrentTab() {
+async function approveAllRequests() {
     const endpoint = currentModTab === "books"
         ? `${API_URL}/moderation/books/approve-all`
         : `${API_URL}/moderation/writer-requests/approve-all`;
@@ -1176,7 +1183,7 @@ async function approveAllCurrentTab() {
 /**
  * Rechaza todos los elementos de la pestaña activa
  */
-async function rejectAllCurrentTab() {
+async function denyAllRequests() {
     const endpoint = currentModTab === "books"
         ? `${API_URL}/moderation/books/reject-all`
         : `${API_URL}/moderation/writer-requests/reject-all`;
