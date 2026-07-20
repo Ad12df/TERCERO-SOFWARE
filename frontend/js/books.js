@@ -24,19 +24,22 @@ function initializeProfile() {
     const avatarLetter = document.getElementById("avatarLetter");
     const profileName = document.getElementById("profileName");
 
+    // En algunas páginas (ej. book-detail.html) estos elementos no existen
+    if (!profileEmail && !avatarLetter && !profileName) return;
+
     if (user) {
-        profileEmail.textContent = user.email;
-        profileName.textContent = user.name || user.email;
-        avatarLetter.textContent = (user.name || user.email).charAt(0).toUpperCase();
+        if (profileEmail) profileEmail.textContent = user.email;
+        if (profileName) profileName.textContent = user.name || user.email;
+        if (avatarLetter) avatarLetter.textContent = (user.name || user.email).charAt(0).toUpperCase();
         if (user.role === "admin") {
             const adminBadge = document.getElementById("adminBadge");
             if (adminBadge) adminBadge.style.display = "inline-block";
         }
         return;
     }
-    profileEmail.textContent = "visitante@bibliotech.com";
-    profileName.textContent = "Visitante";
-    avatarLetter.textContent = "V";
+    if (profileEmail) profileEmail.textContent = "visitante@bibliotech.com";
+    if (profileName) profileName.textContent = "Visitante";
+    if (avatarLetter) avatarLetter.textContent = "V";
 }
 
 /**

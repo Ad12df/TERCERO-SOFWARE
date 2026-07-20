@@ -203,11 +203,8 @@ function showBookDetail(book) {
 
     // ─── Cargar comentarios desde la API del backend ───────────────
     loadCommentsFromAPI(book.id);
-}
-    
-    // Comentarios (se cargan desde localStorage en initializeDetailPage)
-    
-    // Cargar sugerencias
+
+    // Cargar sugerencias (libros publicados)
     loadSuggestions(book);
 }
 
@@ -486,22 +483,32 @@ function loadSuggestions(currentBook) {
 }
 
 /**
- * Verifica si el libro está en Mi Lista
+ * Verifica si el libro está en Mi Lista consultando la API
  */
-function checkMyListStatus() {
+async function checkMyListStatus() {
     const btn = document.getElementById('btnAddList');
     const btnText = document.getElementById('listBtnText');
-    if (!btn || !btnText) return;
-    
-    const myList = JSON.parse(localStorage.getItem('bibliotech_my_list') || '[]');
-    const isAdded = myList.includes(selectedBookId);
-    
-    if (isAdded) {
-        btn.classList.add('added');
-        btnText.textContent = 'En Mi Lista';
-    } else {
-        btn.classList.remove('added');
-        btnText.textContent = 'Añadir a Mi Lista';
+    if (!btn || !btnText || !selectedBookId) return;
+
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+        const res = await fetch(`${API_URL}/lists/check/${selectedBookId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const json = await res.json();
+        const inList = json?.inList === true;
+
+        if (inList) {
+            btn.classList.add('added');
+            btnText.textContent = 'En Mi Lista';
+        } else {
+            btn.classList.remove('added');
+            btnText.textContent = 'Añadir a Mi Lista';
+        }
+    } catch (err) {
+        console.error('Error verificando Mi Lista:', err);
     }
 }
 
@@ -675,32 +682,57 @@ function openReader() {
 }
 
 /**
- * Alterna la lista "Mi Lista" para el libro actual
+ * Alterna la lista "Mi Lista" para el libro actual — llama a la API
  */
-function toggleMyList() {
+async function toggleMyList() {
     const btn = document.getElementById('btnAddList');
     const btnText = document.getElementById('listBtnText');
-    const isAdded = btn.classList.toggle('added');
-    
-    if (isAdded) {
-        btnText.textContent = 'En Mi Lista';
-        btn.classList.add('added');
-    } else {
-        btnText.textContent = 'Añadir a Mi Lista';
-        btn.classList.remove('added');
+    if (!btn || !btnText || !selectedBookId) return;
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+        showToast('Inicia sesión para usar Mi Lista', 'warning');
+        return;
     }
-    
-    // Guardar en localStorage
-    const myList = JSON.parse(localStorage.getItem('bibliotech_my_list') || '[]');
-    if (isAdded) {
-        if (!myList.includes(selectedBookId)) {
-            myList.push(selectedBookId);
+
+    const isAdded = btn.classList.contains('added');
+
+    try {
+        if (isAdded) {
+            // Quitar de la lista
+            const res = await fetch(`${API_URL}/lists/remove/${selectedBookId}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const json = await res.json();
+            if (json.success) {
+                btn.classList.remove('added');
+                btnText.textContent = 'Añadir a Mi Lista';
+                showToast('Eliminado de Mi Lista');
+            } else {
+                showToast(json.message || 'No se pudo quitar el libro', 'error');
+            }
+        } else {
+            // Añadir a la lista
+            const res = await fetch(`${API_URL}/lists/add`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ book_id: selectedBookId }),
+            });
+            const json = await res.json();
+            if (json.success) {
+                btn.classList.add('added');
+                btnText.textContent = 'En Mi Lista';
+                showToast('Añadido a Mi Lista');
+            } else {
+                showToast(json.message || 'No se pudo añadir el libro', 'error');
+            }
         }
-    } else {
-        const index = myList.indexOf(selectedBookId);
-        if (index > -1) {
-            myList.splice(index, 1);
-        }
+    } catch (err) {
+        console.error('Error en toggleMyList:', err);
+        showToast('Error de conexión', 'error');
     }
-    localStorage.setItem('bibliotech_my_list', JSON.stringify(myList));
 }

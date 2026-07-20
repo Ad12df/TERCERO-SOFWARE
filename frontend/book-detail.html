@@ -178,6 +178,9 @@
                                         <span>Leer Ahora</span>
                                     </button>
                                 </div>
+
+                                <!-- Barra de progreso de lectura (la inyecta showReadingProgress en bookDetail.js) -->
+                                <div id="readingProgressContainer"></div>
                             </div>
                         </div>
                         
@@ -263,55 +266,18 @@
                                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                                 </svg>
-                                También te puede interesar
+                                Libros publicados
                             </h3>
                             <a href="books.html" class="section-link">Ver todos →</a>
                         </div>
                         <div class="suggestions-grid" id="suggestionsGrid">
-                            <!-- Minitarjetas de libros sugeridos -->
-                            <a href="#" class="mini-book-card" data-book-id="1">
-                                <div class="mini-book-cover">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                                    </svg>
-                                </div>
-                                <h4 class="mini-book-title">El Gran Gatsby</h4>
-                                <p class="mini-book-author">F. Scott Fitzgerald</p>
-                            </a>
-                            
-                            <a href="#" class="mini-book-card" data-book-id="2">
-                                <div class="mini-book-cover">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                                    </svg>
-                                </div>
-                                <h4 class="mini-book-title">1984</h4>
-                                <p class="mini-book-author">George Orwell</p>
-                            </a>
-                            
-                            <a href="#" class="mini-book-card" data-book-id="3">
-                                <div class="mini-book-cover">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                                    </svg>
-                                </div>
-                                <h4 class="mini-book-title">Don Quijote</h4>
-                                <p class="mini-book-author">Miguel de Cervantes</p>
-                            </a>
-                            
-                            <a href="#" class="mini-book-card" data-book-id="4">
-                                <div class="mini-book-cover">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                                    </svg>
-                                </div>
-                                <h4 class="mini-book-title">Cien Años</h4>
-                                <p class="mini-book-author">Gabriel García Márquez</p>
-                            </a>
+                            <!-- Las tarjetas se renderizan dinámicamente desde la API en bookDetail.js (loadSuggestions) -->
+                            <div class="comments-loading">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                                </svg>
+                                <span>Cargando libros...</span>
+                            </div>
                         </div>
                     </section>
                     

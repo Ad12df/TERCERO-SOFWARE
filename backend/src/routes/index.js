@@ -3,12 +3,16 @@ const router = require("express").Router();
 const authRoutes = require("./auth");
 const userRoutes = require("./user");
 const bookRoutes = require("./books");
+const userListRoutes = require("./user/userList");
 
 // ─── Rutas de autenticación ──────────────────────────────────
 router.use("/auth", authRoutes);
 
 // ─── Rutas de usuario ────────────────────────────────────────
 router.use("/user", userRoutes);
+
+// ─── Rutas de lista personal ────────────────────────────────
+router.use("/lists", userListRoutes);
 
 // ─── Rutas de libros ─────────────────────────────────────────
 router.use("/books", bookRoutes);

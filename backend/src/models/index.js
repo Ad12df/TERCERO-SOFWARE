@@ -4,6 +4,7 @@ const Book = require("./books");
 const Review = require("./reviews");
 const UserSetting = require("./userSettings");
 const Comment = require("./Comment");
+const UserList = require("./UserList");
 
 // ─── Relaciones ───────────────────────────────────────────────
 
@@ -45,6 +46,20 @@ Book.hasMany(Comment, { foreignKey: "book_id", as: "comments", onDelete: "CASCAD
 // Comment → Book (cada comentario pertenece a un libro)
 Comment.belongsTo(Book, { foreignKey: "book_id", as: "book" });
 
+// ─── UserList Relations ────────────────────────────────────────
+
+// User → UserList (un usuario puede tener muchos libros en su lista)
+User.hasMany(UserList, { foreignKey: "user_id", as: "userList", onDelete: "CASCADE", hooks: true });
+
+// UserList → User (cada entrada pertenece a un usuario)
+UserList.belongsTo(User, { foreignKey: "user_id", as: "user" });
+
+// Book → UserList (un libro puede estar en muchas listas de usuarios)
+Book.hasMany(UserList, { foreignKey: "book_id", as: "bookList", onDelete: "CASCADE", hooks: true });
+
+// UserList → Book (cada entrada de lista apunta a un libro)
+UserList.belongsTo(Book, { foreignKey: "book_id", as: "book" });
+
 // ─── Conexión y Sincronización ─────────────────────────────────
 
 const connectDB = async () => {
@@ -71,4 +86,5 @@ module.exports = {
   Review,
   UserSetting,
   Comment,
+  UserList,
 };
