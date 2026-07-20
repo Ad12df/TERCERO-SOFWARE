@@ -1459,7 +1459,8 @@ body.users-page {
 .file-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 20px;
+    margin-top: 4px;
 }
 
 /* Grupo de campo (label + input) */
@@ -1497,8 +1498,8 @@ body.users-page {
 }
 
 .input-pill:focus-within {
-    border-color: #3A6B82;
-    box-shadow: 0 0 0 4px rgba(58, 107, 130, 0.1);
+    border-color: #1E4B65;
+    box-shadow: 0 0 0 4px rgba(30, 75, 101, 0.12), 0 2px 8px rgba(30, 75, 101, 0.08);
     background: #FFFFFF;
 }
 
@@ -1525,6 +1526,52 @@ body.users-page {
     min-height: 80px;
 }
 
+/* ==========================================================================
+   SELECT DE CATEGORÍA — Estilizado moderno y consistente con el diseño
+   ========================================================================== */
+
+.input-pill-select {
+    padding: 0;
+    overflow: hidden;
+}
+
+.input-pill-select select {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    font-size: 0.925rem;
+    color: #1E293B;
+    padding: 12px 40px 12px 16px;
+    line-height: 1.5;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233A6B82' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
+    transition: color 0.25s;
+}
+
+.input-pill-select select:disabled {
+    color: #94A3B8;
+    cursor: not-allowed;
+}
+
+.input-pill-select select option {
+    color: #1E293B;
+    background: #FFFFFF;
+    padding: 10px;
+}
+
+/* Resaltar el placeholder del select (primera opción vacía) */
+.input-pill-select select:invalid {
+    color: #94A3B8;
+}
+
 /* Wrapper del input de archivo (oculta el input real) */
 .file-input-wrapper {
     position: relative;
@@ -1546,15 +1593,17 @@ body.users-page {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 22px 16px;
+    gap: 10px;
+    padding: 32px 20px;
+    margin-top: 4px;
     background: #F8FAFC;
     border: 2px dashed #CBD5E1;
     border-radius: 16px;
     cursor: pointer;
-    transition: border-color 0.25s, background 0.25s, transform 0.15s;
+    transition: border-color 0.25s, background 0.25s, transform 0.15s, box-shadow 0.25s;
     text-align: center;
     color: #64748B;
+    min-height: 150px;
 }
 
 .file-input-label svg {
@@ -1575,14 +1624,15 @@ body.users-page {
 
 .file-input-wrapper input[type="file"]:hover + .file-input-label,
 .file-input-wrapper input[type="file"]:focus + .file-input-label {
-    border-color: #3A6B82;
+    border-color: #1E4B65;
     background: #EFF6FF;
     transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(30, 75, 101, 0.1);
 }
 
 .file-input-wrapper input[type="file"]:hover + .file-input-label svg,
 .file-input-wrapper input[type="file"]:focus + .file-input-label svg {
-    color: #3A6B82;
+    color: #1E4B65;
     transform: translateY(-3px);
 }
 

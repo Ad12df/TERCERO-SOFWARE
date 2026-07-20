@@ -123,7 +123,7 @@ function showBookDetail(book) {
     const bookAuthorEl = document.getElementById("bookAuthor");
     if (bookAuthorEl) bookAuthorEl.textContent = book.autor ? `por ${book.autor}` : "Autor desconocido";
 
-    // Imagen de portada (foto de Cloudinary)
+    // Imagen de portada (foto almacenada en Supabase Storage)
     const bookCover = document.getElementById("bookCover");
     if (bookCover) {
         if (book.foto) {
@@ -197,6 +197,13 @@ function showBookDetail(book) {
     // Visitas (el backend no proporciona contador de visitas)
     const visitsCounter = document.getElementById("visitsCounter");
     if (visitsCounter) visitsCounter.textContent = `0 visitas`;
+
+    // ─── Barra de progreso de lectura ───────────────────────────────
+    showReadingProgress(book.progreso_porcentaje);
+
+    // ─── Cargar comentarios desde la API del backend ───────────────
+    loadCommentsFromAPI(book.id);
+}
     
     // Comentarios (se cargan desde localStorage en initializeDetailPage)
     
@@ -220,19 +227,84 @@ function updateStarDisplay(rating) {
 }
 
 /**
- * Renderiza los comentarios del libro
- * @param {Array} comments - Lista de comentarios
+ * Muestra la barra de progreso de lectura del libro
+ * @param {number} progresoPorcentaje - Porcentaje de progreso (0-100)
+ */
+function showReadingProgress(progresoPorcentaje) {
+    const container = document.getElementById("readingProgressContainer");
+    if (!container) return;
+
+    const pct = Number(progresoPorcentaje) || 0;
+
+    container.innerHTML = `
+        <div class="reading-progress-bar">
+            <div class="reading-progress-header">
+                <span class="reading-progress-label">Progreso de lectura</span>
+                <span class="reading-progress-pct">${pct}%</span>
+            </div>
+            <div class="reading-progress-track">
+                <div class="reading-progress-fill" style="width: ${pct}%"></div>
+            </div>
+            <span class="reading-progress-hint">
+                ${pct === 0 ? '¡Empieza a leer ahora!' : pct === 100 ? '✅ ¡Libro completado!' : 'Continúa desde donde lo dejaste'}
+            </span>
+        </div>
+    `;
+}
+
+/**
+ * Carga los comentarios del libro desde la API del backend
+ * @param {number} bookId - ID del libro
+ */
+function loadCommentsFromAPI(bookId) {
+    const listContainer = document.getElementById("commentsList");
+    if (!listContainer) return;
+
+    listContainer.innerHTML = `
+        <div class="comments-loading">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+            <span>Cargando comentarios...</span>
+        </div>
+    `;
+
+    fetch(`${API_URL}/books/${bookId}/comments`)
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(result => {
+            const comments = result.data || [];
+            renderComments(comments);
+        })
+        .catch(err => {
+            console.error('❌ Error cargando comentarios:', err);
+            listContainer.innerHTML = `
+                <div class="empty-comments">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <p>No se pudieron cargar los comentarios.</p>
+                </div>
+            `;
+        });
+}
+
+/**
+ * Renderiza la lista de comentarios
+ * @param {Array} comments - Array de comentarios (desde API o localStorage)
  */
 function renderComments(comments) {
     const container = document.getElementById("commentsList");
     const countEl = document.getElementById("commentsCount");
-    
+
     if (countEl) {
         countEl.textContent = `${comments.length} comentario${comments.length !== 1 ? 's' : ''}`;
     }
-    
+
     if (!container) return;
-    
+
     if (comments.length === 0) {
         container.innerHTML = `
             <div class="empty-comments">
@@ -244,19 +316,27 @@ function renderComments(comments) {
         `;
         return;
     }
-    
-    container.innerHTML = comments.map(comment => `
-        <div class="comment-item">
-            <div class="comment-avatar">${(comment.author || "A").charAt(0).toUpperCase()}</div>
-            <div class="comment-content">
-                <div class="comment-header">
-                    <span class="comment-author">${escapeHtml(comment.author || "Anónimo")}</span>
-                    <span class="comment-date">${formatDate(comment.date)}</span>
+
+    container.innerHTML = comments.map(comment => {
+        const authorName = (comment.user && comment.user.name) || comment.autor || comment.author || "Anónimo";
+        const initial = authorName.charAt(0).toUpperCase();
+        const dateStr = comment.fecha_creacion || comment.date || comment.created_at;
+        const formattedDate = dateStr ? formatDate(dateStr) : "";
+        const text = escapeHtml(comment.contenido || comment.text);
+
+        return `
+            <div class="comment-item">
+                <div class="comment-avatar">${initial}</div>
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="comment-author">${escapeHtml(authorName)}</span>
+                        ${formattedDate ? `<span class="comment-date">${formattedDate}</span>` : ''}
+                    </div>
+                    <p class="comment-text">${text}</p>
                 </div>
-                <p class="comment-text">${escapeHtml(comment.text)}</p>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 /**
@@ -292,56 +372,53 @@ function saveBookNotes() {
 }
 
 /**
- * Envía un nuevo comentario y lo guarda en localStorage
+ * Envía un nuevo comentario a la API del backend
  */
 function submitComment() {
     if (!currentBook?.id) {
         console.error("❌ No hay libro actual para añadir comentario");
         return;
     }
-    
+
     const input = document.getElementById("commentInput");
     if (!input) return;
-    
+
     const text = input.value.trim();
-    
+
     if (!text) {
         showToast("Por favor, escribe un comentario.", "warning");
         return;
     }
-    
-    // Obtener nombre de usuario
-    const userStr = localStorage.getItem("user");
-    let authorName = "Anónimo";
-    if (userStr) {
-        try {
-            const user = JSON.parse(userStr);
-            if (user && user.name) {
-                authorName = user.name;
-            } else if (user && user.email) {
-                authorName = user.email.split("@")[0];
-            }
-        } catch (e) {
-            console.error("Error al parsear el usuario:", e);
-        }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+        showToast("Inicia sesión para comentar.", "warning");
+        return;
     }
-    
-    // Guardar comentario en localStorage por libro
-    const commentsKey = `bibliotech_comments_${currentBook.id}`;
-    const comments = JSON.parse(localStorage.getItem(commentsKey) || "[]");
-    
-    comments.push({
-        author: authorName,
-        text: text,
-        date: new Date().toISOString()
+
+    fetch(`${API_URL}/books/${currentBook.id}/comments`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ contenido: text })
+    })
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    })
+    .then(result => {
+        console.log("💬 Comentario creado:", result.data);
+        input.value = "";
+        showToast("Comentario añadido", "success");
+        // Recargar la lista de comentarios desde la API
+        loadCommentsFromAPI(currentBook.id);
+    })
+    .catch(err => {
+        console.error("❌ Error enviando comentario:", err);
+        showToast("Error al enviar el comentario.", "error");
     });
-    
-    localStorage.setItem(commentsKey, JSON.stringify(comments));
-    console.log("💬 Comentario guardado para libro", currentBook.id);
-    
-    renderComments(comments);
-    input.value = "";
-    showToast("Comentario añadido", "success");
 }
 
 /**
@@ -571,7 +648,7 @@ function logout() {
 /**
  * Abre el lector de PDF (reader.html) pasando exclusivamente el ID del libro.
  * El lector se encarga de obtener el PDF vía el proxy del backend + IndexedDB.
- * NUNCA se debe usar directamente currentBook.pdf_url (Cloudinary da 401).
+ * NUNCA se debe usar directamente currentBook.pdf_url (Supabase Storage da 401).
  */
 function openReader() {
     console.log("🔍 openReader() llamado, currentBook:", currentBook);

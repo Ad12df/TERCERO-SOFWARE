@@ -621,6 +621,43 @@
             }
 
             localStorage.setItem('bibliotech_books', JSON.stringify(books));
+
+            // ─── Sincronizar con la API del backend ───────────────
+            saveProgressToAPI();
+        }
+    }
+
+    // ─── Sincronizar progreso con la API del backend ───────────────
+    async function saveProgressToAPI() {
+        if (!state.bookId || !state.totalPages) return;
+
+        const porcentaje = Math.round((state.currentPage / state.totalPages) * 100);
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.log('📖 Progreso guardado solo en localStorage (sin sesión)');
+                return;
+            }
+
+            const response = await fetch(`${API_URL}/books/${state.bookId}/progress`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ progreso_porcentaje: porcentaje })
+            });
+
+            if (!response.ok) {
+                console.warn('⚠️ No se pudo guardar el progreso en el servidor:', response.status);
+                return;
+            }
+
+            const result = await response.json();
+            console.log('✅ Progreso sincronizado con el servidor:', result.data);
+        } catch (err) {
+            console.warn('⚠️ Error al sincronizar progreso con la API:', err.message);
         }
     }
 
@@ -711,11 +748,23 @@
         elements.btnFontDecrease.addEventListener('click', () => changeFontSize(-10));
         elements.btnFontIncrease.addEventListener('click', () => changeFontSize(10));
 
-        // Volver atrás → book-detail.html
+        // Volver atrás → guardar progreso y navegar
         elements.btnBack.addEventListener('click', () => {
             saveProgress();
             window.location.href = `book-detail.html?id=${state.bookId}`;
         });
+
+        // Guardar progreso al cerrar/cambiar de pestaña
+        window.addEventListener('beforeunload', () => {
+            saveProgress();
+        });
+
+        // Guardar progreso cada 30 segundos mientras se lee
+        setInterval(() => {
+            if (state.pdfDoc && !state.isLoading) {
+                saveProgress();
+            }
+        }, 30000);
 
         // Teclado
         document.addEventListener('keydown', (e) => {

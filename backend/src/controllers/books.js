@@ -1,4 +1,4 @@
-const { Book } = require("../models");
+const { Book, Comment } = require("../models");
 const {
   uploadImageFromBuffer,
   uploadPdfFromBuffer,
@@ -205,6 +205,144 @@ class BookController {
       return res.status(500).json({
         success: false,
         message: error.message || "Error al eliminar el libro",
+      });
+    }
+  }
+
+  // ─── PATCH /api/books/:id/progress ─────────────────────────
+  // Actualiza el progreso de lectura del libro para el usuario actual
+  static async updateProgress(req, res) {
+    try {
+      const { id } = req.params;
+      const { progreso_porcentaje } = req.body;
+
+      const book = await Book.findByPk(id);
+
+      if (!book) {
+        return res.status(404).json({
+          success: false,
+          message: "Libro no encontrado",
+        });
+      }
+
+      if (progreso_porcentaje === undefined) {
+        return res.status(400).json({
+          success: false,
+          message: "El campo progreso_porcentaje es requerido",
+        });
+      }
+
+      const porcentaje = Math.max(0, Math.min(100, parseInt(progreso_porcentaje, 10)));
+
+      book.progreso_porcentaje = porcentaje;
+      book.fecha_ultima_lectura = new Date();
+      await book.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Progreso actualizado",
+        data: {
+          progreso_porcentaje: book.progreso_porcentaje,
+          fecha_ultima_lectura: book.fecha_ultima_lectura,
+        },
+      });
+    } catch (error) {
+      console.error("❌ Error al actualizar progreso:", error);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "Error al actualizar el progreso",
+      });
+    }
+  }
+
+  // ─── GET /api/books/:id/comments ───────────────────────────
+  // Obtiene todos los comentarios de un libro (público)
+  static async getComments(req, res) {
+    try {
+      const { id } = req.params;
+
+      const book = await Book.findByPk(id);
+      if (!book) {
+        return res.status(404).json({
+          success: false,
+          message: "Libro no encontrado",
+        });
+      }
+
+      const comments = await Comment.findAll({
+        where: { book_id: id },
+        include: [
+          {
+            model: require("../models").User,
+            as: "user",
+            attributes: ["id", "name", "email"],
+          },
+        ],
+        order: [["createdAt", "DESC"]],
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: comments,
+      });
+    } catch (error) {
+      console.error("❌ Error al obtener comentarios:", error);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "Error al obtener los comentarios",
+      });
+    }
+  }
+
+  // ─── POST /api/books/:id/comments ─────────────────────────
+  // Crea un nuevo comentario en un libro (requiere autenticación)
+  static async createComment(req, res) {
+    try {
+      const { id } = req.params;
+      const { contenido } = req.body;
+
+      const book = await Book.findByPk(id);
+      if (!book) {
+        return res.status(404).json({
+          success: false,
+          message: "Libro no encontrado",
+        });
+      }
+
+      if (!contenido || !contenido.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: "El contenido del comentario es requerido",
+        });
+      }
+
+      const newComment = await Comment.create({
+        contenido: contenido.trim(),
+        book_id: parseInt(id, 10),
+        user_id: req.user.id,
+      });
+
+      // Cargar datos del usuario para devolver en la respuesta
+      const commentWithUser = await Comment.findByPk(newComment.id, {
+        include: [
+          {
+            model: require("../models").User,
+            as: "user",
+            attributes: ["id", "name", "email"],
+          },
+        ],
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: "Comentario creado exitosamente",
+        data: commentWithUser,
+      });
+    } catch (error) {
+      console.error("❌ Error al crear comentario:", error);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "Error al crear el comentario",
       });
     }
   }

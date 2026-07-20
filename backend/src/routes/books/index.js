@@ -52,4 +52,15 @@ router.delete(
   BookController.deleteBook
 );
 
+// ─── Rutas de progreso y comentarios ───────────────────────
+
+// PATCH /api/books/:id/progress - Actualizar progreso de lectura
+router.patch("/:id/progress", authenticate, BookController.updateProgress);
+
+// GET /api/books/:id/comments - Obtener comentarios de un libro (público)
+router.get("/:id/comments", BookController.getComments);
+
+// POST /api/books/:id/comments - Crear un comentario (requiere auth)
+router.post("/:id/comments", authenticate, BookController.createComment);
+
 module.exports = router;

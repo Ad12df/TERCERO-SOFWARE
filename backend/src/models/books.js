@@ -55,6 +55,15 @@ const Book = sequelize.define(
         key: "id",
       },
     },
+    progreso_porcentaje: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false,
+    },
+    fecha_ultima_lectura: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,

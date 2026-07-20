@@ -3,6 +3,7 @@ const User = require("./users");
 const Book = require("./books");
 const Review = require("./reviews");
 const UserSetting = require("./userSettings");
+const Comment = require("./Comment");
 
 // ─── Relaciones ───────────────────────────────────────────────
 
@@ -30,6 +31,20 @@ User.hasOne(UserSetting, { foreignKey: "user_id", as: "settings" });
 // UserSetting → User (la configuración pertenece a un usuario)
 UserSetting.belongsTo(User, { foreignKey: "user_id", as: "user" });
 
+// ─── Comment Relations ────────────────────────────────────────
+
+// User → Comments (un usuario puede escribir muchos comentarios)
+User.hasMany(Comment, { foreignKey: "user_id", as: "comments" });
+
+// Comment → User (cada comentario pertenece a un usuario)
+Comment.belongsTo(User, { foreignKey: "user_id", as: "user" });
+
+// Book → Comments (un libro tiene muchos comentarios de discusión)
+Book.hasMany(Comment, { foreignKey: "book_id", as: "comments", onDelete: "CASCADE", hooks: true });
+
+// Comment → Book (cada comentario pertenece a un libro)
+Comment.belongsTo(Book, { foreignKey: "book_id", as: "book" });
+
 // ─── Conexión y Sincronización ─────────────────────────────────
 
 const connectDB = async () => {
@@ -55,4 +70,5 @@ module.exports = {
   Book,
   Review,
   UserSetting,
+  Comment,
 };

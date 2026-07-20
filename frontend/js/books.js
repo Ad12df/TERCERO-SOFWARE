@@ -336,12 +336,12 @@ function showServerError(message) {
 
 /**
  * Guarda (crea o actualiza) un libro conectando con el backend
- * Usa FormData para enviar archivos a Cloudinary
+ * Usa FormData para enviar archivos a Supabase Storage
  */
 async function saveBook() {
     const title = document.getElementById("bookTitle").value.trim();
     const author = document.getElementById("bookAuthor").value.trim();
-    const genre = document.getElementById("bookGenre").value.trim();
+    const genre = document.getElementById("bookGenre").value;
     const address = document.getElementById("bookAddress").value.trim();
     const description = document.getElementById("bookDescription").value.trim();
     const coverFile = document.getElementById("bookCover").files[0];
@@ -374,7 +374,7 @@ async function saveBook() {
     const method = isEdit ? "PUT" : "POST";
     const url = isEdit ? `${API_URL}/books/${editId}` : `${API_URL}/books`;
 
-    setUploadStatus(isEdit ? "Actualizando libro..." : "Subiendo archivos a Cloudinary...", true);
+    setUploadStatus(isEdit ? "Actualizando libro..." : "Subiendo archivos a Supabase...", true);
 
     try {
         const response = await fetch(url, {
