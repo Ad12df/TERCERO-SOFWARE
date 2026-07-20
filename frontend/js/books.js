@@ -977,7 +977,14 @@ async function loadPendingBooks() {
             return;
         }
 
-        list.innerHTML = pending.map(book => `
+        list.innerHTML = pending.map(book => {
+            const writerName = book.Writer?.name || book.Writer?.email || book.writer_name || "Escritor desconocido";
+            const writerEmail = book.Writer?.email || book.writer_email || "";
+            const created = book.createdAt || book.created_at || book.fecha;
+            const formattedDate = created ? new Date(created).toLocaleDateString("es-ES", {
+                day: "2-digit", month: "short", year: "numeric"
+            }) : "";
+            return `
             <div class="mod-item">
                 ${book.foto
                     ? `<img src="${book.foto}" alt="${book.nombre}" class="mod-item-cover">`
@@ -986,6 +993,8 @@ async function loadPendingBooks() {
                     <p class="mod-item-title">${book.nombre}</p>
                     <p class="mod-item-subtitle">por ${book.autor || "Autor desconocido"}</p>
                     <p class="mod-item-meta">${book.categoria || "Sin categoría"} · ID #${book.id}</p>
+                    <p class="mod-item-meta">Propuesto por: <strong style="color:#E2E8F0;">${writerName}</strong>${writerEmail ? ` <${writerEmail}>` : ""}</p>
+                    ${formattedDate ? `<p class="mod-item-date">📅 ${formattedDate}</p>` : ""}
                 </div>
                 <div class="mod-item-actions">
                     <button class="mod-item-btn mod-item-approve" title="Aprobar" onclick="approveBook(${book.id})">
@@ -996,7 +1005,8 @@ async function loadPendingBooks() {
                     </button>
                 </div>
             </div>
-        `).join("");
+        `;
+        }).join("");
     } catch (error) {
         console.error("❌ Error al cargar libros pendientes:", error);
         list.innerHTML = `<div class="mod-empty"><p style="color:#EF4444;">${error.message}</p></div>`;
@@ -1022,15 +1032,25 @@ async function loadWriterRequests() {
             return;
         }
 
-        list.innerHTML = requests.map(req => `
+        list.innerHTML = requests.map(req => {
+            const fullName = req.User?.name || req.user_name || "Usuario #" + (req.user_id || req.id);
+            const email = req.User?.email || req.user_email || "";
+            const currentRole = req.User?.role || req.user_role || "user";
+            const created = req.createdAt || req.created_at || req.fecha;
+            const formattedDate = created ? new Date(created).toLocaleDateString("es-ES", {
+                day: "2-digit", month: "short", year: "numeric"
+            }) : "";
+            return `
             <div class="mod-item">
                 <div class="mod-item-cover-placeholder" style="border-radius:50%;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 </div>
                 <div class="mod-item-body">
-                    <p class="mod-item-title">${req.User?.name || req.User?.email || "Usuario #" + req.user_id}</p>
-                    <p class="mod-item-subtitle">${req.User?.email || ""}</p>
+                    <p class="mod-item-title">${fullName}</p>
+                    <p class="mod-item-subtitle">${email}</p>
                     <p class="mod-item-meta">Solicitud #${req.id}${req.mensaje ? " · " + req.mensaje : ""}</p>
+                    <span class="mod-item-role">Rol actual: ${String(currentRole).toLowerCase()}</span>
+                    ${formattedDate ? `<p class="mod-item-date">📅 ${formattedDate}</p>` : ""}
                 </div>
                 <div class="mod-item-actions">
                     <button class="mod-item-btn mod-item-approve" title="Aprobar" onclick="approveWriterRequest(${req.id})">
@@ -1041,7 +1061,8 @@ async function loadWriterRequests() {
                     </button>
                 </div>
             </div>
-        `).join("");
+        `;
+        }).join("");
     } catch (error) {
         console.error("❌ Error al cargar solicitudes de escritor:", error);
         list.innerHTML = `<div class="mod-empty"><p style="color:#EF4444;">${error.message}</p></div>`;
