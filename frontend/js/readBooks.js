@@ -91,48 +91,34 @@ function renderReadBooks(books) {
 
     books.forEach((book, index) => {
         const card = document.createElement("div");
-        card.className = "book-card";
+        card.className = "horizontal-book-card";
         card.style.animationDelay = `${index * 0.08}s`;
 
-        const coverStyle = book.foto
-            ? `background-image: url('${book.foto}'); background-size: cover; background-position: center;`
-            : "";
+        const coverHtml = book.foto
+            ? `<img src="${book.foto}" alt="${escapeHtml(book.nombre)}">`
+            : `<div class="hbc-cover-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+            </div>`;
 
         card.innerHTML = `
-            <div class="book-card-header">
-                <div class="book-cover-placeholder" style="${coverStyle}">
-                    ${!book.foto ? `
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                    </svg>
-                    ` : ""}
-                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">${book.categoria || "Sin categoría"}</span>
-                </div>
-                <div class="completed-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    100% Completado
-                </div>
+            ${coverHtml}
+            <div class="hbc-info">
+                <h4 class="hbc-title">${escapeHtml(book.nombre)}</h4>
+                <p class="hbc-author">por ${escapeHtml(book.autor || "Autor desconocido")}</p>
+                ${book.categoria ? `<span class="hbc-category">${escapeHtml(book.categoria)}</span>` : ""}
+                ${book.completado_el ? `<p class="hbc-author" style="color:#22c55e;">Completado el ${formatDate(book.completado_el)}</p>` : ""}
             </div>
-            <div class="book-card-body">
-                <h4 class="book-title">${escapeHtml(book.nombre)}</h4>
-                <p class="book-author">por ${escapeHtml(book.autor || "Autor desconocido")}</p>
-                <div class="book-meta">
-                    ${book.puntuacion_media ? `<span>★ <strong>${book.puntuacion_media}</strong></span>` : ""}
-                    ${book.total_resenas ? `<span>${book.total_resenas} reseñas</span>` : ""}
-                </div>
-                ${book.completado_el ? `<p class="completed-date">Completado el ${formatDate(book.completado_el)}</p>` : ""}
-                <div class="book-actions">
-                    <button class="book-btn book-btn-edit" onclick="openReader(${book.id})">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
-                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                        </svg>
-                        <span>Releeer</span>
-                    </button>
-                </div>
+            <div class="hbc-actions">
+                <button class="book-btn book-btn-edit" onclick="openReader(${book.id})">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                    <span>Releer</span>
+                </button>
             </div>
         `;
 

@@ -47,7 +47,7 @@ const authorize = (...roles) => {
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        message: "No tienes permisos para realizar esta acción",
+        message: "Acceso no autorizado. Se requieren permisos de Administrador",
       });
     }
 
@@ -55,7 +55,11 @@ const authorize = (...roles) => {
   };
 };
 
+// Middleware específico para exigir rol ADMIN
+const requireAdmin = authorize("admin");
+
 module.exports = {
   authenticate,
   authorize,
+  requireAdmin,
 };

@@ -36,8 +36,9 @@ class AuthController {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
-      // ─── 4. Asignar rol por defecto 'user' si no viene ─────────
-      const validRole = role === "admin" ? "admin" : "user";
+      // ─── 4. Asignar rol por defecto 'user' si no viene o no es válido ─────
+      const validRoles = ["admin", "user", "escritor"];
+      const validRole = validRoles.includes(role) ? role : "user";
 
       // ─── 5. Guardar el registro en la base de datos ───────────
       const newUser = await User.create({

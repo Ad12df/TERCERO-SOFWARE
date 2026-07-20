@@ -24,22 +24,22 @@ router.options("/:id/download", (req, res) => {
 });
 router.get("/:id/download", downloadBookPDF);
 
-// POST /api/books - Crear un libro
+// POST /api/books - Crear un libro (solo admin)
 // ⚠️ El middleware de Multer va ANTES del controlador
 // Acepta campos múltiples: 'foto' (portada) y 'pdf' (documento)
-// ⚠️ TEMPORAL: Se quitó authorize("admin") para pruebas locales con Cloudinary
 router.post(
   "/",
   authenticate, // 👈 Verifica que el usuario esté autenticado
-  // authorize("admin"), // 👈 DESACTIVADO TEMPORALMENTE — cualquier usuario puede crear libros
+  authorize("admin"), // 👈 Solo el administrador puede crear libros
   uploadBookFiles, // 👈 Multer procesa los archivos (foto + pdf)
   BookController.createBook
 );
 
-// PUT /api/books/:id - Actualizar un libro
+// PUT /api/books/:id - Actualizar un libro (solo admin)
 router.put(
   "/:id",
   authenticate,
+  authorize("admin"),
   uploadBookFiles,
   BookController.updateBook
 );

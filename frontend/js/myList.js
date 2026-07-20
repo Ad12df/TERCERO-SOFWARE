@@ -94,49 +94,44 @@ function renderMyList(books) {
         card.className = "book-card";
         card.style.animationDelay = `${index * 0.08}s`;
 
-        const coverStyle = book.foto
-            ? `background-image: url('${book.foto}'); background-size: cover; background-position: center;`
-            : "";
-
         const progreso = book.progreso_porcentaje || 0;
         const progressBar = createProgressBar(progreso);
 
+        card.className = "horizontal-book-card";
+        card.style.animationDelay = `${index * 0.08}s`;
+
+        const coverHtml = book.foto
+            ? `<img src="${book.foto}" alt="${escapeHtml(book.nombre)}">`
+            : `<div class="hbc-cover-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+            </div>`;
+
         card.innerHTML = `
-            <div class="book-card-header">
-                <div class="book-cover-placeholder" style="${coverStyle}">
-                    ${!book.foto ? `
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                    </svg>
-                    ` : ""}
-                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">${book.categoria || "Sin categoría"}</span>
-                </div>
-            </div>
-            <div class="book-card-body">
-                <h4 class="book-title">${escapeHtml(book.nombre)}</h4>
-                <p class="book-author">por ${escapeHtml(book.autor || "Autor desconocido")}</p>
-                <div class="book-meta">
-                    ${book.puntuacion_media ? `<span>★ <strong>${book.puntuacion_media}</strong></span>` : ""}
-                    ${book.total_resenas ? `<span>${book.total_resenas} reseñas</span>` : ""}
-                </div>
+            ${coverHtml}
+            <div class="hbc-info">
+                <h4 class="hbc-title">${escapeHtml(book.nombre)}</h4>
+                <p class="hbc-author">por ${escapeHtml(book.autor || "Autor desconocido")}</p>
+                ${book.categoria ? `<span class="hbc-category">${escapeHtml(book.categoria)}</span>` : ""}
                 ${progressBar}
-                <div class="book-actions">
-                    <button class="book-btn book-btn-edit" onclick="openReader(${book.id})">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
-                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                        </svg>
-                        <span>${progreso > 0 ? "Continuar" : "Leer"}</span>
-                    </button>
-                    <button class="book-btn book-btn-delete" onclick="removeFromList(${book.id})">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                        <span>Quitar</span>
-                    </button>
-                </div>
+            </div>
+            <div class="hbc-actions">
+                <button class="book-btn book-btn-edit" onclick="openReader(${book.id})">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                    <span>${progreso > 0 ? "Continuar" : "Leer"}</span>
+                </button>
+                <button class="book-btn book-btn-delete" onclick="removeFromList(${book.id})">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    <span>Quitar</span>
+                </button>
             </div>
         `;
 

@@ -2165,3 +2165,122 @@ body.users-page {
     }
 }
 
+/* ==========================================================================
+   TARJETA HORIZONTAL DE LIBRO — MI LISTA / LEÍDOS
+   ========================================================================== */
+
+.horizontal-book-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+/* Contenedor de tarjetas horizontales (Mi Lista / Leídos) */
+#myListGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 16px;
+}
+
+.horizontal-book-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(30, 75, 101, 0.12);
+}
+
+.horizontal-book-card img {
+    width: 80px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.horizontal-book-card .hbc-cover-placeholder {
+    width: 80px;
+    height: 110px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #3A6B82 0%, #1E4B65 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+.horizontal-book-card .hbc-cover-placeholder svg {
+    width: 32px;
+    height: 32px;
+}
+
+.horizontal-book-card .hbc-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.horizontal-book-card .hbc-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.horizontal-book-card .hbc-author {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.horizontal-book-card .hbc-category {
+    display: inline-block;
+    width: fit-content;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #E8F4F8;
+    color: #1E4B65;
+    border: 1px solid rgba(30, 75, 101, 0.12);
+}
+
+.horizontal-book-card .hbc-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.horizontal-book-card .hbc-actions .book-btn {
+    white-space: nowrap;
+    padding: 8px 16px;
+}
+
+@media (max-width: 600px) {
+    .horizontal-book-card {
+        flex-wrap: wrap;
+    }
+    .horizontal-book-card .hbc-actions {
+        flex-direction: row;
+        width: 100%;
+    }
+    .horizontal-book-card .hbc-actions .book-btn {
+        flex: 1;
+    }
+}
+

@@ -11,8 +11,9 @@ class AuthService {
       throw error;
     }
 
-    // Validar rol (solo 'admin' si se especifica, sino 'user')
-    const validRole = role === "admin" ? "admin" : "user";
+    // Validar rol (solo 'admin' o 'escritor' si se especifica, sino 'user' por defecto)
+    const validRoles = ["admin", "user", "escritor"];
+    const validRole = validRoles.includes(role) ? role : "user";
 
     // Crear usuario
     const user = await User.create({
