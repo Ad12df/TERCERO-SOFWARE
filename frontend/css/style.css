@@ -2001,41 +2001,36 @@ body.users-page {
 
 /* ==========================================================================
    BOTÓN DE SOLICITUDES (Cabecera — solo ADMIN)
-   Clases: .btn-requests / .btn-moderation (alias semántico)
    ========================================================================== */
-.btn-requests,
-.btn-moderation {
+.btn-requests {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 11px 20px;
+    padding: 12px 24px;
     background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
     color: #FFFFFF;
     border: none;
-    border-radius: 12px;
-    font-size: 0.875rem;
-    font-weight: 600;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    transition: all 0.2s ease;
     font-family: "Segoe UI", system-ui, sans-serif;
     box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
     position: relative;
 }
 
-.btn-requests svg,
-.btn-moderation svg {
+.btn-requests svg {
     width: 18px;
     height: 18px;
 }
 
-.btn-requests:hover,
-.btn-moderation:hover {
+.btn-requests:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
 }
 
-.btn-requests:active,
-.btn-moderation:active {
+.btn-requests:active {
     transform: translateY(0);
 }
 
