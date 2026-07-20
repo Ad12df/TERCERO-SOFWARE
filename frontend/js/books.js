@@ -79,7 +79,7 @@ function initializeProfile() {
         if (profileEmail) profileEmail.textContent = user.email;
         if (profileName) profileName.textContent = user.name || user.email;
         if (avatarLetter) avatarLetter.textContent = (user.name || user.email).charAt(0).toUpperCase();
-        if (user.role === "admin") {
+        if (String(user.role).toLowerCase() === "admin") {
             const adminBadge = document.getElementById("adminBadge");
             if (adminBadge) adminBadge.style.display = "inline-block";
         }
@@ -903,13 +903,23 @@ async function loadModerationCounts() {
 
 /**
  * Abre el modal del Centro de Moderación
+ * Validación de permisos robusta e insensible a mayúsculas/minúsculas:
+ * el rol llega como 'admin' (minúsculas) desde PostgreSQL, pero nos
+ * protegemos frente a cualquier variación ('Admin', 'ADMIN', etc.).
  */
 function openRequestsModal() {
-    if (getUserRole() !== "admin") {
-        alert("No tienes permisos para acceder al Centro de Moderación.");
+    const userRole = getUserRole();
+    if (String(userRole).toLowerCase() !== "admin") {
+        // Sin alerta intrusiva: simplemente no abre el modal.
+        console.warn("⛔ Acceso denegado al Centro de Moderación. Rol actual:", userRole);
         return;
     }
-    document.getElementById("requestsModal").classList.add("active");
+    const modal = document.getElementById("requestsModal");
+    if (!modal) {
+        console.error("❌ No se encontró el modal #requestsModal en el DOM");
+        return;
+    }
+    modal.classList.add("active");
     currentModTab = "books";
     switchModTab("books");
 }
@@ -959,7 +969,7 @@ async function loadPendingBooks() {
 
         const pending = data.data || [];
         if (pending.length === 0) {
-            list.innerHTML = renderModEmpty("No hay libros pendientes de aprobación.");
+            list.innerHTML = renderModEmpty("No hay solicitudes pendientes en este momento.");
             return;
         }
 
@@ -1004,7 +1014,7 @@ async function loadWriterRequests() {
 
         const requests = data.data || [];
         if (requests.length === 0) {
-            list.innerHTML = renderModEmpty("No hay solicitudes de ascenso pendientes.");
+            list.innerHTML = renderModEmpty("No hay solicitudes pendientes en este momento.");
             return;
         }
 

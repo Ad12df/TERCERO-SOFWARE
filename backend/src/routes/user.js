@@ -15,4 +15,7 @@ router.get("/profile", UserController.getProfile);
 // PUT /api/user/profile - Actualizar perfil
 router.put("/profile", UserController.updateProfile);
 
+// PUT /api/user/password - Cambiar contraseña
+router.put("/password", UserController.changePassword);
+
 module.exports = router;

@@ -110,28 +110,27 @@
                             </div>
                             <div class="settings-card-title-group">
                                 <h3 class="settings-card-title">Perfil de Usuario</h3>
-                                <p class="settings-card-subtitle">Gestiona tu información personal</p>
+                                <p class="settings-card-subtitle">Gestiona tu información personal y seguridad</p>
                             </div>
                         </div>
                         <div class="settings-card-body">
+                            <!-- Datos del perfil -->
                             <div class="profile-section">
                                 <div class="avatar-edit">
                                     <div class="avatar avatar-large" id="settingsAvatar">A</div>
-                                    <button class="avatar-change-btn" onclick="changeAvatar()">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                                            <circle cx="12" cy="13" r="4"></circle>
-                                        </svg>
-                                    </button>
                                 </div>
                                 <div class="profile-fields">
                                     <div class="settings-field">
                                         <label for="settingsName">Nombre</label>
-                                        <input type="text" id="settingsName" value="Bibliotecario Administrador" placeholder="Tu nombre">
+                                        <input type="text" id="settingsName" placeholder="Tu nombre">
                                     </div>
                                     <div class="settings-field">
                                         <label for="settingsEmail">Correo Electrónico</label>
-                                        <input type="email" id="settingsEmail" value="Admin@bibliotech.com" placeholder="tu@correo.com">
+                                        <input type="email" id="settingsEmail" placeholder="tu@correo.com">
+                                    </div>
+                                    <div class="settings-field">
+                                        <label for="settingsRole">Rol actual</label>
+                                        <input type="text" id="settingsRole" disabled class="input-disabled">
                                     </div>
                                 </div>
                             </div>
@@ -145,140 +144,123 @@
                                     Guardar Cambios
                                 </button>
                             </div>
-                        </div>
-                    </div>
 
-                    <!-- Sección 2: Preferencias del Sistema -->
-                    <div class="settings-card">
-                        <div class="settings-card-header">
-                            <div class="settings-card-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                                </svg>
-                            </div>
-                            <div class="settings-card-title-group">
-                                <h3 class="settings-card-title">Preferencias del Sistema</h3>
-                                <p class="settings-card-subtitle">Personaliza tu experiencia</p>
-                            </div>
-                        </div>
-                        <div class="settings-card-body">
-                            <div class="settings-toggles">
-                                <div class="settings-toggle-item">
-                                    <div class="toggle-info">
-                                        <div class="toggle-icon dark-mode-icon">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="toggle-text">
-                                            <span class="toggle-label">Modo Oscuro</span>
-                                            <span class="toggle-description">Activa el tema oscuro para reducir fatiga visual</span>
+                            <!-- Cambio de contraseña inline -->
+                            <div class="password-section">
+                                <h4 class="password-section-title">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    Cambiar Contraseña
+                                </h4>
+                                <div class="password-fields">
+                                    <div class="settings-field">
+                                        <label for="currentPassword">Contraseña actual</label>
+                                        <div class="password-input-wrapper">
+                                            <input type="password" id="currentPassword" placeholder="••••••••">
+                                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('currentPassword', this)" title="Mostrar/ocultar">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                </svg>
+                                            </button>
                                         </div>
                                     </div>
-                                    <label class="toggle-switch">
-                                        <input type="checkbox" id="toggleDarkMode" onchange="toggleDarkMode()">
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                                <div class="settings-toggle-item">
-                                    <div class="toggle-info">
-                                        <div class="toggle-icon notifications-icon">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="toggle-text">
-                                            <span class="toggle-label">Notificaciones de Préstamos</span>
-                                            <span class="toggle-description">Recibe alertas cuando un préstamo esté por vencer</span>
+                                    <div class="settings-field">
+                                        <label for="newPassword">Nueva contraseña</label>
+                                        <div class="password-input-wrapper">
+                                            <input type="password" id="newPassword" placeholder="••••••••">
+                                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('newPassword', this)" title="Mostrar/ocultar">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                </svg>
+                                            </button>
                                         </div>
                                     </div>
-                                    <label class="toggle-switch">
-                                        <input type="checkbox" id="toggleNotifications" checked onchange="toggleNotifications()">
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                                <div class="settings-toggle-item">
-                                    <div class="toggle-info">
-                                        <div class="toggle-icon language-icon">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <circle cx="12" cy="12" r="10"></circle>
-                                                <line x1="2" y1="12" x2="22" y2="12"></line>
-                                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="toggle-text">
-                                            <span class="toggle-label">Idioma</span>
-                                            <span class="toggle-description">Selecciona el idioma de la interfaz</span>
+                                    <div class="settings-field">
+                                        <label for="confirmPassword">Confirmar nueva contraseña</label>
+                                        <div class="password-input-wrapper">
+                                            <input type="password" id="confirmPassword" placeholder="••••••••">
+                                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirmPassword', this)" title="Mostrar/ocultar">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                </svg>
+                                            </button>
                                         </div>
                                     </div>
-                                    <select class="language-select" id="languageSelect" onchange="changeLanguage()">
-                                        <option value="es" selected>Español</option>
-                                        <option value="en">English</option>
-                                        <option value="fr">Français</option>
-                                        <option value="pt">Português</option>
-                                    </select>
                                 </div>
+                                <button class="btn-save-password" onclick="changePassword()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    Actualizar Contraseña
+                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Sección 3: Gestión de Seguridad -->
+                    <!-- Sección 2: Acciones de Cuenta -->
                     <div class="settings-card">
                         <div class="settings-card-header">
                             <div class="settings-card-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                                 </svg>
                             </div>
                             <div class="settings-card-title-group">
-                                <h3 class="settings-card-title">Gestión de Seguridad</h3>
-                                <p class="settings-card-subtitle">Protege tu cuenta</p>
+                                <h3 class="settings-card-title">Acciones de Cuenta</h3>
+                                <p class="settings-card-subtitle">Solicita cambios en tu perfil o contacta a un administrador</p>
                             </div>
                         </div>
                         <div class="settings-card-body">
-                            <div class="security-section">
-                                <div class="security-item">
-                                    <div class="security-icon">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="security-info">
-                                        <h4>Cambiar Contraseña</h4>
-                                        <p>Actualiza tu contraseña periódicamente para mayor seguridad</p>
-                                    </div>
-                                    <button class="btn-security" onclick="openPasswordModal()">
+                            <div class="account-actions">
+                                <div class="action-item">
+                                    <div class="action-icon action-icon-writer">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                         </svg>
-                                        Cambiar
+                                    </div>
+                                    <div class="action-info">
+                                        <h4>Solicitar ascenso a Escritor</h4>
+                                        <p id="writerRequestDesc">Envía una solicitud para publicar tus propios libros en la plataforma</p>
+                                    </div>
+                                    <button class="btn-action" id="btnRequestWriter" onclick="requestWriterPromotion()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        </svg>
+                                        Solicitar
                                     </button>
                                 </div>
-                                <div class="security-item">
-                                    <div class="security-icon">
+                                <div class="action-item">
+                                    <div class="action-icon action-icon-contact">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                            <polyline points="22,6 12,13 2,6"></polyline>
                                         </svg>
                                     </div>
-                                    <div class="security-info">
-                                        <h4>Autenticación de Dos Factores</h4>
-                                        <p>Añade una capa extra de seguridad a tu cuenta</p>
+                                    <div class="action-info">
+                                        <h4>Comunicarse con un Admin</h4>
+                                        <p>¿Tienes dudas, sugerencias o necesitas ayuda? Escríbenos directamente</p>
                                     </div>
-                                    <label class="toggle-switch small">
-                                        <input type="checkbox" id="toggle2FA" onchange="toggle2FA()">
-                                        <span class="toggle-slider"></span>
-                                    </label>
+                                    <button class="btn-action btn-action-outline" onclick="openContactModal()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                            <polyline points="22,6 12,13 2,6"></polyline>
+                                        </svg>
+                                        Contactar
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Sección 4: Información de la App -->
+                    <!-- Sección 3: Acerca de este Portal -->
                     <div class="settings-card settings-card-info">
                         <div class="app-info">
                             <div class="app-logo">
