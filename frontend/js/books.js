@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
  */
 function getUserRole() {
     const user = getUserData();
-    return user ? (user.role || "user") : null;
+    return user ? ((user.role || "user").toLowerCase()) : null;
 }
 
 /**

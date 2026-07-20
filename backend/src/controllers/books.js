@@ -45,7 +45,13 @@ class BookController {
         pdfUrl = result.secure_url;
       }
 
-      // ─── 3. Crear el registro en la base de datos ─────────────
+      // ─── 3. Determinar estado según rol del usuario ──────────────
+      // Los escritores siempre crean libros PENDIENTES (necesitan aprobación del admin)
+      // Los admins crean directamente APROBADOS
+      const userRole = req.user.role ? req.user.role.toLowerCase() : "user";
+      const bookStatus = userRole === "escritor" ? "PENDIENTE" : "APROBADO";
+
+      // ─── 4. Crear el registro en la base de datos ─────────────
       const newBook = await Book.create({
         nombre,
         autor: autor || null,
@@ -56,6 +62,7 @@ class BookController {
         pdf_url: pdfUrl, // 👈 secure_url del PDF
         puntuacion_media: 0, // 👈 Por defecto en 0
         total_resenas: 0, // 👈 Por defecto en 0
+        status: bookStatus, // 👈 PENDIENTE para escritores, APROBADO para admins
         created_by: req.user.id, // ID del admin autenticado
       });
 
@@ -78,8 +85,15 @@ class BookController {
   // Obtiene todos los libros aprobados (público)
   static async getBooks(req, res) {
     try {
+      const { Op } = require("sequelize");
       const books = await Book.findAll({
-        where: { status: "APROBADO" },
+        where: {
+          [Op.or]: [
+            { status: "APROBADO" },
+            { status: null },
+            { status: { [Op.eq]: undefined } },
+          ],
+        },
         order: [["createdAt", "DESC"]],
       });
 
