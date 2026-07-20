@@ -44,10 +44,14 @@ const authorize = (...roles) => {
       });
     }
 
-    if (!roles.includes(req.user.role)) {
+    // Normalizar el rol del usuario y los roles permitidos a minúsculas
+    const userRole = String(req.user.role || "").toLowerCase();
+    const allowedRoles = roles.map((r) => String(r).toLowerCase());
+
+    if (!allowedRoles.includes(userRole)) {
       return res.status(403).json({
         success: false,
-        message: "Acceso no autorizado. Se requieren permisos de Administrador",
+        message: "Acceso no autorizado. No tienes los permisos requeridos",
       });
     }
 

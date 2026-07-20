@@ -98,6 +98,7 @@ function initializeProfile() {
  */
 function applyRoleVisibility() {
     const role = getUserRole();
+    const currentRole = String(role).toLowerCase();
     const btnRequests = document.getElementById("btnRequests");
     const btnAddBook = document.getElementById("btnAddBook");
 
@@ -105,10 +106,11 @@ function applyRoleVisibility() {
     if (btnRequests) btnRequests.style.display = "none";
     if (btnAddBook) btnAddBook.style.display = "none";
 
-    if (role === "admin") {
-        // Admin: solo Solicitudes
+    if (currentRole === "admin") {
+        // Admin: ve Solicitudes y también puede Añadir Libro
         if (btnRequests) btnRequests.style.display = "inline-flex";
-    } else if (role === "escritor") {
+        if (btnAddBook) btnAddBook.style.display = "inline-flex";
+    } else if (currentRole === "escritor") {
         // Escritor: solo Añadir Libro
         if (btnAddBook) btnAddBook.style.display = "inline-flex";
     }
@@ -586,8 +588,9 @@ function updateFileLabel(input, labelId) {
  * Abre el modal para añadir un nuevo libro
  */
 function openAddModal() {
-    // Solo ESCRITOR puede añadir libros (el admin no publica, solo modera)
-    if (getUserRole() !== "escritor") {
+    // Tanto ESCRITOR como ADMIN pueden añadir libros
+    const currentRole = String(getUserRole()).toLowerCase();
+    if (currentRole !== "escritor" && currentRole !== "admin") {
         alert("No tienes permisos para añadir libros.");
         return;
     }
@@ -687,7 +690,8 @@ function showServerError(message) {
 async function saveBook() {
     // Solo ADMIN (edición) o ESCRITOR (nuevo) pueden guardar libros
     const role = getUserRole();
-    if (role !== "admin" && role !== "escritor") {
+    const currentRole = String(role).toLowerCase();
+    if (currentRole !== "admin" && currentRole !== "escritor") {
         alert("No tienes permisos para guardar libros.");
         return;
     }
