@@ -1,4 +1,4 @@
-const { User, Book, UserList } = require("../models");
+const { User, Book, UserList, UserRead } = require("../models");
 
 class UserListController {
   // ─── GET /api/lists — Obtener todos los libros de la lista del usuario ───
@@ -38,6 +38,47 @@ class UserListController {
       return res.status(500).json({
         success: false,
         message: error.message || "Error al obtener la lista",
+      });
+    }
+  }
+
+  // ─── GET /api/lists/read — Obtener todos los libros leídos del usuario ───
+  static async getReadList(req, res) {
+    try {
+      const userId = req.user.id;
+
+      const entries = await UserRead.findAll({
+        where: { user_id: userId },
+        include: [
+          {
+            model: Book,
+            as: "book",
+            attributes: [
+              "id", "nombre", "autor", "categoria", "foto",
+              "puntuacion_media", "total_resenas", "pdf_url",
+              "progreso_porcentaje", "fecha_ultima_lectura",
+            ],
+          },
+        ],
+        order: [["fecha_actualizacion", "DESC"]],
+      });
+
+      const books = entries
+        .filter(e => e.book !== null)
+        .map(e => ({
+          ...e.book.toJSON(),
+          completado_el: e.fecha_creacion,
+        }));
+
+      return res.status(200).json({
+        success: true,
+        data: books,
+      });
+    } catch (error) {
+      console.error("❌ Error al obtener libros leídos:", error);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "Error al obtener los libros leídos",
       });
     }
   }

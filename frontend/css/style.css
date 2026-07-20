@@ -868,6 +868,267 @@ body.users-page {
 }
 
 /* ==========================================================================
+   BOTÓN DE FILTROS + DROPDOWN DE CATEGORÍAS
+   ========================================================================== */
+
+/* Contenedor del botón de filtros */
+.filter-dropdown-wrapper {
+    position: relative;
+    flex: 2;
+}
+
+/* Botón principal "Filtros / Categorías" */
+.filter-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 50px;
+    background: #FFFFFF;
+    color: #1E4B65;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.filter-toggle-btn:hover {
+    border-color: #1E4B65;
+    background: rgba(30, 75, 101, 0.05);
+    box-shadow: 0 2px 10px rgba(30, 75, 101, 0.1);
+}
+
+.filter-toggle-btn.active {
+    background: #1E4B65;
+    border-color: #1E4B65;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(30, 75, 101, 0.25);
+}
+
+.filter-toggle-btn svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+/* Badge contador de filtros activos */
+.filter-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 50px;
+    background: #14b8a6;
+    color: #FFFFFF;
+    font-size: 0.72rem;
+    font-weight: 800;
+    margin-left: 4px;
+}
+
+.filter-toggle-btn.active .filter-count-badge {
+    background: #FFFFFF;
+    color: #1E4B65;
+}
+
+/* Dropdown / menú desplegable */
+.filter-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 320px;
+    max-width: calc(100vw - 64px);
+    max-height: 420px;
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid #E2E8F0;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.filter-dropdown.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.filter-dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #F0F4F8;
+}
+
+.filter-dropdown-header h4 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #1E4B65;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-dropdown-header h4 svg {
+    width: 16px;
+    height: 16px;
+}
+
+.filter-dropdown-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    padding: 4px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.filter-dropdown-close:hover {
+    background: #F0F4F8;
+    color: #1E4B65;
+}
+
+.filter-dropdown-close svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Lista de tags dentro del dropdown */
+.filter-tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 50px;
+    background: #F8FAFC;
+    color: #555555;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.filter-tag:hover {
+    border-color: #1E4B65;
+    color: #1E4B65;
+    background: rgba(30, 75, 101, 0.05);
+}
+
+.filter-tag.selected {
+    background: #1E4B65;
+    border-color: #1E4B65;
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(30, 75, 101, 0.2);
+}
+
+.filter-tag.selected svg {
+    color: #14b8a6;
+}
+
+.filter-tag svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+}
+
+/* Footer del dropdown con botón de limpiar */
+.filter-dropdown-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-top: 1px solid #F0F4F8;
+    background: #F8FAFC;
+}
+
+.filter-dropdown-footer .selected-count {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #888;
+}
+
+.filter-clear-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 50px;
+    background: #FEECEB;
+    color: #EB5757;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-clear-btn:hover {
+    background: #fcd8d6;
+}
+
+.filter-clear-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.filter-clear-btn svg {
+    width: 13px;
+    height: 13px;
+}
+
+/* Overlay para cerrar dropdown al hacer clic fuera */
+.filter-dropdown-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+    display: none;
+}
+
+.filter-dropdown-overlay.show {
+    display: block;
+}
+
+/* Responsive del dropdown */
+@media (max-width: 768px) {
+    .filter-dropdown {
+        width: 280px;
+    }
+
+    .filter-toggle-btn {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+}
+
+/* ==========================================================================
    ÁREA DE TRABAJO DE LIBROS
    ========================================================================== */
 .dashboard-container {
@@ -992,49 +1253,89 @@ body.users-page {
 }
 
 .book-card-header {
-    height: 160px;
-    background: linear-gradient(135deg, #3A6B82 0%, #1E4B65 100%);
+    height: 200px;
     position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #3A6B82 0%, #1E4B65 100%);
+}
+
+/* La portada ocupa todo el header a ancho y alto completos */
+.book-card-header .book-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.book-cover-placeholder {
+    width: 100%;
+    height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 10px;
     color: #FFFFFF;
+    opacity: 0.95;
+}
+
+.book-cover-placeholder svg {
+    width: 52px;
+    height: 52px;
 }
 
 .book-badge {
     position: absolute;
-    top: 14px;
-    right: 14px;
-    background: rgba(255, 255, 255, 0.2);
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(10px);
-    color: #FFFFFF;
+    color: #1E4B65;
     padding: 4px 12px;
     border-radius: 50px;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .book-badge.disponible {
-    background: rgba(46, 204, 113, 0.25);
-    color: #2ecc71;
+    background: rgba(46, 204, 113, 0.92);
+    color: #FFFFFF;
 }
 
 .book-badge.no-disponible {
-    background: rgba(231, 76, 60, 0.25);
-    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.92);
+    color: #FFFFFF;
 }
 
-.book-cover-placeholder {
-    display: flex;
-    flex-direction: column;
+/* Chip / Pill de categoría — diseño moderno fuera de la portada */
+.category-chip {
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    opacity: 0.9;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    letter-spacing: 0.3px;
+    background: linear-gradient(135deg, #E8F4F8 0%, #D6EAF2 100%);
+    color: #1E4B65;
+    border: 1px solid rgba(30, 75, 101, 0.12);
+    margin-bottom: 10px;
+    width: fit-content;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.book-cover-placeholder svg {
-    width: 48px;
-    height: 48px;
+.category-chip svg {
+    width: 11px;
+    height: 11px;
+    flex-shrink: 0;
+    color: #3A6B82;
 }
 
 .book-card-body {

@@ -1,4 +1,4 @@
-const { Book, Comment } = require("../models");
+const { Book, Comment, UserRead, UserList } = require("../models");
 const {
   uploadImageFromBuffer,
   uploadPdfFromBuffer,
@@ -237,6 +237,22 @@ class BookController {
       book.progreso_porcentaje = porcentaje;
       book.fecha_ultima_lectura = new Date();
       await book.save();
+
+      // ─── Auto-completar lectura al llegar al 100% ───────────
+      if (porcentaje === 100) {
+        // Agregar a UserRead si no existe
+        const [userRead] = await UserRead.findOrCreate({
+          where: { user_id: req.user.id, book_id: id },
+          defaults: { user_id: req.user.id, book_id: id },
+        });
+
+        // Quitar de UserList si existe
+        await UserList.destroy({
+          where: { user_id: req.user.id, book_id: id },
+        });
+
+        console.log(`✅ Libro ${id} marcado como leído para usuario ${req.user.id}`);
+      }
 
       return res.status(200).json({
         success: true,

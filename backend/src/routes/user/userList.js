@@ -5,6 +5,9 @@ const { authenticate } = require("../../middleware/auth");
 // GET /api/lists — Obtener todos los libros de la lista del usuario
 router.get("/", authenticate, UserListController.getUserList);
 
+// GET /api/lists/read — Obtener todos los libros leídos del usuario
+router.get("/read", authenticate, UserListController.getReadList);
+
 // GET /api/lists/check/:bookId — Verificar si un libro está en la lista
 router.get("/check/:bookId", authenticate, UserListController.checkBook);
 

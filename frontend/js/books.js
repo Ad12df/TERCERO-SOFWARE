@@ -4,7 +4,7 @@
 
 let editId = null;
 let books = [];
-let activeGenre = 'Todos';
+let activeTags = []; // Array de categorías seleccionadas (multi-selección)
 
 document.addEventListener("DOMContentLoaded", () => {
     if (!isAuthenticated()) {
@@ -119,24 +119,32 @@ function renderBooks(booksList) {
         card.style.animationDelay = `${index * 0.08}s`;
 
         // Usar foto del backend o placeholder
-        const coverStyle = book.foto
-            ? `background-image: url('${book.foto}'); background-size: cover; background-position: center;`
-            : "";
-
-        card.innerHTML = `
-            <div class="book-card-header">
-                <span class="book-badge disponible">Disponible</span>
-                <div class="book-cover-placeholder" style="${coverStyle}">
-                    ${!book.foto ? `
+        const coverContent = book.foto
+            ? `<img src="${book.foto}" alt="Portada de ${book.nombre}" class="book-cover-img" loading="lazy">`
+            : `
+                <div class="book-cover-placeholder">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                     </svg>
-                    ` : ""}
-                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">${book.categoria || "Sin categoría"}</span>
                 </div>
+            `;
+
+        const category = book.categoria || "Sin categoría";
+
+        card.innerHTML = `
+            <div class="book-card-header">
+                <span class="book-badge disponible">Disponible</span>
+                ${coverContent}
             </div>
             <div class="book-card-body">
+                <span class="category-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                        <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                    </svg>
+                    ${category}
+                </span>
                 <h4 class="book-title">${book.nombre}</h4>
                 <p class="book-author">por ${book.autor || "Autor desconocido"}</p>
                 <div class="book-meta">
@@ -171,15 +179,19 @@ function renderBooks(booksList) {
 }
 
 /**
- * Filtra los libros por texto de búsqueda y género activo
+ * Filtra los libros por texto de búsqueda y tags activos (multi-selección)
  */
 function filterBooks() {
     const query = document.getElementById("searchInput").value.toLowerCase().trim();
 
     let filtered = books;
 
-    if (activeGenre !== 'Todos') {
-        filtered = filtered.filter(book => book.categoria === activeGenre);
+    // Filtrar por categorías seleccionadas (OR entre tags)
+    if (activeTags.length > 0) {
+        filtered = filtered.filter(book => {
+            const cat = book.categoria || "Sin categoría";
+            return activeTags.includes(cat);
+        });
     }
 
     if (query) {
@@ -194,21 +206,163 @@ function filterBooks() {
 }
 
 /**
- * Filtra los libros por género seleccionado
- * @param {string} genre - Género a filtrar ('Todos' para mostrar todos)
+ * Obtiene todas las categorías únicas presentes en la colección de libros
+ * @returns {Array} Lista de categorías únicas
  */
-function filterByGenre(genre) {
-    activeGenre = genre;
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    filterBtns.forEach(btn => {
-        if (btn.getAttribute('data-genre') === genre) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
+function getAvailableCategories() {
+    const cats = new Set();
+    books.forEach(book => {
+        if (book.categoria) {
+            cats.add(book.categoria);
         }
     });
+    return Array.from(cats).sort((a, b) => a.localeCompare(b, "es"));
+}
+
+/**
+ * Renderiza los tags de categorías dentro del dropdown de filtros
+ */
+function renderFilterTags() {
+    const list = document.getElementById("filterTagsList");
+    if (!list) return;
+
+    const categories = getAvailableCategories();
+
+    if (categories.length === 0) {
+        list.innerHTML = `<p style="color:#888; font-size:0.85rem; padding:8px 0;">No hay categorías disponibles.</p>`;
+        return;
+    }
+
+    list.innerHTML = categories.map(cat => {
+        const selected = activeTags.includes(cat);
+        return `
+            <button class="filter-tag ${selected ? "selected" : ""}" data-category="${cat}" onclick="toggleTagFilter('${cat.replace(/'/g, "\\'")}')">
+                ${selected ? `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                ` : ""}
+                <span>${cat}</span>
+            </button>
+        `;
+    }).join("");
+}
+
+/**
+ * Alterna la apertura/cierre del dropdown de filtros
+ * @param {Event} event - Evento del clic
+ */
+function toggleFilterDropdown(event) {
+    if (event) event.stopPropagation();
+    const dropdown = document.getElementById("filterDropdown");
+    const overlay = document.getElementById("filterDropdownOverlay");
+    const toggleBtn = document.getElementById("filterToggleBtn");
+    if (!dropdown) return;
+
+    const isOpen = dropdown.classList.contains("open");
+    if (isOpen) {
+        closeFilterDropdown();
+    } else {
+        renderFilterTags();
+        updateFilterBadge();
+        dropdown.classList.add("open");
+        overlay.classList.add("show");
+        toggleBtn.classList.add("active");
+    }
+}
+
+/**
+ * Cierra el dropdown de filtros
+ */
+function closeFilterDropdown() {
+    const dropdown = document.getElementById("filterDropdown");
+    const overlay = document.getElementById("filterDropdownOverlay");
+    const toggleBtn = document.getElementById("filterToggleBtn");
+    if (dropdown) dropdown.classList.remove("open");
+    if (overlay) overlay.classList.remove("show");
+    if (toggleBtn && activeTags.length === 0) toggleBtn.classList.remove("active");
+}
+
+/**
+ * Alterna la selección de un tag de categoría (multi-selección)
+ * @param {string} category - Categoría a alternar
+ */
+function toggleTagFilter(category) {
+    const idx = activeTags.indexOf(category);
+    if (idx > -1) {
+        activeTags.splice(idx, 1);
+    } else {
+        activeTags.push(category);
+    }
+    renderFilterTags();
+    updateFilterBadge();
     filterBooks();
 }
+
+/**
+ * Limpia todos los filtros de categoría seleccionados
+ */
+function clearFilters() {
+    activeTags = [];
+    renderFilterTags();
+    updateFilterBadge();
+    filterBooks();
+}
+
+/**
+ * Actualiza el badge contador y el texto del footer del dropdown
+ */
+function updateFilterBadge() {
+    const badge = document.getElementById("filterCountBadge");
+    const countText = document.getElementById("selectedCountText");
+    const clearBtn = document.getElementById("filterClearBtn");
+    const toggleBtn = document.getElementById("filterToggleBtn");
+    const count = activeTags.length;
+
+    if (badge) {
+        if (count > 0) {
+            badge.textContent = count;
+            badge.style.display = "inline-flex";
+        } else {
+            badge.style.display = "none";
+        }
+    }
+
+    if (countText) {
+        countText.textContent = count === 0
+            ? "0 categorías seleccionadas"
+            : count === 1
+                ? "1 categoría seleccionada"
+                : `${count} categorías seleccionadas`;
+    }
+
+    if (clearBtn) {
+        clearBtn.disabled = count === 0;
+    }
+
+    if (toggleBtn) {
+        if (count > 0) {
+            toggleBtn.classList.add("active");
+        } else {
+            toggleBtn.classList.remove("active");
+        }
+    }
+}
+
+// Cerrar el dropdown al hacer clic fuera o al presionar Escape
+document.addEventListener("click", (e) => {
+    const dropdown = document.getElementById("filterDropdown");
+    const wrapper = document.querySelector(".filter-dropdown-wrapper");
+    if (dropdown && dropdown.classList.contains("open") && wrapper && !wrapper.contains(e.target)) {
+        closeFilterDropdown();
+    }
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        closeFilterDropdown();
+    }
+});
 
 /**
  * Actualiza el label del input de archivo cuando se selecciona un archivo

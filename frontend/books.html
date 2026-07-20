@@ -41,7 +41,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="my-list.html" class="menu-item" id="menu-lectura">
+                    <a href="read-books.html" class="menu-item" id="menu-lectura">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                             <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -119,12 +119,46 @@
                         </svg>
                         <input type="text" id="searchInput" placeholder="Buscar libros, autores..." oninput="filterBooks()">
                     </div>
-                    <div class="toolbar-filters" id="filterBar">
-                        <button class="filter-btn active" data-genre="Todos" onclick="filterByGenre('Todos')">Todos</button>
-                        <button class="filter-btn" data-genre="Realismo Mágico" onclick="filterByGenre('Realismo Mágico')">Realismo Mágico</button>
-                        <button class="filter-btn" data-genre="Clásico" onclick="filterByGenre('Clásico')">Clásico</button>
-                        <button class="filter-btn" data-genre="Infantil / Fantasía" onclick="filterByGenre('Infantil / Fantasía')">Infantil / Fantasía</button>
-                        <button class="filter-btn" data-genre="Ficción / Filosofía" onclick="filterByGenre('Ficción / Filosofía')">Ficción / Filosofía</button>
+                    <div class="filter-dropdown-wrapper">
+                        <button class="filter-toggle-btn" id="filterToggleBtn" onclick="toggleFilterDropdown(event)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                            </svg>
+                            <span>Filtros / Categorías</span>
+                            <span class="filter-count-badge" id="filterCountBadge" style="display: none;">0</span>
+                        </button>
+
+                        <div class="filter-dropdown-overlay" id="filterDropdownOverlay" onclick="closeFilterDropdown()"></div>
+
+                        <div class="filter-dropdown" id="filterDropdown">
+                            <div class="filter-dropdown-header">
+                                <h4>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                    </svg>
+                                    Filtrar por categorías
+                                </h4>
+                                <button class="filter-dropdown-close" onclick="closeFilterDropdown()" aria-label="Cerrar">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="filter-tags-list" id="filterTagsList">
+                                <!-- Se llenará dinámicamente con JavaScript -->
+                            </div>
+                            <div class="filter-dropdown-footer">
+                                <span class="selected-count" id="selectedCountText">0 categorías seleccionadas</span>
+                                <button class="filter-clear-btn" id="filterClearBtn" onclick="clearFilters()" disabled>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 6h18"></path>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                    Limpiar filtros
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
