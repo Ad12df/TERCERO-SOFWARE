@@ -2373,13 +2373,24 @@ body.users-page {
 .mod-empty-state i,
 #pendingBooksList svg,
 #writerRequestsList svg {
-    width: 56px !important;
-    height: 56px !important;
-    max-width: 56px !important;
-    max-height: 56px !important;
+    width: 48px !important;
+    height: 48px !important;
+    max-width: 48px !important;
+    max-height: 48px !important;
     margin: 1rem auto;
     display: block;
     color: #94A3B8;
+}
+
+#requestsModal svg,
+#requestsModal img,
+.mod-empty-state svg {
+    width: 48px !important;
+    height: 48px !important;
+    max-width: 48px !important;
+    max-height: 48px !important;
+    margin: 10px auto !important;
+    display: block !important;
 }
 
 .mod-empty svg {
