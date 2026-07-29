@@ -7,6 +7,9 @@
     <title>Login — Tercero Software</title>
     <!-- Importación de la hoja de estilos personalizada -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- PWA: manifest y tema -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1E4B65">
 </head>
 
 <body class="auth-page">
@@ -191,6 +194,12 @@
     <script src="js/api.js"></script>
     <script src="js/login.js"></script>
 
+    <!-- PWA: registro del service worker -->
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("sw.js");
+        }
+    </script>
 </body>
 
 </html>

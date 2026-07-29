@@ -7,6 +7,9 @@
     <title>Leídos — BiblioTech</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/book-detail.css">
+    <!-- PWA: manifest y tema -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1E4B65">
 </head>
 
 <body class="users-page">
@@ -119,6 +122,13 @@
 
     <script src="js/api.js"></script>
     <script src="js/readBooks.js"></script>
+
+    <!-- PWA: registro del service worker -->
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("sw.js");
+        }
+    </script>
 </body>
 
 </html>

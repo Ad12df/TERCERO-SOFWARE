@@ -6,6 +6,9 @@
     <title>Lector - BiblioTech</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/reader.css">
+    <!-- PWA: manifest y tema -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1E4B65">
 </head>
 <body class="reader-dark">
     <!-- Header Fijo -->
@@ -203,5 +206,12 @@
     <!-- api.js DEBE cargarse antes que reader.js para definir API_URL -->
     <script src="js/api.js"></script>
     <script src="js/reader.js"></script>
+
+    <!-- PWA: registro del service worker -->
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("sw.js");
+        }
+    </script>
 </body>
 </html>

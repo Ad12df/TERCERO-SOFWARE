@@ -8,6 +8,9 @@
     <!-- Importación de las hojas de estilo personalizadas -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/book-detail.css">
+    <!-- PWA: manifest y tema -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1E4B65">
     <!-- Font Awesome (iconos) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWWn2YksIqtL5o6B+L1lA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -458,6 +461,12 @@
         </div>
     </div>
 
+    <!-- PWA: registro del service worker -->
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("sw.js");
+        }
+    </script>
 </body>
 
 </html>
