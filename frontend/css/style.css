@@ -11,6 +11,12 @@
     padding: 0;
 }
 
+/* Estilos globales del body para prevenir scroll horizontal */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
 /* Estilos de la página base de autenticación */
 .auth-page {
     font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
@@ -1421,15 +1427,36 @@ body.users-page {
     background: #F8FBFF;
     box-shadow: -18px 0 60px rgba(16, 50, 79, 0.12);
     transform: translateX(110%);
-    transition: transform 0.35s ease;
+    transition: transform 0.35s ease, visibility 0.35s ease;
     z-index: 1200;
     display: flex;
     align-items: stretch;
     overflow: hidden;
+    visibility: hidden;
 }
 
 .book-detail-panel.active {
     transform: translateX(0);
+    visibility: visible;
+}
+
+/* Overlay de fondo para el panel de detalle */
+.detail-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.detail-overlay.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 .detail-panel-inner {
@@ -2593,11 +2620,89 @@ body.users-page {
     }
 
     .dashboard-container {
-        padding: 20px;
+        padding: 16px;
+        overflow-x: hidden;
     }
 
+    /* Evitar superposición: título arriba, botones abajo */
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+    }
+
+    .section-header-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .section-header-actions .btn-add {
+        flex: 1;
+        justify-content: center;
+        padding: 10px 14px;
+        font-size: 0.85rem;
+        min-width: 0;
+    }
+
+    /* Toolbar: búsqueda y filtros a 100% */
+    .toolbar-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px 14px;
+    }
+
+    .toolbar-search {
+        max-width: 100%;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .filter-dropdown-wrapper,
+    .filter-toggle-btn {
+        width: 100%;
+    }
+
+    .filter-toggle-btn {
+        justify-content: center;
+    }
+
+    /* Grid de libros: una columna, sin overflow */
     .books-grid {
         grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .book-card {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Ocultar overlay y panel de detalle por defecto */
+    .detail-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1100;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .detail-overlay.active {
+        display: block;
+        opacity: 1;
+        visibility: visible;
     }
 
     .book-detail-panel {
@@ -2610,10 +2715,12 @@ body.users-page {
         max-height: 95%;
         border-top-left-radius: 24px;
         border-top-right-radius: 24px;
+        visibility: hidden;
     }
 
     .book-detail-panel.active {
         transform: translateY(0);
+        visibility: visible;
     }
 
     .detail-panel-inner {

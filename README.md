@@ -7,6 +7,8 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-336791.svg)](https://www.postgresql.org/)
 [![Sequelize](https://img.shields.io/badge/Sequelize-6.x-blue)](https://sequelize.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Storage-3ECF8E.svg)](https://supabase.com/)
+[![PWA](https://img.shields.io/badge/PWA-Installable-purple.svg)](https://web.dev/progressive-web-apps/)
+[![Android](https://img.shields.io/badge/Android-TWA-3DDC84.svg)](https://developer.android.com/training/wearables/apps/twa)
 
 ## 🎯 Propósito del Portal
 
@@ -22,8 +24,9 @@
 
 ## 🚀 Demo
 
-- **Frontend**: https://tercero-sofware.vercel.app/
-- **Backend API**: https://tercero-sofware.onrender.com/
+- **Frontend (Web/PWA)**: https://tercero-sofware.vercel.app/
+- **Backend API**: https://tercero-sofware.onrender.com/api
+- **App Android (TWA)**: APK generada con Bubblewrap — package `app.vercel.tercero_sofware.twa`
 
 ---
 
@@ -114,6 +117,16 @@
 | Fetch API | Comunicación con el backend |
 | localStorage | Almacenamiento de sesión |
 | PDF.js | Renderizado de documentos PDF |
+
+### PWA y App Móvil
+
+| Tecnología | Propósito |
+|------------|----------|
+| Web App Manifest (`manifest.json`) | Metadatos de la PWA (nombre, iconos, tema, display standalone) |
+| Service Worker (`sw.js`) | Cache offline con estrategia network-first |
+| Iconos PWA (`icon-192.png`, `icon-512.png`) | Iconos instalables (192px y 512px, maskable) |
+| Bubblewrap CLI | Generación de APK Android a partir de la PWA (TWA) |
+| Digital Asset Links (`.well-known/assetlinks.json`) | Verificación de propiedad para fullscreen nativo en Android |
 
 ---
 
@@ -266,7 +279,7 @@ TERCERO-SOFWARE/
 │       └── utils/
 │           └── password.js   # Utilidades de contraseña
 │
-└── frontend/                 # Interfaz Web
+└── frontend/                 # Interfaz Web (PWA)
     ├── index.html             # Login / Registro
     ├── books.html             # Dashboard / Catálogo
     ├── book-detail.html       # Detalle de libro + reseñas + comentarios
@@ -274,6 +287,12 @@ TERCERO-SOFWARE/
     ├── settings.html          # Configuración de usuario
     ├── my-list.html           # Mi Lista de lectura
     ├── read-books.html        # Historial de libros leídos
+    ├── manifest.json          # Web App Manifest (PWA)
+    ├── sw.js                  # Service Worker (cache offline)
+    ├── icon-192.png           # Icono PWA 192x192 (maskable)
+    ├── icon-512.png           # Icono PWA 512x512 (maskable)
+    ├── .well-known/
+    │   └── assetlinks.json    # Digital Asset Links (TWA fullscreen Android)
     ├── css/
     │   ├── style.css          # Estilos principales
     │   ├── book-detail.css    # Estilos detalle libro
@@ -289,6 +308,8 @@ TERCERO-SOFWARE/
         ├── myList.js          # Lógica de Mi Lista
         └── readBooks.js       # Lógica de libros leídos
 ```
+
+---
 
 ---
 
@@ -722,10 +743,76 @@ Petición HTTP
 | El frontend no carga datos | Backend no corriendo | Ejecutar `npm run dev` en `backend/` |
 | Error CORS o `fetch` bloqueado | Abrir HTML como `file://` | Usar `npx serve frontend` o Live Server |
 | Puerto 3000 en uso | Otra app usa el puerto | Cambiar `PORT` en `.env` y `API_URL` en el frontend |
+| APK muestra `404: NOT_FOUND` | URL incorrecta en `twa-manifest.json` | Verificar que `host` sea `tercero-sofware.vercel.app` (con una sola "f") |
+| APK muestra barra de navegador | `assetlinks.json` no accesible o SHA-256 incorrecto | Verificar `https://tercero-sofware.vercel.app/.well-known/assetlinks.json` y que el SHA-256 coincida con el keystore |
+| APK no se instala (INSTALL_FAILED) | Firma diferente a la versión anterior | Desinstalar la app anterior primero: `adb uninstall app.vercel.tercero_sofware.twa` |
+| `bubblewrap build` pide contraseña | Es normal — la necesita para firmar la APK | Usar `159753` para keystore y key |
 
 ---
 
-## 📝 Notas de Desarrollo
+## � Configuración PWA y App Móvil (Android TWA)
+
+El frontend está configurado como **Progressive Web App (PWA)** y se ha empaquetado como **Trusted Web Activity (TWA)** para generar una APK nativa de Android mediante [Bubblewrap](https://github.com/GoogleChromeLabs/bubblewrap).
+
+### Archivos PWA
+
+| Archivo | Descripción |
+|---------|-------------|
+| `frontend/manifest.json` | Manifest con `display: standalone`, `theme_color: #1E4B65`, iconos maskable 192px y 512px |
+| `frontend/sw.js` | Service Worker con estrategia **network-first** (cache `bibliotech-v1`) |
+| `frontend/icon-192.png` | Icono instalable 192×192 |
+| `frontend/icon-512.png` | Icono instalable 512×512 |
+
+Todos los HTML incluyen:
+- `<link rel="manifest" href="/manifest.json">`
+- `<meta name="theme-color" content="#1E4B65">`
+- Registro del Service Worker (`navigator.serviceWorker.register('/sw.js')`)
+
+### Digital Asset Links (`.well-known/assetlinks.json`)
+
+Para que la TWA se abra en **modo pantalla completa nativo** (sin barra de navegador), Android verifica la propiedad del sitio mediante Digital Asset Links:
+
+- **Ubicación**: `frontend/.well-known/assetlinks.json` → accesible en `https://tercero-sofware.vercel.app/.well-known/assetlinks.json`
+- **Contenido**: JSON con `package_name` (`app.vercel.tercero_sofware.twa`) y `sha256_cert_fingerprints` del keystore de firma
+- **SHA-256 actual**: `1D:79:EB:EB:4C:FE:DD:67:09:C6:76:97:67:9E:07:B3:02:3C:9C:70:88:C4:11:81:C9:E3:FA:73:2E:3D:F0:E0`
+
+> Si regeneras el keystore, debes extraer el nuevo SHA-256 y actualizar este archivo.
+
+### Generar/Actualizar la APK con Bubblewrap
+
+**Requisitos previos:**
+- Java JDK 17+
+- Bubblewrap CLI instalado: `npm install -g @bubblewrap/cli`
+- Keystore en `bibliotech-twa/android.keystore` (alias `android`, contraseña `159753`)
+
+**Pasos:**
+
+```powershell
+# 1. Subir cambios del frontend a GitHub (Vercel despliega automáticamente)
+cd c:\Users\javie\OneDrive\Documentos\GitHub\TERCERO-SOFWARE
+git add .
+git commit -m "descripción del cambio"
+git push
+
+# 2. Esperar 1-2 min a que Vercel despliegue...
+
+# 3. Actualizar y reconstruir la APK
+cd c:\Users\javie\OneDrive\Documentos\GitHub\bibliotech-twa
+bubblewrap update
+bubblewrap build
+# (pedirá contraseña del keystore: 159753 y del key: 159753)
+
+# 4. Instalar en el teléfono (conectado por USB con depuración activada)
+& "C:\Users\javie\.bubblewrap\android_sdk\platform-tools\adb.exe" install -r "C:\Users\javie\OneDrive\Documentos\GitHub\bibliotech-twa\app-release-signed.apk"
+```
+
+> **Nota:** Si solo cambiaste contenido del frontend (HTML/CSS/JS) y ya está en Vercel, **no necesitas reconstruir la APK** — la TWA carga el contenido desde la web. Solo reconstruye si cambiaste algo en `twa-manifest.json` (URL, iconos, package name, etc.).
+
+> **Cache de Android:** Si la barra de navegador sigue apareciendo tras instalar, ve a *Ajustes → Aplicaciones → BiblioTech → Almacenamiento → Borrar caché* y vuelve a abrir la app.
+
+---
+
+## �📝 Notas de Desarrollo
 
 - El backend crea automáticamente todas las tablas en la base de datos al iniciar (`sequelize.sync({ alter: true })`)
 - El rol `admin` puede crear/editar/eliminar libros directamente; `escritor` puede crear libros pero quedan `PENDIENTE` hasta aprobación
