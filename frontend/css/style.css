@@ -573,9 +573,13 @@ body.users-page {
     transition: all 0.3s ease;
     flex-shrink: 0;
     z-index: 100;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    bottom: 0;
+    width: 260px;
     height: 100vh;
+    justify-content: space-between;
     overflow-y: auto;
 }
 
@@ -649,6 +653,7 @@ body.users-page {
     display: flex;
     flex-direction: column;
     min-width: 0; /* Evita desbordamiento con flexbox */
+    margin-left: 260px; /* Compensa el sidebar fijo de 260px */
 }
 
 /* Barra Superior (Topbar) */
@@ -2613,6 +2618,10 @@ body.users-page {
 
     .sidebar.active {
         left: 0;
+    }
+
+    .main-content {
+        margin-left: 0;
     }
 
     .topbar {
