@@ -573,6 +573,10 @@ body.users-page {
     transition: all 0.3s ease;
     flex-shrink: 0;
     z-index: 100;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 .sidebar-logo {
@@ -2612,7 +2616,28 @@ body.users-page {
     }
 
     .topbar {
-        padding: 0 16px;
+        padding: 0 14px;
+        height: 52px;
+    }
+
+    .topbar-title {
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    /* Ocultar texto del perfil en móvil: solo avatar */
+    .user-info {
+        display: none;
+    }
+
+    .user-profile {
+        gap: 0;
+    }
+
+    .avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
     }
 
     .search-bar {
