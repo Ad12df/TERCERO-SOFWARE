@@ -2108,29 +2108,32 @@ body.users-page {
     flex-wrap: wrap;
 }
 
-/* --- Pestañas (Tabs) --- */
+/* --- Pestañas (Tabs) — diseño pill moderno --- */
 .mod-tabs {
-    display: flex;
-    gap: 6px;
+    display: inline-flex;
+    gap: 4px;
     flex-wrap: wrap;
+    background: #F1F5F9;
+    border-radius: 50px;
+    padding: 4px;
 }
 
 .mod-tab {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 14px;
-    background: #F1F5F9;
-    border: 1px solid #CBD5E1;
+    padding: 8px 18px;
+    background: transparent;
+    border: none;
     outline: none;
-    border-radius: 20px;
+    border-radius: 50px;
     font-size: 0.85rem;
     font-weight: 600;
-    color: #334155;
+    color: #64748B;
     cursor: pointer;
-    transition: color 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+    transition: color 0.25s, background 0.25s, box-shadow 0.25s;
     font-family: "Segoe UI", system-ui, sans-serif;
-    margin-bottom: 12px;
+    margin-bottom: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -2143,15 +2146,13 @@ body.users-page {
 
 .mod-tab:hover {
     color: #1E4B65;
-    background: #E2E8F0;
-    border-color: #CBD5E1;
+    background: rgba(255, 255, 255, 0.6);
 }
 
 .mod-tab.active {
     color: #FFFFFF;
     background: #1E4B65;
-    border-color: #1E4B65;
-    box-shadow: 0 3px 10px rgba(30, 75, 101, 0.3);
+    box-shadow: 0 2px 8px rgba(30, 75, 101, 0.25);
 }
 
 .tab-badge {
@@ -2170,13 +2171,15 @@ body.users-page {
 
 .mod-tab.active .tab-badge {
     background: #FFFFFF;
-    color: #6366F1;
+    color: #1E4B65;
 }
 
 /* --- Acciones globales (pills) --- */
 .global-actions {
     display: flex;
-    gap: 8px;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
     margin-bottom: 12px;
 }
 
@@ -2185,15 +2188,15 @@ body.users-page {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 7px 14px;
+    padding: 8px 16px;
     border: none;
     outline: none;
     background: transparent;
     border-radius: 50px;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s, background 0.2s;
+    transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s, background 0.2s, border-color 0.2s;
     font-family: "Segoe UI", system-ui, sans-serif;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -2213,7 +2216,7 @@ body.users-page {
 .btn-pill-success {
     background: #D1FAE5;
     color: #059669;
-    border: 1px solid #A7F3D0;
+    border: 1.5px solid #A7F3D0;
 }
 
 .btn-pill-success:hover {
@@ -2222,17 +2225,17 @@ body.users-page {
     box-shadow: 0 3px 8px rgba(16, 185, 129, 0.25);
 }
 
-/* Píldora roja — Denegar / Rechazar */
+/* Píldora roja — Denegar / Rechazar (outline) */
 .btn-pill-danger {
-    background: #FEE2E2;
+    background: transparent;
     color: #DC2626;
-    border: 1px solid #FECACA;
+    border: 1.5px solid #FECACA;
 }
 
 .btn-pill-danger:hover {
-    background: #FECACA;
+    background: #FEE2E2;
     transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(239, 68, 68, 0.25);
+    box-shadow: 0 3px 8px rgba(239, 68, 68, 0.2);
 }
 
 /* --- Contenido de tabs --- */
@@ -2401,38 +2404,44 @@ body.users-page {
 .mod-empty,
 .mod-empty-state {
     text-align: center;
-    padding: 48px 20px;
+    padding: 40px 20px;
     color: #94A3B8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .mod-empty-state svg,
 .mod-empty-state i,
 #pendingBooksList svg,
 #writerRequestsList svg {
-    width: 48px !important;
-    height: 48px !important;
-    max-width: 48px !important;
-    max-height: 48px !important;
-    margin: 1rem auto;
+    width: 64px !important;
+    height: 64px !important;
+    max-width: 64px !important;
+    max-height: 64px !important;
+    margin: 0 auto 16px;
     display: block;
-    color: #94A3B8;
+    color: #CBD5E1;
 }
 
 #requestsModal svg,
 #requestsModal img,
 .mod-empty-state svg {
-    width: 48px !important;
-    height: 48px !important;
-    max-width: 48px !important;
-    max-height: 48px !important;
-    margin: 10px auto !important;
+    width: 64px !important;
+    height: 64px !important;
+    max-width: 64px !important;
+    max-height: 64px !important;
+    margin: 0 auto 16px !important;
     display: block !important;
 }
 
 .mod-empty svg {
-    width: 48px;
-    height: 48px;
-    margin-bottom: 12px;
+    width: 64px;
+    height: 64px;
+    max-width: 64px;
+    max-height: 64px;
+    margin: 0 auto 12px;
     opacity: 0.5;
 }
 
@@ -2441,6 +2450,7 @@ body.users-page {
     font-size: 0.9rem;
     font-weight: 500;
     margin: 0;
+    text-align: center;
 }
 
 /* --- Estado de carga --- */
@@ -2456,33 +2466,46 @@ body.users-page {
    ========================================================================== */
 @media (max-width: 640px) {
     .requests-modal-content {
-        width: 96%;
-        max-height: 92vh;
+        width: 90%;
+        max-width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
     }
 
     .requests-modal-content .modal-title {
-        padding: 18px 18px 12px;
-        font-size: 1.15rem;
+        padding: 16px 18px 10px;
+        font-size: 1.1rem;
     }
 
     .modal-header-actions {
-        padding: 12px 18px 0;
+        padding: 10px 18px 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .mod-tabs {
+        justify-content: center;
+        width: 100%;
     }
 
     .mod-tab {
-        padding: 8px 12px;
-        font-size: 0.78rem;
-        margin-bottom: 10px;
+        padding: 7px 14px;
+        font-size: 0.76rem;
+        flex: 1;
+        justify-content: center;
     }
 
     .global-actions {
+        flex-direction: row;
+        justify-content: center;
         flex-wrap: wrap;
         margin-bottom: 10px;
     }
 
     .btn-pill {
-        padding: 6px 12px;
-        font-size: 0.74rem;
+        padding: 7px 14px;
+        font-size: 0.76rem;
     }
 
     .moderation-content {
@@ -2497,6 +2520,11 @@ body.users-page {
     .request-card-actions {
         width: 100%;
         justify-content: flex-end;
+    }
+
+    .mod-empty,
+    .mod-empty-state {
+        padding: 28px 16px;
     }
 }
 }
