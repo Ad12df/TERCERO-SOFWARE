@@ -107,37 +107,63 @@ class AuthService {
    *   (el controlador responde igual en ambos casos para evitar enumeración)
    */
   static async forgotPassword(email) {
+    console.log("[AuthService] Buscando usuario en DB con email:", email);
     const user = await User.findOne({ where: { email } });
 
     // Si el usuario no existe, no hacemos nada pero devolvemos true
     // para que el controlador responda de forma idéntica (anti-enumeración)
-    if (!user) return false;
+    if (!user) {
+      console.log("Usuario no encontrado en DB, abortando envío en silencio");
+      return false;
+    }
+    console.log("[AuthService] Usuario encontrado id=", user.id, "email=", user.email);
 
     // ─── 1. Generar token criptográficamente seguro ────────────
     const plainToken = crypto.randomBytes(RESET_TOKEN_BYTES).toString("hex");
+    console.log("[AuthService] Token generado (longitud):", plainToken.length);
 
     // ─── 2. Hashear el token antes de guardarlo en la BD ───────
     const hashedToken = await bcrypt.hash(plainToken, BCRYPT_SALT_ROUNDS);
+    console.log("[AuthService] Token hasheado con bcrypt OK");
 
     // ─── 3. Calcular fecha de expiración ──────────────────────
     const expiresAt = new Date(Date.now() + RESET_TOKEN_EXPIRY_MIN * 60 * 1000);
+    console.log("[AuthService] Expira el:", expiresAt.toISOString());
 
     // ─── 4. Invalidar tokens anteriores del usuario ────────────
+    console.log("[AuthService] Invalidando tokens anteriores...");
     await PasswordReset.update(
       { used: true },
       { where: { user_id: user.id, used: false } }
     );
+    console.log("[AuthService] Tokens anteriores invalidados OK");
 
     // ─── 5. Guardar el nuevo token ─────────────────────────────
-    await PasswordReset.create({
-      user_id: user.id,
-      token: hashedToken,
-      expiresAt,
-      used: false,
-    });
+    console.log("[AuthService] Guardando nuevo token en tabla password_resets...");
+    try {
+      await PasswordReset.create({
+        user_id: user.id,
+        token: hashedToken,
+        expiresAt,
+        used: false,
+      });
+      console.log("[AuthService] ✅ Token guardado en BD correctamente");
+    } catch (dbError) {
+      console.error("[AuthService] ❌❌ ERROR al escribir en tabla password_resets:", dbError);
+      console.error("[AuthService] Stack:", dbError.stack);
+      throw dbError;
+    }
 
     // ─── 6. Enviar el correo con el token en claro ────────────
-    await sendPasswordResetEmail(user.email, plainToken);
+    console.log("[AuthService] Llamando a sendPasswordResetEmail...");
+    try {
+      await sendPasswordResetEmail(user.email, plainToken);
+      console.log("[AuthService] ✅ sendPasswordResetEmail completado sin errores");
+    } catch (emailError) {
+      console.error("[AuthService] ❌❌ ERROR al enviar correo:", emailError);
+      console.error("[AuthService] Stack:", emailError.stack);
+      throw emailError;
+    }
 
     return true;
   }

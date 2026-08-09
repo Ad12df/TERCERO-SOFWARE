@@ -178,9 +178,20 @@ class AuthController {
   static async forgotPassword(req, res) {
     try {
       const { email } = req.body;
+      console.log("\n========== 📨 FORGOT PASSWORD ==========");
+      console.log("Solicitud de recuperación para:", email);
+      console.log("EMAIL_PROVIDER =", process.env.EMAIL_PROVIDER);
+      console.log("SMTP_HOST =", process.env.SMTP_HOST);
+      console.log("SMTP_PORT =", process.env.SMTP_PORT);
+      console.log("SMTP_USER =", process.env.SMTP_USER ? "(set)" : "(NOT SET)");
+      console.log("SMTP_PASS =", process.env.SMTP_PASS ? "(set)" : "(NOT SET)");
+      console.log("SMTP_FROM =", process.env.SMTP_FROM);
+      console.log("APP_BASE_URL =", process.env.APP_BASE_URL);
+      console.log("========================================\n");
 
       // ─── Validación básica ──────────────────────────────────
       if (!email) {
+        console.log("❌ Email no proporcionado en el body");
         return res.status(400).json({
           success: false,
           message: "El correo electrónico es obligatorio",
@@ -197,16 +208,20 @@ class AuthController {
       }
 
       // ─── Delegar al servicio ────────────────────────────────
-      await AuthService.forgotPassword(email);
+      console.log("➡️  Delegando a AuthService.forgotPassword...");
+      const result = await AuthService.forgotPassword(email);
+      console.log("⬅️  AuthService.forgotPassword retornó:", result);
 
       // ─── Respuesta genérica (anti-enumeración) ───────────────
+      console.log("✅ Respondiendo 200 OK (anti-enumeración)\n");
       return res.status(200).json({
         success: true,
         message:
           "Si el correo está registrado, recibirás un enlace de recuperación en breve.",
       });
     } catch (error) {
-      console.error("❌ Error en forgotPassword:", error);
+      console.error("❌❌ Error en forgotPassword (controller):", error);
+      console.error("Stack:", error.stack);
       // Incluso en error interno, devolvemos el mismo mensaje genérico
       return res.status(200).json({
         success: true,

@@ -107,18 +107,34 @@ Equipo BiblioTech
     console.log("Para:   ", toEmail);
     console.log("Asunto: ", subject);
     console.log("Enlace: ", resetUrl);
+    console.log("⚠️  EMAIL_PROVIDER != 'nodemailer' → NO se envía correo real");
     console.log("─────────────────────────────────────────────");
     return;
   }
 
   // ─── Modo producción: envío real con Nodemailer ──────────────
-  await getTransporter().sendMail({
-    from: process.env.SMTP_FROM || "no-reply@bibliotech.app",
-    to: toEmail,
-    subject,
-    text: textBody,
-    html: htmlBody,
-  });
+  console.log("[EmailService] 📤 Enviando correo real vía SMTP...");
+  console.log("[EmailService] Host:", process.env.SMTP_HOST, "Port:", process.env.SMTP_PORT);
+  console.log("[EmailService] From:", process.env.SMTP_FROM || "no-reply@bibliotech.app");
+  console.log("[EmailService] To:", toEmail);
+  console.log("[EmailService] Reset URL:", resetUrl);
+  try {
+    const info = await getTransporter().sendMail({
+      from: process.env.SMTP_FROM || "no-reply@bibliotech.app",
+      to: toEmail,
+      subject,
+      text: textBody,
+      html: htmlBody,
+    });
+    console.log("[EmailService] ✅ Correo enviado OK. Message ID:", info.messageId);
+    console.log("[EmailService] Respuesta completa:", JSON.stringify(info, null, 2));
+  } catch (smtpError) {
+    console.error("[EmailService] ❌❌ Fallo exacto en SMTP:", smtpError);
+    console.error("[EmailService] Código de error:", smtpError.code);
+    console.error("[EmailService] Respuesta SMTP:", smtpError.response);
+    console.error("[EmailService] Stack:", smtpError.stack);
+    throw smtpError;
+  }
 }
 
 module.exports = {
