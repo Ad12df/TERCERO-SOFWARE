@@ -179,6 +179,8 @@ class AuthController {
     try {
       const { email } = req.body;
       console.log("\n========== 📨 FORGOT PASSWORD ==========");
+      console.log("[1] req.body recibido del frontend:", JSON.stringify(req.body));
+      console.log("[1] req.headers:", JSON.stringify({ origin: req.headers.origin, "content-type": req.headers["content-type"] }));
       console.log("Solicitud de recuperación para:", email);
       console.log("EMAIL_PROVIDER =", process.env.EMAIL_PROVIDER);
       console.log("SMTP_HOST =", process.env.SMTP_HOST);

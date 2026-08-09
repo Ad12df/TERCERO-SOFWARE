@@ -108,7 +108,15 @@ class AuthService {
    */
   static async forgotPassword(email) {
     console.log("[AuthService] Buscando usuario en DB con email:", email);
-    const user = await User.findOne({ where: { email } });
+    let user;
+    try {
+      user = await User.findOne({ where: { email } });
+      console.log("[AuthService] Resultado crudo de User.findOne:", user ? JSON.stringify(user.toJSON()) : "null");
+    } catch (dbQueryError) {
+      console.error("[AuthService] ❌❌ ERROR al consultar User en DB:", dbQueryError);
+      console.error("[AuthService] Stack:", dbQueryError.stack);
+      throw dbQueryError;
+    }
 
     // Si el usuario no existe, no hacemos nada pero devolvemos true
     // para que el controlador responda de forma idéntica (anti-enumeración)

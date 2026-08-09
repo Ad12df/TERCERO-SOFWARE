@@ -130,9 +130,12 @@ Equipo BiblioTech
     console.log("[EmailService] Respuesta completa:", JSON.stringify(info, null, 2));
   } catch (smtpError) {
     console.error("[EmailService] ❌❌ Fallo exacto en SMTP:", smtpError);
-    console.error("[EmailService] Código de error:", smtpError.code);
-    console.error("[EmailService] Respuesta SMTP:", smtpError.response);
-    console.error("[EmailService] Stack:", smtpError.stack);
+    console.error("[EmailService] Código de error (.code):", smtpError.code);
+    console.error("[EmailService] Comando SMTP (.command):", smtpError.command);
+    console.error("[EmailService] Respuesta SMTP (.response):", smtpError.response);
+    console.error("[EmailService] Código de respuesta (.responseCode):", smtpError.responseCode);
+    console.error("[EmailService] Mensaje (.message):", smtpError.message);
+    console.error("[EmailService] Stack completo:", smtpError.stack);
     throw smtpError;
   }
 }
