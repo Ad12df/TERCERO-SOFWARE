@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const { User } = require("../models");
+const AuthService = require("../services/auth");
 
 class AuthController {
   // ─── POST /api/auth/register ────────────────────────────────
@@ -163,6 +164,100 @@ class AuthController {
       return res.status(500).json({
         success: false,
         message: error.message || "Error al obtener usuario",
+      });
+    }
+  }
+  // ─── Solicitar recuperación de contraseña ───────────────────
+  /**
+   * POST /api/auth/forgot-password
+   * Body: { email }
+   *
+   * Responde SIEMPRE con el mismo mensaje, exista o no el correo,
+   * para evitar enumeración de usuarios (ataque de descubrimiento).
+   */
+  static async forgotPassword(req, res) {
+    try {
+      const { email } = req.body;
+
+      // ─── Validación básica ──────────────────────────────────
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          message: "El correo electrónico es obligatorio",
+        });
+      }
+
+      // Validar formato de email con expresión regular simple
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          success: false,
+          message: "El formato del correo electrónico no es válido",
+        });
+      }
+
+      // ─── Delegar al servicio ────────────────────────────────
+      await AuthService.forgotPassword(email);
+
+      // ─── Respuesta genérica (anti-enumeración) ───────────────
+      return res.status(200).json({
+        success: true,
+        message:
+          "Si el correo está registrado, recibirás un enlace de recuperación en breve.",
+      });
+    } catch (error) {
+      console.error("❌ Error en forgotPassword:", error);
+      // Incluso en error interno, devolvemos el mismo mensaje genérico
+      return res.status(200).json({
+        success: true,
+        message:
+          "Si el correo está registrado, recibirás un enlace de recuperación en breve.",
+      });
+    }
+  }
+
+  // ─── Restablecer contraseña con token ───────────────────────
+  /**
+   * POST /api/auth/reset-password
+   * Body: { token, newPassword }
+   *
+   * Valida el token, hashea la nueva contraseña con bcrypt (vía
+   * utils/password.js) y actualiza al usuario. Invalida el token.
+   */
+  static async resetPassword(req, res) {
+    try {
+      const { token, newPassword } = req.body;
+
+      // ─── Validaciones ────────────────────────────────────────
+      if (!token || !newPassword) {
+        return res.status(400).json({
+          success: false,
+          message: "El token y la nueva contraseña son obligatorios",
+        });
+      }
+
+      // Validar longitud mínima de contraseña
+      if (newPassword.length < 6) {
+        return res.status(400).json({
+          success: false,
+          message: "La contraseña debe tener al menos 6 caracteres",
+        });
+      }
+
+      // ─── Delegar al servicio ────────────────────────────────
+      const user = await AuthService.resetPassword(token, newPassword);
+
+      return res.status(200).json({
+        success: true,
+        message: "Contraseña actualizada correctamente",
+        data: { id: user.id, email: user.email },
+      });
+    } catch (error) {
+      console.error("❌ Error en resetPassword:", error);
+      const status = error.status || 500;
+      return res.status(status).json({
+        success: false,
+        message: error.message || "Error al restablecer la contraseña",
       });
     }
   }

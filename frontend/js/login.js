@@ -214,11 +214,9 @@ async function register() {
 goToRegister.addEventListener("click", switchToRegister);
 goToLogin.addEventListener("click", switchToLogin);
 
-// Mensaje preliminar para la recuperación de contraseña
-forgotPassword.addEventListener("click", (event) => {
-  event.preventDefault();
-  showMessage("loginMessage", "Función disponible próximamente");
-});
+// Navegación a la pantalla de recuperación de contraseña
+// El enlace ya tiene href="forgot-password.html" en index.html,
+// por lo que la navegación es nativa. No se intercepta el evento.
 
 // Listener de redimensionamiento de pantalla para mantener una sincronización correcta de clases de estado activo
 window.addEventListener("resize", () => {

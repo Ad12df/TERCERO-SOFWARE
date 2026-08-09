@@ -7,6 +7,7 @@ const Comment = require("./Comment");
 const UserList = require("./UserList");
 const UserRead = require("./UserRead");
 const WriterRequest = require("./WriterRequest");
+const PasswordReset = require("./PasswordReset");
 
 // ─── Relaciones ───────────────────────────────────────────────
 
@@ -84,6 +85,14 @@ User.hasMany(WriterRequest, { foreignKey: "user_id", as: "writerRequests" });
 // WriterRequest → User (cada solicitud pertenece a un usuario)
 WriterRequest.belongsTo(User, { foreignKey: "user_id", as: "user" });
 
+// ─── PasswordReset Relations ──────────────────────────────────
+
+// User → PasswordReset (un usuario puede tener múltiples tokens de recuperación)
+User.hasMany(PasswordReset, { foreignKey: "user_id", as: "passwordResets", onDelete: "CASCADE", hooks: true });
+
+// PasswordReset → User (cada token pertenece a un usuario)
+PasswordReset.belongsTo(User, { foreignKey: "user_id", as: "user" });
+
 // ─── Conexión y Sincronización ─────────────────────────────────
 
 const connectDB = async () => {
@@ -113,4 +122,5 @@ module.exports = {
   UserList,
   UserRead,
   WriterRequest,
+  PasswordReset,
 };
