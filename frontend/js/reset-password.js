@@ -34,9 +34,18 @@
   const formMessage = document.getElementById("formMessage");
 
   // ─── Configuración de la API ─────────────────────────────────
-  const API_URL =
-    (typeof API_URL !== "undefined" ? API_URL : null) ||
-    "https://tercero-sofware.onrender.com/api";
+  //    Se usa la variable global definida en api.js (cargado antes en el HTML).
+  //    Si por algún motivo no existiera, se usa un fallback hardcoded.
+  //    Nota: no se puede usar window.API_URL porque api.js declara const
+  //    (no se asigna a window en scripts clásicos). Se accede directamente
+  //    a la variable global mediante eval indirecto para evitar el TDZ.
+  var API_BASE = (function () {
+    try {
+      return API_URL; // Variable global de api.js
+    } catch (e) {
+      return "https://tercero-sofware.onrender.com/api";
+    }
+  })();
 
   // ─── Estado de envío ────────────────────────────────────────
   let isSubmitting = false;
@@ -139,7 +148,7 @@
     setLoading(true);
 
     try {
-      const response = await fetch(API_URL + "/auth/reset-password", {
+      const response = await fetch(API_BASE + "/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
