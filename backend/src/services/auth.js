@@ -170,6 +170,9 @@ class AuthService {
     } catch (emailError) {
       console.error("[AuthService] ❌❌ ERROR al enviar correo:", emailError);
       console.error("[AuthService] Stack:", emailError.stack);
+      // Marcar el error para que el controller pueda distinguirlo
+      // de "usuario no encontrado" y responder adecuadamente
+      emailError.isEmailError = true;
       throw emailError;
     }
 

@@ -125,12 +125,18 @@
       const data = await response.json();
 
       // ─── Respuesta exitosa (siempre 200, anti-enumeración) ───
-      if (response.ok) {
+      if (response.ok && data.success) {
         showMessage(
           "Si el correo está registrado, recibirás un enlace de recuperación en breve.",
           "success"
         );
         form.reset();
+      } else if (response.ok && !data.success) {
+        // El backend detectó un fallo técnico (ej. SMTP caído)
+        showMessage(
+          data.message || "Ocurrió un problema técnico. Inténtalo más tarde.",
+          "error"
+        );
       } else {
         // El backend puede devolver 400 por formato inválido
         showMessage(

@@ -224,7 +224,21 @@ class AuthController {
     } catch (error) {
       console.error("❌❌ Error en forgotPassword (controller):", error);
       console.error("Stack:", error.stack);
-      // Incluso en error interno, devolvemos el mismo mensaje genérico
+
+      // Si el error es de envío de correo (SMTP), informamos al usuario
+      // con un mensaje claro de problema técnico temporal.
+      // NO revelamos si el email existe (anti-enumeración).
+      if (error.isEmailError) {
+        console.error("📧 Tipo: fallo de envío de correo (SMTP)");
+        return res.status(200).json({
+          success: false,
+          message:
+            "No pudimos enviar el correo de recuperación en este momento debido a un problema técnico. " +
+            "Inténtalo de nuevo más tarde. Si el problema persiste, contacta con soporte.",
+        });
+      }
+
+      // Otros errores internos: devolvemos el mismo mensaje genérico
       return res.status(200).json({
         success: true,
         message:
