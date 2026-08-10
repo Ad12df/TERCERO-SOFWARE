@@ -31,15 +31,29 @@ let transporter = null;
 function getTransporter() {
   if (transporter) return transporter;
 
+  const port = parseInt(process.env.SMTP_PORT || "587", 10);
+
   transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || "587", 10),
-    secure: parseInt(process.env.SMTP_PORT || "587", 10) === 465,
+    port,
+    secure: port === 465, // 465 = SSL implícito, 587 = STARTTLS
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     },
+    // ─── Opciones de conexión robustas para entornos cloud (Render) ───
+    connectionTimeout: 15000,   // 15 s para establecer conexión
+    greetingTimeout: 15000,     // 15 s para recibir saludo del servidor
+    socketTimeout: 30000,       // 30 s de inactividad en el socket
+    pool: true,                 // reutilizar conexiones
+    maxConnections: 3,
+    maxMessages: 100,
+    // Forzar STARTTLS en 587; en 465 ya es SSL desde el inicio
+    requireTLS: port !== 465,
   });
+
+  console.log("[EmailService] Transporter creado → Host:", process.env.SMTP_HOST,
+    "Port:", port, "Secure:", port === 465, "requireTLS:", port !== 465);
 
   return transporter;
 }
@@ -119,13 +133,23 @@ Equipo BiblioTech
   console.log("[EmailService] To:", toEmail);
   console.log("[EmailService] Reset URL:", resetUrl);
   try {
-    const info = await getTransporter().sendMail({
+    // ─── Envío real con timeout explícito (evita que se quede colgado) ───
+    const sendPromise = getTransporter().sendMail({
       from: process.env.SMTP_FROM || "no-reply@bibliotech.app",
       to: toEmail,
       subject,
       text: textBody,
       html: htmlBody,
     });
+
+    // Timeout de 45 s: si sendMail no responde, lanzamos error explícito
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error("⏰ TIMEOUT: sendMail no respondió en 45 segundos (posible bloqueo SMTP de Gmail o de Render)"));
+      }, 45000);
+    });
+
+    const info = await Promise.race([sendPromise, timeoutPromise]);
     console.log("[EmailService] ✅ Correo enviado OK. Message ID:", info.messageId);
     console.log("[EmailService] Respuesta completa:", JSON.stringify(info, null, 2));
   } catch (smtpError) {
