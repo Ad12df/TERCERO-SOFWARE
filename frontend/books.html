@@ -54,6 +54,16 @@
                         <span>Leídos</span>
                     </a>
                 </li>
+                <li id="menu-descargados-item" style="display: none;">
+                    <a href="descargados.html" class="menu-item" id="menu-descargados">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Descargados</span>
+                    </a>
+                </li>
             </ul>
 
             <div class="sidebar-bottom">
@@ -310,6 +320,20 @@
     <script src="js/api.js"></script>
     <script src="js/books.js"></script>
     <script src="js/bookDetail.js"></script>
+
+    <!-- Detección de plataforma: mostrar "Descargados" solo en el APK de Capacitor -->
+    <script>
+        (function () {
+            // La sección "Descargados" es exclusiva de la app Android (Capacitor).
+            // En navegador web se oculta porque la descarga local usa el File System nativo.
+            const isNative = typeof window.Capacitor !== 'undefined' &&
+                window.Capacitor.isNativeAvailable === true;
+            const item = document.getElementById('menu-descargados-item');
+            if (item) {
+                item.style.display = isNative ? '' : 'none';
+            }
+        })();
+    </script>
 
     <!-- Overlay de fondo para el panel de detalle -->
     <div class="detail-overlay" id="detailOverlay"></div>

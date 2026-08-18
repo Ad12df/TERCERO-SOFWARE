@@ -2817,7 +2817,8 @@ body.users-page {
 }
 
 /* Contenedor de tarjetas horizontales (Mi Lista / Leídos) */
-#myListGrid {
+#myListGrid,
+#downloadedGrid {
     display: flex;
     flex-direction: column;
     gap: 0;
@@ -2891,6 +2892,57 @@ body.users-page {
     background: #E8F4F8;
     color: #1E4B65;
     border: 1px solid rgba(30, 75, 101, 0.12);
+}
+
+/* Badges de disponibilidad offline (Descargados) */
+.horizontal-book-card .hbc-badge {
+    display: inline-block;
+    width: fit-content;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.horizontal-book-card .hbc-badge-online {
+    background: #E7F8EE;
+    color: #16A34A;
+    border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.horizontal-book-card .hbc-badge-warning {
+    background: #FEF3C7;
+    color: #B45309;
+    border: 1px solid rgba(180, 83, 9, 0.2);
+}
+
+/* Barra de progreso de lectura (Descargados) */
+.horizontal-book-card .hbc-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.horizontal-book-card .hbc-progress-bar {
+    width: 100%;
+    max-width: 220px;
+    height: 6px;
+    border-radius: 50px;
+    background: #E5E7EB;
+    overflow: hidden;
+}
+
+.horizontal-book-card .hbc-progress-fill {
+    height: 100%;
+    border-radius: 50px;
+    background: linear-gradient(90deg, #3A6B82 0%, #1E4B65 100%);
+    transition: width 0.3s ease;
+}
+
+.horizontal-book-card .hbc-progress-text {
+    font-size: 0.72rem;
+    color: #888;
 }
 
 .horizontal-book-card .hbc-actions {

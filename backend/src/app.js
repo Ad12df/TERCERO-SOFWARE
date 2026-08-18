@@ -18,6 +18,7 @@ const allowedOrigins = [
   VERCEL_URL,
   "http://localhost:5500",
   "http://127.0.0.1:5500",
+  "capacitor://localhost",
 ];
 
 app.use(
