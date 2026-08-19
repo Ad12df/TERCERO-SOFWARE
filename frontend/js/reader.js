@@ -238,14 +238,14 @@
     // ===================================
     // CARGAR PDF CON PDF.js (vía proxy + IndexedDB)
     // ===================================
-    async function loadPDF() {
+    async function loadPDF(bookId) {
         if (!window.pdfjsLib) {
             showToast('Error: PDF.js no está disponible');
             return;
         }
 
-        if (!state.bookId) {
-            console.error('loadPDF: state.bookId no está definido');
+        if (!bookId) {
+            console.error('loadPDF: bookId no está definido');
             showToast('Error: No se identificó el libro');
             return;
         }
@@ -257,7 +257,7 @@
         }
 
         // 1. Verificar caché de IndexedDB
-        const cachedBlob = await getCachedPDF(state.bookId);
+        const cachedBlob = await getCachedPDF(bookId);
 
         if (cachedBlob) {
             // PDF ya está en caché local — cargar directamente

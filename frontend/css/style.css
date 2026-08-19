@@ -2630,7 +2630,7 @@ body.users-page {
     height: 24px;
 }
 
-/* Responsividad para Móviles y Tabletas */
+/* Responsividad para Móviles y Tablets */
 @media (max-width: 768px) {
     .menu-toggle {
         display: block;
@@ -2967,6 +2967,47 @@ body.users-page {
     }
     .horizontal-book-card .hbc-actions .book-btn {
         flex: 1;
+    }
+}
+
+/* ====== Responsividad para sección de descargas ====== */
+
+/* Oculta el enlace de descargas en escritorio */
+@media (min-width: 1024px) {
+  #downloadsLink {
+    display: none !important;
+  }
+}
+
+/* Estilos para el enlace de descargas en móviles/tablets */
+.nav-link-container {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.3s;
+}
+.nav-link:hover {
+  background-color: #f0f0f0;
+}
+.nav-icon {
+  margin-right: 0.5rem;
+}
+
+/* Estilos responsivos para el botón de descargas */
+.download-button {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .download-button {
+        display: block;
     }
 }
 
