@@ -8,7 +8,7 @@
 [![Sequelize](https://img.shields.io/badge/Sequelize-6.x-blue)](https://sequelize.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Storage-3ECF8E.svg)](https://supabase.com/)
 [![PWA](https://img.shields.io/badge/PWA-Installable-purple.svg)](https://web.dev/progressive-web-apps/)
-[![Android](https://img.shields.io/badge/Android-TWA-3DDC84.svg)](https://developer.android.com/training/wearables/apps/twa)
+[![Capacitor](https://img.shields.io/badge/Capacitor-6.x-blue.svg)](https://capacitorjs.com/)
 
 ## 🎯 Propósito del Portal
 
@@ -118,15 +118,15 @@
 | localStorage | Almacenamiento de sesión |
 | PDF.js | Renderizado de documentos PDF |
 
-### PWA y App Móvil
+### 📱 App Móvil Nativa (Android con Capacitor)
 
 | Tecnología | Propósito |
-|------------|----------|
-| Web App Manifest (`manifest.json`) | Metadatos de la PWA (nombre, iconos, tema, display standalone) |
-| Service Worker (`sw.js`) | Cache offline con estrategia network-first |
-| Iconos PWA (`icon-192.png`, `icon-512.png`) | Iconos instalables (192px y 512px, maskable) |
-| Bubblewrap CLI | Generación de APK Android a partir de la PWA (TWA) |
-| Digital Asset Links (`.well-known/assetlinks.json`) | Verificación de propiedad para fullscreen nativo en Android |
+|------------|-----------|
+| Capacitor | Plataforma para convertir la web en app nativa Android |
+| `capacitor-android` | Entorno de compilación para Android |
+| `capacitor.config.json` | Configuración de la app nativa (mode, android) |
+| Android Studio | Entorno de desarrollo para compilación y depuración |
+| Gradle | Sistema de construcción (build) de la app Android |
 
 ---
 
@@ -231,7 +231,27 @@ python -m http.server 5500
 ```
 TERCERO-SOFWARE/
 ├── README.md                 # Este archivo
-│
+├── android/                  # App Nativa Android (Capacitor)
+│   ├── .gitignore
+│   ├── .gradle/
+│   ├── app/
+│   │   ├── src/
+│   │   │   ├── main/
+│   │   │   │   ├── AndroidManifest.xml
+│   │   │   │   └── java/
+│   │   │   └── test/
+│   │   ├── build.gradle
+│   │   ├── capacitor.build.gradle
+│   │   ├── proguard-rules.pro
+│   ├── build.gradle
+│   ├── capacitor-cordova-android-plugins/
+│   ├── capacitor.settings.gradle
+│   ├── gradle/
+│   ├── gradle.properties
+│   ├── gradlew
+│   ├── gradlew.bat
+│   ├── settings.gradle
+│   └── variables.gradle
 ├── backend/                  # API REST (Node.js + Express)
 │   ├── package.json
 │   └── src/
@@ -280,36 +300,39 @@ TERCERO-SOFWARE/
 │           └── password.js   # Utilidades de contraseña
 │
 └── frontend/                 # Interfaz Web (PWA)
-    ├── index.html             # Login / Registro
-    ├── books.html             # Dashboard / Catálogo
-    ├── book-detail.html       # Detalle de libro + reseñas + comentarios
-    ├── reader.html            # Lector de PDF
-    ├── settings.html          # Configuración de usuario
-    ├── my-list.html           # Mi Lista de lectura
-    ├── read-books.html        # Historial de libros leídos
-    ├── manifest.json          # Web App Manifest (PWA)
-    ├── sw.js                  # Service Worker (cache offline)
-    ├── icon-192.png           # Icono PWA 192x192 (maskable)
-    ├── icon-512.png           # Icono PWA 512x512 (maskable)
     ├── .well-known/
-    │   └── assetlinks.json    # Digital Asset Links (TWA fullscreen Android)
-    ├── css/
-    │   ├── style.css          # Estilos principales
-    │   ├── book-detail.css    # Estilos detalle libro
-    │   ├── reader.css         # Estilos lector PDF
-    │   └── settings.css       # Estilos configuración
-    └── js/
-        ├── api.js             # Configuración API + auth helpers
-        ├── login.js           # Lógica de autenticación
-        ├── books.js           # Lógica del catálogo
-        ├── bookDetail.js      # Lógica detalle libro
-        ├── reader.js          # Lógica del lector PDF
-        ├── settings.js        # Lógica de configuración
-        ├── myList.js          # Lógica de Mi Lista
-        └── readBooks.js       # Lógica de libros leídos
-```
 
----
+    ├── book-detail.html          # Vista de detalles de libro individual
+    ├── books.html                   # Lista principal de libros
+    ├── descargados.html             # Interfaz de libros descargados offline
+    ├── forgot-password.html          # Formulario de recuperación de contraseña
+    ├── index.html                    # Página de entrada principal (PWA)
+    ├── manifest.json                 # Manifesto web para instalación PWA
+    ├── my-list.html                  # Lista personal de libros guardados
+    ├── read-books.html               # Interfaz de lectura de libros
+    ├── reader.html                   # Componente de lector PDF integrado
+    ├── reset-password.html            # Confirmación de restablecimiento de contraseña
+    ├── settings.html                 # Configuración de usuario (tema, idioma, etc.)
+    ├── sw.js                        # Service Worker para funcionalidad offline
+    ├── css/                          # Hojas de estilo modulares
+    │   ├── book-detail.css
+    │   ├── forgot-password.css
+    │   ├── reader.css
+    │   ├── settings.css
+    │   └── style.css
+    └── js/                           # Módulos JavaScript de aplicación
+        ├── api.js                   # Capa de comunicación con backend
+        ├── bookDetail.js
+        ├── books.js
+        ├── descargados.js
+        ├── forgot-password.js
+        ├── login.js
+        ├── myList.js
+        ├── readBooks.js
+        ├── reader.js
+        ├── reset-password.js
+        └── settings.js
+```
 
 ---
 
