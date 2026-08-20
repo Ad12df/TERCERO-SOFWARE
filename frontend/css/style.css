@@ -3038,28 +3038,34 @@ body.users-page {
     left: -250px;
     width: 250px;
     height: 100vh;
-    background: #1E4B65;
-    transition: left 0.3s ease;
     z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    background-color: #1E4B65;
+    color: white;
+    padding-top: 1rem;
 }
 
 .sidebar.open {
-    left: 0;
+    transform: translateX(0);
 }
 
-#sidebar-overlay {
-  display: none;
+.sidebar-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 500;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  z-index: 999;
+  transition: opacity 0.3s ease;
 }
 
-#sidebar-overlay.active {
-  display: block;
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
 }
 
 .sidebar .menu-item {

@@ -18,7 +18,7 @@ const allowedOrigins = [
   "http://localhost",
   "https://localhost",
   "capacitor://localhost",
-  VERCEL_URL,
+  "https://tercero-sofware.vercel.app",
 ];
 
 app.use(
@@ -31,7 +31,8 @@ app.use(
       if (
         origin.includes('localhost') ||
         origin.includes('capacitor://') ||
-        origin.includes('tercero-sofware.onrender.com')
+        origin.includes('tercero-sofware.onrender.com') ||
+        origin.includes('tercero-sofware.vercel.app')
       ) {
         return callback(null, true);
       }
