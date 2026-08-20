@@ -86,16 +86,18 @@
     // ===================================
     // INICIALIZACIÓN
     // ===================================
-    function init() {
-        // 1. Capturar el ID dinámicamente desde la URL (?id=)
-        const urlParams = new URLSearchParams(window.location.search);
-        state.bookId = urlParams.get('id');
+function init() {
+    // 1. Capturar el ID dinámicamente desde la URL (?id=)
+    const urlParams = new URLSearchParams(window.location.search);
+    state.bookId = urlParams.get('id');
 
-        if (!state.bookId) {
-            showToast('Error: No se especificó el libro');
-            setTimeout(() => { window.location.href = 'index.html'; }, 2000);
-            return;
-        }
+    if (!state.bookId) {
+        showToast('Error: No se especificó el libro');
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 2000);
+        return;
+    }
 
         // 2. Validar que API_URL esté definida (proviene de js/api.js)
         if (typeof API_URL === 'undefined') {
