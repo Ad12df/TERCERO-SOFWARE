@@ -20,553 +20,547 @@
         <!-- Barra Lateral (Sidebar) -->
         <aside class="sidebar" id="sidebar">
     <div id="sidebar-overlay" class="sidebar-overlay"></div>
-<div class="sidebar-logo" id="menu-toggle">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <div class="sidebar-logo" id="menu-toggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        <span>BiblioTech</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li>
+            <a href="#" class="menu-item active" id="menu-libros" onclick="switchTab('libros')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                 </svg>
-                <span>BiblioTech</span>
-            </div>
-            
-            <ul class="sidebar-menu">
-                <li>
-                    <a href="#" class="menu-item active" id="menu-libros" onclick="switchTab('libros')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                        </svg>
-                        <span>Libros</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="my-list.html" class="menu-item sidebar" id="menu-mi-lista">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                        <span>Mi lista</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="read-books.html" class="menu-item" id="menu-lectura">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                        <span>Leídos</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="descargados.html" class="menu-item download-button" id="menu-descargas">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 18h.01M12 15h.01M12 12h.01M12 9h.01"/>
-                            <path d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 011 0z"/>
-                        </svg>
-                        <span>Ir a descargas</span>
-                    </a>
-                </li>
-            </ul>
-
-            <div class="sidebar-bottom">
-                <a href="settings.html" class="menu-item" id="menu-config">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                    </svg>
-                    <span>Configuración</span>
-                </a>
-                <a href="index.html" class="menu-item" id="menu-logout" onclick="logout()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                    <span>Cerrar Sesión</span>
-                </a>
-            </div>
-        </aside>
-
-        <!-- Sidebar Menu -->
-        <aside id="sidebar" class="sidebar md:block lg:block">
-            <!-- Sidebar Logo -->
-            <div class="sidebar-logo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                <span>Libros</span>
+            </a>
+        </li>
+        <li>
+            <a href="my-list.html" class="menu-item sidebar" id="menu-mi-lista">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                 </svg>
-                <span>BiblioTech</span>
-            </div>
-            <!-- Sidebar Menu Items -->
-            <ul class="sidebar-menu">
-                <li>
-                    <a href="#" class="menu-item active" id="menu-libros" onclick="switchTab('libros')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                        </svg>
-                        <span>Libros</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="my-list.html" class="menu-item sidebar" id="menu-mi-lista">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                        <span>Mi lista</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="read-books.html" class="menu-item" id="menu-lectura">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                        <span>Leídos</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="descargados.html" class="menu-item download-button" id="menu-descargas">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 18h.01M12 15h.01M12 12h.01M12 9h.01"/>
-                            <path d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 011 0z"/>
-                        </svg>
-                        <span>Ir a descargas</span>
-                    </a>
-                </li>
-            </ul>
-            <!-- Sidebar Bottom -->
-            <div class="sidebar-bottom">
-                <a href="settings.html" class="menu-item" id="menu-config">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                    </svg>
-                    <span>Configuración</span>
-                </a>
-                <a href="index.html" class="menu-item" id="menu-logout" onclick="logout()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                    <span>Cerrar Sesión</span>
-                </a>
-            </div>
-        </aside>
-
-        <!-- Hamburger Icon -->
-        <div id="menu-toggle" class="md:hidden lg:hidden">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                <span>Mi lista</span>
+            </a>
+        </li>
+        <li>
+            <a href="read-books.html" class="menu-item" id="menu-lectura">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>Leídos</span>
+            </a>
+        </li>
+        <li>
+            <a href="descargados.html" class="menu-item download-button" id="menu-descargas">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 18h.01M12 15h.01M12 12h.01M12 9h.01"/>
+                    <path d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 011 0z"></path>
+                </svg>
+                <span>Ir a descargas</span>
+            </a>
+        </li>
+    </ul>
+    <div class="sidebar-bottom">
+        <a href="settings.html" class="menu-item" id="menu-config">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
             </svg>
+            <span>Configuración</span>
+        </a>
+        <a href="index.html" class="menu-item" id="menu-logout" onclick="logout()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Cerrar Sesión</span>
+        </a>
+    </div>
+</aside>
+<!-- Sidebar Menu -->
+<aside id="sidebar" class="sidebar md:block lg:block">
+    <!-- Sidebar Logo -->
+    <div class="sidebar-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        <span>BiblioTech</span>
+    </div>
+    <!-- Sidebar Menu Items -->
+    <ul class="sidebar-menu">
+        <li>
+            <a href="#" class="menu-item active" id="menu-libros" onclick="switchTab('libros')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                <span>Libros</span>
+            </a>
+        </li>
+        <li>
+            <a href="my-list.html" class="menu-item sidebar" id="menu-mi-lista">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>Mi lista</span>
+            </a>
+        </li>
+        <li>
+            <a href="read-books.html" class="menu-item" id="menu-lectura">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>Leídos</span>
+            </a>
+        </li>
+        <li>
+            <a href="descargados.html" class="menu-item download-button" id="menu-descargas">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 18h.01M12 15h.01M12 12h.01M12 9h.01"/>
+                    <path d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 011 0z"></path>
+                </svg>
+                <span>Ir a descargas</span>
+            </a>
+        </li>
+    </ul>
+    <div class="sidebar-bottom">
+        <a href="settings.html" class="menu-item" id="menu-config">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Configuración</span>
+        </a>
+        <a href="index.html" class="menu-item" id="menu-logout" onclick="logout()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Cerrar Sesión</span>
+        </a>
+    </div>
+</aside>
+<!-- Hamburger Icon -->
+<div id="menu-toggle" class="md:hidden lg:hidden">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+    </svg>
+</div>
+
+<!-- Contenido Principal -->
+<main class="main-content">
+    <!-- Barra Superior (Topbar) -->
+    <header class="topbar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <h1 class="topbar-title" id="currentSectionTitle">Catálogo de Libros</h1>
         </div>
 
-        <!-- Contenido Principal -->
-        <main class="main-content">
-            <!-- Barra Superior (Topbar) -->
-            <header class="topbar">
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="3" y1="12" x2="21" y2="12"></line>
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <line x1="3" y1="18" x2="21" y2="18"></line>
-                        </svg>
-                    </button>
-                    <h1 class="topbar-title" id="currentSectionTitle">Catálogo de Libros</h1>
+        <div class="topbar-actions">
+            <div class="user-profile">
+                <div class="avatar" id="avatarLetter">A</div>
+                <div class="user-info">
+                    <p class="user-name" id="profileName">Usuario</p>
+                    <p class="user-email" id="profileEmail">user@bibliotech.com</p>
+                    <span class="admin-badge" id="adminBadge" style="display: none;">Admin</span>
                 </div>
+            </div>
+        </div>
+    </header>
 
-                <div class="topbar-actions">
-                    <div class="user-profile">
-                        <div class="avatar" id="avatarLetter">A</div>
-                        <div class="user-info">
-                            <p class="user-name" id="profileName">Usuario</p>
-                            <p class="user-email" id="profileEmail">user@bibliotech.com</p>
-                            <span class="admin-badge" id="adminBadge" style="display: none;">Admin</span>
-                        </div>
-                    </div>
-                </div>
-            </header>
+    <!-- Área de Trabajo Principal (Libros) -->
+    <section class="dashboard-container">
+        <div class="section-header">
+            <h2 class="section-title">Todos los Libros</h2>
+            <div class="section-header-actions">
+                <button id="btnRequests" class="btn-add btn-requests" onclick="openRequestsModal()" style="display: none;">
+                    <i class="fas fa-inbox"></i>
+                    <span>Solicitudes</span>
+                    <span id="requestsBadge" class="badge">0</span>
+                </button>
+                <button class="btn-add" id="btnAddBook" onclick="openAddModal()" style="display: none;">
+                    <i class="fas fa-plus"></i>
+                    <span>Añadir Libro</span>
+                </button>
+            </div>
+        </div>
 
-            <!-- Área de Trabajo Principal (Libros) -->
-            <section class="dashboard-container">
-                <div class="section-header">
-                    <h2 class="section-title">Todos los Libros</h2>
-                    <div class="section-header-actions">
-                        <button id="btnRequests" class="btn-add btn-requests" onclick="openRequestsModal()" style="display: none;">
-                            <i class="fas fa-inbox"></i>
-                            <span>Solicitudes</span>
-                            <span id="requestsBadge" class="badge">0</span>
-                        </button>
-                        <button class="btn-add" id="btnAddBook" onclick="openAddModal()" style="display: none;">
-                            <i class="fas fa-plus"></i>
-                            <span>Añadir Libro</span>
-                        </button>
-                    </div>
-                </div>
+        <!-- Barra de Herramientas Combinada: Buscador + Filtros -->
+        <div class="toolbar-container">
+            <div class="toolbar-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Buscar libros, autores..." oninput="filterBooks()">
+            </div>
+            <div class="filter-dropdown-wrapper">
+                <button class="filter-toggle-btn" id="filterToggleBtn" onclick="toggleFilterDropdown(event)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                    <span>Filtros / Categorías</span>
+                    <span class="filter-count-badge" id="filterCountBadge" style="display: none;">0</span>
+                </button>
 
-                <!-- Barra de Herramientas Combinada: Buscador + Filtros -->
-                <div class="toolbar-container">
-                    <div class="toolbar-search">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <input type="text" id="searchInput" placeholder="Buscar libros, autores..." oninput="filterBooks()">
-                    </div>
-                    <div class="filter-dropdown-wrapper">
-                        <button class="filter-toggle-btn" id="filterToggleBtn" onclick="toggleFilterDropdown(event)">
+                <div class="filter-dropdown-overlay" id="filterDropdownOverlay" onclick="closeFilterDropdown()"></div>
+
+                <div class="filter-dropdown" id="filterDropdown">
+                    <div class="filter-dropdown-header">
+                        <h4>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
                             </svg>
-                            <span>Filtros / Categorías</span>
-                            <span class="filter-count-badge" id="filterCountBadge" style="display: none;">0</span>
+                            Filtrar por categorías
+                        </h4>
+                        <button class="filter-dropdown-close" onclick="closeFilterDropdown()" aria-label="Cerrar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
                         </button>
-
-                        <div class="filter-dropdown-overlay" id="filterDropdownOverlay" onclick="closeFilterDropdown()"></div>
-
-                        <div class="filter-dropdown" id="filterDropdown">
-                            <div class="filter-dropdown-header">
-                                <h4>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                                    </svg>
-                                    Filtrar por categorías
-                                </h4>
-                                <button class="filter-dropdown-close" onclick="closeFilterDropdown()" aria-label="Cerrar">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="filter-tags-list" id="filterTagsList">
-                                <!-- Se llenará dinámicamente con JavaScript -->
-                            </div>
-                            <div class="filter-dropdown-footer">
-                                <span class="selected-count" id="selectedCountText">0 categorías seleccionadas</span>
-                                <button class="filter-clear-btn" id="filterClearBtn" onclick="clearFilters()" disabled>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M3 6h18"></path>
-                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                    </svg>
-                                    Limpiar filtros
-                                </button>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="filter-tags-list" id="filterTagsList">
+                        <!-- Se llenará dinámicamente con JavaScript -->
+                    </div>
+                    <div class="filter-dropdown-footer">
+                        <span class="selected-count" id="selectedCountText">0 categorías seleccionadas</span>
+                        <button class="filter-clear-btn" id="filterClearBtn" onclick="clearFilters()" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 6h18"></path>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            Limpiar filtros
+                        </button>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Grid de Libros dinámico -->
-                <div class="books-grid" id="booksGrid">
-                    <!-- Se llenará dinámicamente con JavaScript -->
-                </div>
-            </section>
-        </main>
-    </div>
+        <!-- Grid de Libros dinámico -->
+        <div class="books-grid" id="booksGrid">
+            <!-- Se llenará dinámicamente con JavaScript -->
+        </div>
+    </section>
+</main>
 
-    <!-- Modal Formulario para añadir/editar libros -->
-    <div class="modal" id="bookModal">
-        <div class="modal-content modal-book-form">
-            <span class="modal-close" onclick="closeModal()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px;">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </span>
-            <h3 class="modal-title" id="modalTitle">Registrar Nuevo Libro</h3>
+<!-- Modal Formulario para añadir/editar libros -->
+<div class="modal" id="bookModal">
+    <div class="modal-content modal-book-form">
+        <span class="modal-close" onclick="closeModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px;">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </span>
+        <h3 class="modal-title" id="modalTitle">Registrar Nuevo Libro</h3>
 
-            <!-- Área de estado de subida -->
-            <div id="uploadStatus" class="upload-status" style="display: none;"></div>
+        <!-- Área de estado de subida -->
+        <div id="uploadStatus" class="upload-status" style="display: none;"></div>
 
-            <!-- Mensaje de error del servidor -->
-            <div id="serverError" class="server-error" style="display: none;"></div>
+        <!-- Mensaje de error del servidor -->
+        <div id="serverError" class="server-error" style="display: none;"></div>
 
-            <form class="book-form" id="bookForm" enctype="multipart/form-data">
+        <form class="book-form" id="bookForm" enctype="multipart/form-data">
 
-                <!-- Fila 1: Título + Autor -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="bookTitle">Título del libro <span class="required">*</span></label>
-                        <div class="input-pill">
-                            <input id="bookTitle" name="nombre" type="text" placeholder="Ej: Cien años de soledad" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="bookAuthor">Autor <span class="required">*</span></label>
-                        <div class="input-pill">
-                            <input id="bookAuthor" name="autor" type="text" placeholder="Ej: Gabriel García Márquez" required>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Fila 2: Categoría + Ubicación -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="bookGenre">Categoría / Género</label>
-                        <div class="input-pill input-pill-select">
-                            <select id="bookGenre" name="categoria">
-                                <option value="">Selecciona una categoría...</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="bookAddress">Ubicación / Dirección</label>
-                        <div class="input-pill">
-                            <input id="bookAddress" name="direccion" type="text" placeholder="Ej: Estante A-3, Piso 2">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Descripción / Sinopsis -->
+            <!-- Fila 1: Título + Autor -->
+            <div class="form-row">
                 <div class="form-group">
-                    <label for="bookDescription">Descripción / Sinopsis</label>
-                    <div class="input-pill textarea-pill">
-                        <textarea id="bookDescription" name="descripcion" rows="3" placeholder="Breve descripción del libro..."></textarea>
+                    <label for="bookTitle">Título del libro <span class="required">*</span></label>
+                    <div class="input-pill">
+                        <input id="bookTitle" name="nombre" type="text" placeholder="Ej: Cien años de soledad" required>
                     </div>
                 </div>
-
-                <!-- Archivos: Portada + PDF -->
-                <div class="form-section-divider"></div>
-                <p class="file-section-label">Archivos adjuntos</p>
-                <div class="form-row file-row">
-                    <div class="form-group">
-                        <label for="bookCover">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px; vertical-align: middle; margin-right: 4px;">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                <polyline points="21 15 16 10 5 21"></polyline>
-                            </svg>
-                            Portada del libro
-                        </label>
-                        <div class="file-input-wrapper">
-                            <input id="bookCover" name="foto" type="file" accept="image/jpeg,image/png,image/jpg" onchange="updateFileLabel(this, 'coverLabel')">
-                            <label for="bookCover" class="file-input-label" id="coverLabel">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px; height:28px;">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="17 8 12 3 7 8"></polyline>
-                                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                                </svg>
-                                <span>Subir portada</span>
-                                <small>(JPG, PNG — máx. 5 MB)</small>
-                            </label>
-                        </div>
-                        <div id="coverPreview" class="file-preview" style="display: none;"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="bookPdf">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px; vertical-align: middle; margin-right: 4px;">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                            </svg>
-                            Archivo PDF
-                        </label>
-                        <div class="file-input-wrapper">
-                            <input id="bookPdf" name="pdf" type="file" accept="application/pdf" onchange="updateFileLabel(this, 'pdfLabel')">
-                            <label for="bookPdf" class="file-input-label" id="pdfLabel">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px; height:28px;">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="17 8 12 3 7 8"></polyline>
-                                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                                </svg>
-                                <span>Subir PDF</span>
-                                <small>(PDF — máx. 50 MB)</small>
-                            </label>
-                        </div>
-                        <div id="pdfPreview" class="file-preview" style="display: none;"></div>
+                <div class="form-group">
+                    <label for="bookAuthor">Autor <span class="required">*</span></label>
+                    <div class="input-pill">
+                        <input id="bookAuthor" name="autor" type="text" placeholder="Ej: Gabriel García Márquez" required>
                     </div>
                 </div>
+            </div>
 
-                <div class="btn-row" style="margin-top: 20px;">
-                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
-                    <button type="button" class="btn-pill btn-save" id="saveButton" onclick="saveBook()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px;">
-                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                            <polyline points="7 3 7 8 15 8"></polyline>
+            <!-- Fila 2: Categoría + Ubicación -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="bookGenre">Categoría / Género</label>
+                    <div class="input-pill input-pill-select">
+                        <select id="bookGenre" name="categoria">
+                            <option value="">Selecciona una categoría...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="bookAddress">Ubicación / Dirección</label>
+                    <div class="input-pill">
+                        <input id="bookAddress" name="direccion" type="text" placeholder="Ej: Estante A-3, Piso 2">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descripción / Sinopsis -->
+            <div class="form-group">
+                <label for="bookDescription">Descripción / Sinopsis</label>
+                <div class="input-pill textarea-pill">
+                    <textarea id="bookDescription" name="descripcion" rows="3" placeholder="Breve descripción del libro..."></textarea>
+                </div>
+            </div>
+
+            <!-- Archivos: Portada + PDF -->
+            <div class="form-section-divider"></div>
+            <p class="file-section-label">Archivos adjuntos</p>
+            <div class="form-row file-row">
+                <div class="form-group">
+                    <label for="bookCover">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px; vertical-align: middle; margin-right: 4px;">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
                         </svg>
-                        <span id="saveButtonText">Guardar Libro</span>
-                    </button>
+                        Portada del libro
+                    </label>
+                    <div class="file-input-wrapper">
+                        <input id="bookCover" name="foto" type="file" accept="image/jpeg,image/png,image/jpg" onchange="updateFileLabel(this, 'coverLabel')">
+                        <label for="bookCover" class="file-input-label" id="coverLabel">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px; height:28px;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <span>Subir portada</span>
+                            <small>(JPG, PNG — máx. 5 MB)</small>
+                        </label>
+                    </div>
+                    <div id="coverPreview" class="file-preview" style="display: none;"></div>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Carga de los scripts de conexión de API y lógica de gestión -->
-    <script src="js/api.js"></script>
-    <script src="js/books.js"></script>
-    <script src="js/bookDetail.js"></script>
-
-    <!-- Detección de plataforma: mostrar "Descargados" solo en el APK de Capacitor -->
-    <script>
-        (function () {
-            // La sección "Descargados" es exclusiva de la app Android (Capacitor).
-            // En navegador web se oculta porque la descarga local usa el File System nativo.
-            const isNative = typeof window.Capacitor !== 'undefined' &&
-                window.Capacitor.isNativeAvailable === true;
-            const item = document.getElementById('menu-descargados-item');
-            if (item) {
-                item.style.display = isNative ? '' : 'none';
-            }
-        })();
-    </script>
-
-    <!-- Overlay de fondo para el panel de detalle -->
-    <div class="detail-overlay" id="detailOverlay"></div>
-
-    <!-- Panel de Detalle de Libro -->
-    <aside class="book-detail-panel" id="bookDetailPanel" aria-hidden="true">
-        <div class="detail-header">
-            <div class="detail-header-top">
-                <h2 class="detail-title" id="detailPanelTitle">Detalle del Libro</h2>
-                <button class="detail-close" onclick="closeBookDetail()" aria-label="Cerrar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-            <span class="detail-status-tag available" id="detailStatusTag">Disponible</span>
-        </div>
-
-        <div class="detail-content">
-            <!-- Información del libro -->
-            <div class="detail-section">
-                <h3 class="detail-section-title">Información</h3>
-                <div class="detail-info-grid">
-                    <div class="detail-info-item">
-                        <p class="detail-info-label">Autor</p>
-                        <p class="detail-info-value" id="detailBookAuthor">-</p>
+                <div class="form-group">
+                    <label for="bookPdf">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px; vertical-align: middle; margin-right: 4px;">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        Archivo PDF
+                    </label>
+                    <div class="file-input-wrapper">
+                        <input id="bookPdf" name="pdf" type="file" accept="application/pdf" onchange="updateFileLabel(this, 'pdfLabel')">
+                        <label for="bookPdf" class="file-input-label" id="pdfLabel">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px; height:28px;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <span>Subir PDF</span>
+                            <small>(PDF — máx. 50 MB)</small>
+                        </label>
                     </div>
-                    <div class="detail-info-item">
-                        <p class="detail-info-label">Género</p>
-                        <p class="detail-info-value" id="detailBookGenre">-</p>
-                    </div>
-                    <div class="detail-info-item">
-                        <p class="detail-info-label">Año</p>
-                        <p class="detail-info-value" id="detailBookYear">-</p>
-                    </div>
-                    <div class="detail-info-item">
-                        <p class="detail-info-label">ID</p>
-                        <p class="detail-info-value" id="detailBookId">#-</p>
-                    </div>
+                    <div id="pdfPreview" class="file-preview" style="display: none;"></div>
                 </div>
             </div>
 
-            <!-- Sinopsis -->
-            <div class="detail-section">
-                <h3 class="detail-section-title">Sinopsis</h3>
-                <div class="detail-synopsis">
-                    <p id="detailSynopsis">Sin información disponible.</p>
-                </div>
-            </div>
-
-            <!-- Calificación -->
-            <div class="detail-section">
-                <h3 class="detail-section-title">Calificación</h3>
-                <div class="detail-rating">
-                    <div class="star-rating">
-                        <span class="star" onclick="saveRating(1)">☆</span>
-                        <span class="star" onclick="saveRating(2)">☆</span>
-                        <span class="star" onclick="saveRating(3)">☆</span>
-                        <span class="star" onclick="saveRating(4)">☆</span>
-                        <span class="star" onclick="saveRating(5)">☆</span>
-                    </div>
-                    <span class="rating-value" id="ratingValue">(0.0)</span>
-                </div>
-            </div>
-
-            <!-- Comentarios -->
-            <div class="detail-section">
-                <h3 class="detail-section-title">Comentarios</h3>
-                <div class="detail-comments" id="commentsList">
-                    <!-- Comentarios se cargan dinámicamente -->
-                </div>
-                <div class="add-comment-form">
-                    <textarea id="newCommentInput" placeholder="Escribe tu opinión sobre este libro..."></textarea>
-                    <button type="button" onclick="addComment()">Publicar</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="detail-footer">
-            <label class="detail-notes-label">Notas Personales</label>
-            <textarea class="detail-notes-textarea" id="detailNotes" placeholder="Añade tus notas, observaciones o pensamientos sobre este libro..."></textarea>
-            <div class="detail-notes-actions">
-                <button class="btn-save-notes" onclick="saveBookNotes()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <div class="btn-row" style="margin-top: 20px;">
+                <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                <button type="button" class="btn-pill btn-save" id="saveButton" onclick="saveBook()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px;">
                         <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                         <polyline points="17 21 17 13 7 13 7 21"></polyline>
                         <polyline points="7 3 7 8 15 8"></polyline>
                     </svg>
-                    Guardar Notas
+                    <span id="saveButtonText">Guardar Libro</span>
                 </button>
             </div>
-        </div>
-    </aside>
+        </form>
+    </div>
+</div>
 
-<!-- Modal: Centro de Moderación -->
-    <div class="modal" id="requestsModal">
-        <div class="modal-content requests-modal-content">
-            <span class="modal-close" onclick="closeRequestsModal()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px;">
+<!-- Carga de los scripts de conexión de API y lógica de gestión -->
+<script src="js/api.js"></script>
+<script src="js/books.js"></script>
+<script src="js/bookDetail.js"></script>
+
+<!-- Detección de plataforma: mostrar "Descargados" solo en el APK de Capacitor -->
+<script>
+    (function () {
+        // La sección "Descargados" es exclusiva de la app Android (Capacitor).
+        // En navegador web se oculta porque la descarga local usa el File System nativo.
+        const isNative = typeof window.Capacitor !== 'undefined' &&
+            window.Capacitor.isNativeAvailable === true;
+        const item = document.getElementById('menu-descargados-item');
+        if (item) {
+            item.style.display = isNative ? '' : 'none';
+        }
+    })();
+</script>
+
+<!-- Overlay de fondo para el panel de detalle -->
+<div class="detail-overlay" id="detailOverlay"></div>
+
+<!-- Panel de Detalle de Libro -->
+<aside class="book-detail-panel" id="bookDetailPanel" aria-hidden="true">
+    <div class="detail-header">
+        <div class="detail-header-top">
+            <h2 class="detail-title" id="detailPanelTitle">Detalle del Libro</h2>
+            <button class="detail-close" onclick="closeBookDetail()" aria-label="Cerrar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
-            </span>
-            <h3 class="modal-title">Centro de Moderación</h3>
+            </button>
+        </div>
+        <span class="detail-status-tag available" id="detailStatusTag">Disponible</span>
+    </div>
 
-            <!-- Cabecera de pestañas + acciones globales -->
-            <div class="modal-header-actions">
-                <!-- Tabs de moderación -->
-                <div class="mod-tabs">
-                    <button class="mod-tab active" data-tab="books" id="tabBooks" onclick="switchModTab('books')">
-                        <i class="fas fa-book"></i>
-                        <span>Libros Pendientes</span>
-                        <span class="tab-badge" id="tabBooksBadge" style="display:none;">0</span>
-                    </button>
-                    <button class="mod-tab" data-tab="writers" id="tabWriters" onclick="switchModTab('writers')">
-                        <i class="fas fa-user-pen"></i>
-                        <span>Ascensos a Escritor</span>
-                        <span class="tab-badge" id="tabWritersBadge" style="display:none;">0</span>
-                    </button>
+    <div class="detail-content">
+        <!-- Información del libro -->
+        <div class="detail-section">
+            <h3 class="detail-section-title">Información</h3>
+            <div class="detail-info-grid">
+                <div class="detail-info-item">
+                    <p class="detail-info-label">Autor</p>
+                    <p class="detail-info-value" id="detailBookAuthor">-</p>
                 </div>
-
-                <!-- Acciones globales -->
-                <div class="global-actions">
-                    <button class="btn-pill btn-pill-success" onclick="approveAllRequests()">
-                        <i class="fas fa-check"></i>
-                        <span>Aceptar Todo</span>
-                    </button>
-                    <button class="btn-pill btn-pill-danger" onclick="denyAllRequests()">
-                        <i class="fas fa-times"></i>
-                        <span>Denegar Todo</span>
-                    </button>
+                <div class="detail-info-item">
+                    <p class="detail-info-label">Género</p>
+                    <p class="detail-info-value" id="detailBookGenre">-</p>
+                </div>
+                <div class="detail-info-item">
+                    <p class="detail-info-label">Año</p>
+                    <p class="detail-info-value" id="detailBookYear">-</p>
+                </div>
+                <div class="detail-info-item">
+                    <p class="detail-info-label">ID</p>
+                    <p class="detail-info-value" id="detailBookId">#-</p>
                 </div>
             </div>
+        </div>
 
-            <!-- Contenido de tabs -->
-            <div class="moderation-content">
-                <div class="mod-tab-content active" id="contentBooks">
-                    <div class="mod-list" id="pendingBooksList">
-                        <!-- Libros pendientes se cargan aquí -->
-                    </div>
+        <!-- Sinopsis -->
+        <div class="detail-section">
+            <h3 class="detail-section-title">Sinopsis</h3>
+            <div class="detail-synopsis">
+                <p id="detailSynopsis">Sin información disponible.</p>
+            </div>
+        </div>
+
+        <!-- Calificación -->
+        <div class="detail-section">
+            <h3 class="detail-section-title">Calificación</h3>
+            <div class="detail-rating">
+                <div class="star-rating">
+                    <span class="star" onclick="saveRating(1)">☆</span>
+                    <span class="star" onclick="saveRating(2)">☆</span>
+                    <span class="star" onclick="saveRating(3)">☆</span>
+                    <span class="star" onclick="saveRating(4)">☆</span>
+                    <span class="star" onclick="saveRating(5)">☆</span>
                 </div>
-                <div class="mod-tab-content" id="contentWriters">
-                    <div class="mod-list" id="writerRequestsList">
-                        <!-- Solicitudes de escritor se cargan aquí -->
-                    </div>
-                </div>
+                <span class="rating-value" id="ratingValue">(0.0)</span>
+            </div>
+        </div>
+
+        <!-- Comentarios -->
+        <div class="detail-section">
+            <h3 class="detail-section-title">Comentarios</h3>
+            <div class="detail-comments" id="commentsList">
+                <!-- Comentarios se cargan dinámicamente -->
+            </div>
+            <div class="add-comment-form">
+                <textarea id="newCommentInput" placeholder="Escribe tu opinión sobre este libro..."></textarea>
+                <button type="button" onclick="addComment()">Publicar</button>
             </div>
         </div>
     </div>
 
-    <!-- PWA: registro del service worker -->
-    <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("sw.js");
-        }
-    </script>
+    <div class="detail-footer">
+        <label class="detail-notes-label">Notas Personales</label>
+        <textarea class="detail-notes-textarea" id="detailNotes" placeholder="Añade tus notas, observaciones o pensamientos sobre este libro..."></textarea>
+        <div class="detail-notes-actions">
+            <button class="btn-save-notes" onclick="saveBookNotes()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Guardar Notas
+            </button>
+        </div>
+    </div>
+</aside>
+
+<!-- Modal: Centro de Moderación -->
+<div class="modal" id="requestsModal">
+    <div class="modal-content requests-modal-content">
+        <span class="modal-close" onclick="closeRequestsModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px;">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </span>
+        <h3 class="modal-title">Centro de Moderación</h3>
+
+        <!-- Cabecera de pestañas + acciones globales -->
+        <div class="modal-header-actions">
+            <!-- Tabs de moderación -->
+            <div class="mod-tabs">
+                <button class="mod-tab active" data-tab="books" id="tabBooks" onclick="switchModTab('books')">
+                    <i class="fas fa-book"></i>
+                    <span>Libros Pendientes</span>
+                    <span class="tab-badge" id="tabBooksBadge" style="display:none;">0</span>
+                </button>
+                <button class="mod-tab" data-tab="writers" id="tabWriters" onclick="switchModTab('writers')">
+                    <i class="fas fa-user-pen"></i>
+                    <span>Ascensos a Escritor</span>
+                    <span class="tab-badge" id="tabWritersBadge" style="display:none;">0</span>
+                </button>
+            </div>
+
+            <!-- Acciones globales -->
+            <div class="global-actions">
+                <button class="btn-pill btn-pill-success" onclick="approveAllRequests()">
+                    <i class="fas fa-check"></i>
+                    <span>Aceptar Todo</span>
+                </button>
+                <button class="btn-pill btn-pill-danger" onclick="denyAllRequests()">
+                    <i class="fas fa-times"></i>
+                    <span>Denegar Todo</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Contenido de tabs -->
+        <div class="moderation-content">
+            <div class="mod-tab-content active" id="contentBooks">
+                <div class="mod-list" id="pendingBooksList">
+                    <!-- Libros pendientes se cargan aquí -->
+                </div>
+            </div>
+            <div class="mod-tab-content" id="contentWriters">
+                <div class="mod-list" id="writerRequestsList">
+                    <!-- Solicitudes de escritor se cargan aquí -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PWA: registro del service worker -->
+<script>
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js");
+    }
+</script>
 </body>
 
 </html>

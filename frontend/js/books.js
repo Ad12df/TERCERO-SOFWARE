@@ -92,9 +92,9 @@ function initializeProfile() {
 
 /**
  * Aplica la visibilidad de los botones de cabecera según el rol del usuario:
- *  - ADMIN:    ve únicamente "📬 Solicitudes"
- *  - ESCRITOR:  ve únicamente "+ Añadir Libro"
- *  - USUARIO:  no ve ningún botón de cabecera
+ * - ADMIN: ve únicamente "📬 Solicitudes"
+ * - ESCRITOR: ve únicamente "+ Añadir Libro"
+ * - USUARIO: no ve ningún botón de cabecera
  */
 function applyRoleVisibility() {
     const role = getUserRole();
