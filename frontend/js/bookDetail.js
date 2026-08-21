@@ -638,14 +638,6 @@ function switchTab(tabName) {
 }
 
 /**
- * Alterna el estado abierto/cerrado de la barra lateral en versión móvil
- */
-function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    sidebar.classList.toggle("active");
-}
-
-/**
  * Borra la sesión local y redirige al login
  */
 function logout() {

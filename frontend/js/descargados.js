@@ -51,14 +51,6 @@ function logout() {
 }
 
 /**
- * Alterna el estado abierto/cerrado de la barra lateral en versión móvil
- */
-function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    sidebar.classList.toggle("active");
-}
-
-/**
  * Carga los libros descargados localmente.
  * Combina la lista de libros descargados (localStorage) con el progreso
  * de lectura guardado y verifica qué PDFs existen realmente en IndexedDB.

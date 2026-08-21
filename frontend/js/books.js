@@ -48,25 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
     applyRoleVisibility();
     populateCategorySelect();
 
-    const menuToggle = document.getElementById("menuToggle");
-    if (menuToggle) {
-        menuToggle.addEventListener("click", (e) => {
-            e.preventDefault();
-            if (typeof window.toggleSidebar === "function") {
-                window.toggleSidebar();
-            }
-        });
-    }
-
-    const sidebarOverlay = document.getElementById("sidebar-overlay");
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener("click", () => {
-            if (typeof window.toggleSidebar === "function") {
-                window.toggleSidebar();
-            }
-        });
-    }
-
     try {
         loadBooks();
     } catch (err) {
@@ -886,22 +867,6 @@ function switchTab(tabName) {
         } catch (_) { /* sin acciones */ }
     }
 }
-
-/**
- * Alterna el estado abierto/cerrado de la barra lateral en versión móvil
- * Definida explícitamente en el ámbito global para evitar ReferenceError
- * al invocarla desde onclick="toggleSidebar()" en el HTML.
- */
-window.toggleSidebar = function () {
-    const sidebar = document.getElementById("sidebar");
-    if (!sidebar) return;
-    sidebar.classList.toggle("active");
-
-    const overlay = document.getElementById("sidebar-overlay");
-    if (overlay) {
-        overlay.classList.toggle("active");
-    }
-};
 
 // ==========================================================================
 // MODERACIÓN — CENTRO DE SOLICITUDES (solo ADMIN)
