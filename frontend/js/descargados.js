@@ -10,71 +10,13 @@ const PROGRESS_KEY = "bibliotech_books";              // progreso de lectura loc
 const PDF_DB_NAME = "bibliotech_pdf_cache";           // IndexedDB con los PDFs cacheados
 const PDF_STORE = "pdfs";
 
-// ===================================
-// DETECCIÓN DE CONEXIÓN Y PANTALLA OFFLINE
-// ===================================
-
-function showOfflineScreen() {
-  const offlineScreen = document.createElement('div');
-  offlineScreen.id = 'offline-screen';
-  offlineScreen.style.position = 'fixed';
-  offlineScreen.style.top = '0';
-  offlineScreen.style.left = '0';
-  offlineScreen.style.width = '100%';
-  offlineScreen.style.height = '100%';
-  offlineScreen.style.backgroundColor = 'rgba(0,0,0,0.8)';
-  offlineScreen.style.color = 'white';
-  offlineScreen.style.display = 'flex';
-  offlineScreen.style.flexDirection = 'column';
-  offlineScreen.style.justifyContent = 'center';
-  offlineScreen.style.alignItems = 'center';
-  offlineScreen.style.zIndex = '9999';
-  
-  const message = document.createElement('h1');
-  message.textContent = 'Sin conexión a internet';
-  
-  const description = document.createElement('p');
-  description.textContent = 'No se puede conectar al servidor. Por favor, verifica tu conexión y vuelve a intentarlo.';
-  
-  const continueButton = document.createElement('button');
-  continueButton.textContent = 'Continuar sin conexión';
-  continueButton.style.padding = '10px 20px';
-  continueButton.style.marginTop = '20px';
-  continueButton.style.backgroundColor = '#ffffff';
-  continueButton.style.color = '#000000';
-  continueButton.style.borderRadius = '5px';
-  continueButton.style.cursor = 'pointer';
-  
-  continueButton.addEventListener('click', () => {
-    window.location.href = 'descargados.html';
-  });
-  
-  offlineScreen.appendChild(message);
-  offlineScreen.appendChild(description);
-  offlineScreen.appendChild(continueButton);
-  document.body.appendChild(offlineScreen);
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-  // Detección de dispositivo para bloquear acceso en escritorio
-  const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
-  if (isDesktop) {
-    window.location.href = 'index.html';
-    return;
-  }
-
-  if (!isAuthenticated()) {
-    window.location.href = "index.html";
-    return;
-  }
-  initializeProfile();
-  
-  // Verifica conexión antes de cargar libros descargados
-  if (navigator.onLine) {
+    if (!isAuthenticated()) {
+        window.location.href = "index.html";
+        return;
+    }
+    initializeProfile();
     loadDownloadedBooks();
-  } else {
-    showOfflineScreen();
-  }
 });
 
 /**

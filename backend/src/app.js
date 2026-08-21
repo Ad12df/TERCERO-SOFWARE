@@ -11,38 +11,28 @@ const app = express();
 // ─── 1. Configuración CORS ────────────────────────────────────
 // ⚠️ REEMPLAZA la URL de abajo con tu URL de Vercel
 //    Ejemplo: "https://mi-libreria.vercel.app"
-const VERCEL_URL = "https://tercero-sofware.onrender.com"; // 👈 Coloca aquí tu URL de Vercel
+const VERCEL_URL = "https://tercero-sofware.vercel.app"; // 👈 Coloca aquí tu URL de Vercel
 
 // Lista de orígenes permitidos (Vercel + localhost para desarrollo)
 const allowedOrigins = [
-  "http://localhost",
-  "https://localhost",
+  VERCEL_URL,
+  "http://localhost:5500",
+  "http://127.0.0.1:5500",
   "capacitor://localhost",
-  "https://tercero-sofware.vercel.app",
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // 1. Si no hay origin (ej. llamadas servidor-a-servidor o algunas apps nativas) -> Permitir
-      if (!origin) return callback(null, true);
-
-      // 2. Si viene de capacitor, localhost en cualquier puerto/protocolo o Render -> Permitir
-      if (
-        origin.includes('localhost') ||
-        origin.includes('capacitor://') ||
-        origin.includes('tercero-sofware.onrender.com') ||
-        origin.includes('tercero-sofware.vercel.app')
-      ) {
+      // Permite peticiones sin origen (como curl o Postman) y los orígenes listados
+      if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-
-      // Si no coincide con ninguno, denegar
-      return callback(new Error('No permitido por CORS'));
+      return callback(new Error("No permitido por CORS"));
     },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
+    credentials: true, // 👈 Permite envío de credenciales/cookies
   })
 );
 

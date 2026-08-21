@@ -86,18 +86,16 @@
     // ===================================
     // INICIALIZACIÓN
     // ===================================
-function init() {
-    // 1. Capturar el ID dinámicamente desde la URL (?id=)
-    const urlParams = new URLSearchParams(window.location.search);
-    state.bookId = urlParams.get('id');
+    function init() {
+        // 1. Capturar el ID dinámicamente desde la URL (?id=)
+        const urlParams = new URLSearchParams(window.location.search);
+        state.bookId = urlParams.get('id');
 
-    if (!state.bookId) {
-        showToast('Error: No se especificó el libro');
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 2000);
-        return;
-    }
+        if (!state.bookId) {
+            showToast('Error: No se especificó el libro');
+            setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+            return;
+        }
 
         // 2. Validar que API_URL esté definida (proviene de js/api.js)
         if (typeof API_URL === 'undefined') {
@@ -240,14 +238,14 @@ function init() {
     // ===================================
     // CARGAR PDF CON PDF.js (vía proxy + IndexedDB)
     // ===================================
-    async function loadPDF(bookId) {
+    async function loadPDF() {
         if (!window.pdfjsLib) {
             showToast('Error: PDF.js no está disponible');
             return;
         }
 
-        if (!bookId) {
-            console.error('loadPDF: bookId no está definido');
+        if (!state.bookId) {
+            console.error('loadPDF: state.bookId no está definido');
             showToast('Error: No se identificó el libro');
             return;
         }
@@ -259,7 +257,7 @@ function init() {
         }
 
         // 1. Verificar caché de IndexedDB
-        const cachedBlob = await getCachedPDF(bookId);
+        const cachedBlob = await getCachedPDF(state.bookId);
 
         if (cachedBlob) {
             // PDF ya está en caché local — cargar directamente
