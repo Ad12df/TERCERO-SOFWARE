@@ -319,8 +319,9 @@
         </div>
     </div>
 
-    <!-- Carga de los scripts de conexión de API y lógica de gestión -->
-    <!-- defer: se ejecutan tras parsear el DOM, sin bloquear el render y antes de DOMContentLoaded -->
+    <!-- Carga de los scripts compartidos (UI global + API) y lógica de gestión -->
+    <!-- defer: se ejecutan tras parsear el DOM, sin bloquear render, y en orden de declaración -->
+    <script src="js/ui.js" defer></script>
     <script src="js/api.js" defer></script>
     <script src="js/books.js" defer></script>
     <script src="js/bookDetail.js" defer></script>

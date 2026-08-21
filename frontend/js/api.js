@@ -167,54 +167,6 @@ async function authFetch(url, options = {}) {
 }
 
 // ===================================
-// SIDEBAR COMÚN (todas las páginas)
-// ===================================
-(function () {
-  function setupSidebar() {
-    const menuBtn = document.getElementById('menuToggle');
-    const overlay = document.getElementById('sidebar-overlay');
-
-    if (menuBtn && !menuBtn.dataset.sidebarBound) {
-      menuBtn.dataset.sidebarBound = 'true';
-      menuBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (typeof window.toggleSidebar === 'function') {
-          window.toggleSidebar();
-        }
-      });
-    }
-    if (overlay && !overlay.dataset.sidebarBound) {
-      overlay.dataset.sidebarBound = 'true';
-      overlay.addEventListener('click', () => {
-        if (typeof window.toggleSidebar === 'function') {
-          window.toggleSidebar();
-        }
-      });
-    }
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupSidebar);
-  } else {
-    setupSidebar();
-  }
-})();
-
-if (typeof window.toggleSidebar !== 'function') {
-  window.toggleSidebar = function () {
-    const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
-    if (!sidebar) return;
-    sidebar.classList.toggle('active');
-
-    const overlay = document.getElementById('sidebar-overlay');
-    if (overlay) {
-      overlay.classList.toggle('active');
-      overlay.setAttribute('aria-hidden', String(!overlay.classList.contains('active')));
-    }
-  };
-}
-
-// ===================================
 // INICIALIZACIÓN
 // ===================================
 OfflineQueue.init();

@@ -4,16 +4,6 @@
 
 let readBooks = [];
 
-if (typeof window.toggleSidebar !== 'function') {
-    window.toggleSidebar = function () {
-        const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
-        if (!sidebar) return;
-        sidebar.classList.toggle('active');
-        const overlay = document.getElementById('sidebar-overlay');
-        if (overlay) overlay.classList.toggle('active');
-    };
-}
-
 document.addEventListener("DOMContentLoaded", () => {
     try {
         if (!isAuthenticated()) {
