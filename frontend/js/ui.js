@@ -1,8 +1,8 @@
 // ==========================================================================
 // UI GLOBAL — BiblioTech
 // Funciones compartidas por todas las vistas con dashboard-layout.
-// Este archivo DEBE cargarse antes que los scripts específicos de cada página
-// para garantizar que toggleSidebar() y utilidades de UI existan en scope.
+// window.toggleSidebar se expone de inmediato (sin dependencias) para que
+// los atributos onclick="toggleSidebar()" inline del HTML la encuentren.
 // ==========================================================================
 
 (function (global) {
@@ -18,24 +18,13 @@
 
     /**
      * Alterna el menú lateral en móviles.
-     * Busca #sidebar (con fallback a .sidebar) y alterna .active.
-     * Hace lo propio con #sidebar-overlay si existe.
-     * Expuesta en window.toggleSidebar para que los atributos
-     * onclick="toggleSidebar()" inline del HTML la encuentren.
+     * Expone inmediatamente en window.toggleSidebar, sin dependencias.
      */
     global.toggleSidebar = function () {
         const sidebar = getSidebar();
-        if (!sidebar) return;
-        sidebar.classList.toggle("active");
-
         const overlay = getOverlay();
-        if (overlay) {
-            overlay.classList.toggle("active");
-            overlay.setAttribute(
-                "aria-hidden",
-                String(!overlay.classList.contains("active"))
-            );
-        }
+        if (sidebar) sidebar.classList.toggle("active");
+        if (overlay) overlay.classList.toggle("active");
     };
 
     function bindMenuToggle() {
@@ -75,10 +64,31 @@
         });
     }
 
+    /**
+     * Listener delegado al documento: captura clics en cualquier botón
+     * con clase .menu-toggle o con un atributo onclick que invoque toggleSidebar(),
+     * sin importar en qué página esté el usuario ni cuándo se renderice el botón.
+     */
+    function bindDelegatedMenuToggle() {
+        if (document.documentElement.dataset.uiDelegatedBound === "1") return;
+        document.documentElement.dataset.uiDelegatedBound = "1";
+        document.addEventListener("click", function (e) {
+            const target = e.target;
+            if (!(target instanceof Element)) return;
+            const trigger = target.closest(".menu-toggle, [onclick*='toggleSidebar'], [data-toggle='sidebar']");
+            if (!trigger) return;
+            e.preventDefault();
+            if (typeof global.toggleSidebar === "function") {
+                global.toggleSidebar();
+            }
+        });
+    }
+
     function initUI() {
         bindMenuToggle();
         bindOverlayClose();
         bindEscapeClose();
+        bindDelegatedMenuToggle();
     }
 
     if (document.readyState === "loading") {
