@@ -72,6 +72,9 @@
             </div>
         </aside>
 
+        <!-- Overlay del Sidebar móvil -->
+        <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
         <!-- Contenido Principal -->
         <main class="main-content">
             <!-- Barra Superior (Topbar) -->
@@ -120,8 +123,8 @@
         <span id="toastMessage"></span>
     </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/myList.js"></script>
+    <script src="js/api.js" defer></script>
+    <script src="js/myList.js" defer></script>
 
     <!-- PWA: registro del service worker -->
     <script>

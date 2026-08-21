@@ -134,22 +134,84 @@ async function authFetch(url, options = {}) {
     };
   }
 
-  // Si no hay conexión y es una petición de escritura, encolar
   if (!navigator.onLine && options.method && options.method !== 'GET') {
-    OfflineQueue.enqueue({
-      url: url,
-      method: options.method,
-      headers: options.headers || {},
-      body: options.body ? JSON.parse(options.body) : null
-    });
-    // Devolver una respuesta "falsa" exitosa para no romper el flujo
+    try {
+      OfflineQueue.enqueue({
+        url: url,
+        method: options.method,
+        headers: options.headers || {},
+        body: options.body ? (typeof options.body === 'string' ? JSON.parse(options.body) : options.body) : null
+      });
+    } catch (qErr) {
+      console.warn('⚠️ No se pudo encolar la petición offline:', qErr);
+    }
     return new Response(JSON.stringify({ success: true, offline: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
   }
 
-  return fetch(url, options);
+  try {
+    return await fetch(url, options);
+  } catch (networkErr) {
+    console.error(`❌ Fallo de red en authFetch (${url}):`, networkErr.message);
+    return new Response(JSON.stringify({
+      success: false,
+      message: networkErr.message || 'Error de conexión. Inténtalo de nuevo.'
+    }), {
+      status: 0,
+      statusText: 'Network Error',
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// ===================================
+// SIDEBAR COMÚN (todas las páginas)
+// ===================================
+(function () {
+  function setupSidebar() {
+    const menuBtn = document.getElementById('menuToggle');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    if (menuBtn && !menuBtn.dataset.sidebarBound) {
+      menuBtn.dataset.sidebarBound = 'true';
+      menuBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (typeof window.toggleSidebar === 'function') {
+          window.toggleSidebar();
+        }
+      });
+    }
+    if (overlay && !overlay.dataset.sidebarBound) {
+      overlay.dataset.sidebarBound = 'true';
+      overlay.addEventListener('click', () => {
+        if (typeof window.toggleSidebar === 'function') {
+          window.toggleSidebar();
+        }
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupSidebar);
+  } else {
+    setupSidebar();
+  }
+})();
+
+if (typeof window.toggleSidebar !== 'function') {
+  window.toggleSidebar = function () {
+    const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
+    if (!sidebar) return;
+    sidebar.classList.toggle('active');
+
+    const overlay = document.getElementById('sidebar-overlay');
+    if (overlay) {
+      overlay.classList.toggle('active');
+      overlay.setAttribute('aria-hidden', String(!overlay.classList.contains('active')));
+    }
+  };
 }
 
 // ===================================

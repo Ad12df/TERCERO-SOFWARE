@@ -4,13 +4,31 @@
 
 let readBooks = [];
 
+if (typeof window.toggleSidebar !== 'function') {
+    window.toggleSidebar = function () {
+        const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
+        if (!sidebar) return;
+        sidebar.classList.toggle('active');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (overlay) overlay.classList.toggle('active');
+    };
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-    if (!isAuthenticated()) {
-        window.location.href = "index.html";
-        return;
+    try {
+        if (!isAuthenticated()) {
+            window.location.href = "index.html";
+            return;
+        }
+        initializeProfile();
+        try {
+            loadReadBooks();
+        } catch (err) {
+            console.error("❌ Error inicializando carga de Leídos:", err);
+        }
+    } catch (rootErr) {
+        console.error("❌ Error irrecuperable en Leídos (DOMContentLoaded):", rootErr);
     }
-    initializeProfile();
-    loadReadBooks();
 });
 
 /**
@@ -49,7 +67,14 @@ function logout() {
  */
 async function loadReadBooks() {
     const grid = document.getElementById("myListGrid");
-    if (!grid) return;
+    if (!grid) {
+        console.warn("⚠️ myListGrid no encontrado en el DOM");
+        return;
+    }
+
+    if (document.getElementById('booksGrid') || document.getElementById('books-grid')) {
+        // Prevención: nunca operar sobre el catálogo principal desde esta vista
+    }
 
     const token = localStorage.getItem('token');
     if (!token) {
@@ -58,20 +83,30 @@ async function loadReadBooks() {
     }
 
     try {
-        const res = await fetch(`${API_URL}/lists/read`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        const json = await res.json();
+        let res;
+        try {
+            res = await fetch(`${API_URL}/lists/read`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+        } catch (networkErr) {
+            throw new Error("No se pudo conectar con el servidor. Revisa tu conexión.");
+        }
+        let json;
+        try {
+            json = await res.json();
+        } catch (parseErr) {
+            throw new Error("Respuesta inválida del servidor.");
+        }
 
         if (!res.ok) {
             throw new Error(json.message || "Error al cargar los libros leídos");
         }
 
-        readBooks = json.data || [];
+        readBooks = Array.isArray(json.data) ? json.data : [];
         renderReadBooks(readBooks);
     } catch (err) {
         console.error("❌ Error cargando Leídos:", err);
-        renderError("No se pudieron cargar tus libros leídos");
+        try { renderError(err.message || "No se pudieron cargar tus libros leídos"); } catch (_) {}
     }
 }
 

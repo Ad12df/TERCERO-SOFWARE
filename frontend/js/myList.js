@@ -4,13 +4,31 @@
 
 let myList = [];
 
+if (typeof window.toggleSidebar !== 'function') {
+    window.toggleSidebar = function () {
+        const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
+        if (!sidebar) return;
+        sidebar.classList.toggle('active');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (overlay) overlay.classList.toggle('active');
+    };
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-    if (!isAuthenticated()) {
-        window.location.href = "index.html";
-        return;
+    try {
+        if (!isAuthenticated()) {
+            window.location.href = "index.html";
+            return;
+        }
+        initializeProfile();
+        try {
+            loadMyList();
+        } catch (err) {
+            console.error("❌ Error inicializando carga de Mi Lista:", err);
+        }
+    } catch (rootErr) {
+        console.error("❌ Error irrecuperable en Mi Lista (DOMContentLoaded):", rootErr);
     }
-    initializeProfile();
-    loadMyList();
 });
 
 /**
@@ -49,7 +67,14 @@ function logout() {
  */
 async function loadMyList() {
     const grid = document.getElementById("myListGrid");
-    if (!grid) return;
+    if (!grid) {
+        console.warn("⚠️ myListGrid no encontrado en el DOM");
+        return;
+    }
+
+    if (document.getElementById('booksGrid') || document.getElementById('books-grid')) {
+        // Nada que hacer, pero evitamos cualquier acceso accidental al grid de catálogo
+    }
 
     const token = localStorage.getItem('token');
     if (!token) {
@@ -58,20 +83,30 @@ async function loadMyList() {
     }
 
     try {
-        const res = await fetch(`${API_URL}/lists`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        const json = await res.json();
+        let res;
+        try {
+            res = await fetch(`${API_URL}/lists`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+        } catch (networkErr) {
+            throw new Error("No se pudo conectar con el servidor. Revisa tu conexión.");
+        }
+        let json;
+        try {
+            json = await res.json();
+        } catch (parseErr) {
+            throw new Error("Respuesta inválida del servidor.");
+        }
 
         if (!res.ok) {
             throw new Error(json.message || "Error al cargar la lista");
         }
 
-        myList = json.data || [];
+        myList = Array.isArray(json.data) ? json.data : [];
         renderMyList(myList);
     } catch (err) {
         console.error("❌ Error cargando Mi Lista:", err);
-        renderError("No se pudo cargar tu lista");
+        try { renderError(err.message || "No se pudo cargar tu lista"); } catch (_) {}
     }
 }
 

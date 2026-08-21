@@ -10,7 +10,7 @@
     "build:apk": "cd android && ./gradlew assembleDebug"
   },
   "dependencies": {
-    "@capacitor/android": "^6.1.2",
+    "@capacitor/android": "^6.2.1",
     "@capacitor/core": "^6.1.2",
     "@capacitor/filesystem": "^6.0.4"
   },

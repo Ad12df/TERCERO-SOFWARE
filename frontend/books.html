@@ -85,6 +85,9 @@
             </div>
         </aside>
 
+        <!-- Overlay del Sidebar móvil (activo al abrir el menú) -->
+        <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
         <!-- Contenido Principal -->
         <main class="main-content">
             <!-- Barra Superior (Topbar) -->
@@ -317,9 +320,10 @@
     </div>
 
     <!-- Carga de los scripts de conexión de API y lógica de gestión -->
-    <script src="js/api.js"></script>
-    <script src="js/books.js"></script>
-    <script src="js/bookDetail.js"></script>
+    <!-- defer: se ejecutan tras parsear el DOM, sin bloquear el render y antes de DOMContentLoaded -->
+    <script src="js/api.js" defer></script>
+    <script src="js/books.js" defer></script>
+    <script src="js/bookDetail.js" defer></script>
 
     <!-- Detección de plataforma: mostrar "Descargados" solo en el APK de Capacitor -->
     <script>

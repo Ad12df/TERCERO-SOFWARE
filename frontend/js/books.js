@@ -47,10 +47,38 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeProfile();
     applyRoleVisibility();
     populateCategorySelect();
-    loadBooks();
-    // Si el usuario es admin, cargar el contador de solicitudes pendientes
+
+    const menuToggle = document.getElementById("menuToggle");
+    if (menuToggle) {
+        menuToggle.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (typeof window.toggleSidebar === "function") {
+                window.toggleSidebar();
+            }
+        });
+    }
+
+    const sidebarOverlay = document.getElementById("sidebar-overlay");
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener("click", () => {
+            if (typeof window.toggleSidebar === "function") {
+                window.toggleSidebar();
+            }
+        });
+    }
+
+    try {
+        loadBooks();
+    } catch (err) {
+        console.error("❌ Error al inicializar carga de libros:", err);
+    }
+
     if (getUserRole() === "admin") {
-        loadModerationCounts();
+        try {
+            loadModerationCounts();
+        } catch (err) {
+            console.error("❌ Error al inicializar conteos de moderación:", err);
+        }
     }
 });
 
@@ -130,9 +158,9 @@ function logout() {
  * Carga los libros desde el backend (API)
  */
 async function loadBooks() {
-    const grid = document.getElementById("booksGrid");
+    const grid = document.getElementById("booksGrid") || document.getElementById("books-grid");
     if (!grid) {
-        console.error("❌ booksGrid no encontrado en el DOM");
+        console.warn("⚠️ booksGrid no encontrado en el DOM, omitiendo renderizado de libros");
         return;
     }
     grid.innerHTML = `
@@ -143,25 +171,35 @@ async function loadBooks() {
     `;
 
     try {
-        const response = await fetch(`${API_URL}/books`);
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || "Error al cargar los libros");
+        let response;
+        try {
+            response = await fetch(`${API_URL}/books`);
+        } catch (networkErr) {
+            throw new Error("No se pudo conectar con el servidor. Verifica tu conexión o inténtalo más tarde.");
+        }
+        let data;
+        try {
+            data = await response.json();
+        } catch (parseErr) {
+            throw new Error("Respuesta inválida del servidor.");
         }
 
-        books = data.data || [];
+        if (!response.ok) {
+            throw new Error(data.message || `Error al cargar los libros (${response.status})`);
+        }
+
+        books = Array.isArray(data.data) ? data.data : [];
         renderBooks(books);
     } catch (error) {
         console.error("❌ Error al cargar libros:", error);
-        if (grid) {
+        try {
             grid.innerHTML = `
                 <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #e74c3c;">
                     <p style="font-size: 1.2rem; font-weight: 600;">Error al cargar los libros</p>
                     <p style="font-size: 0.9rem; margin-top: 8px;">${error.message}</p>
                 </div>
             `;
-        }
+        } catch (_) { /* sin acciones */ }
     }
 }
 
@@ -171,9 +209,9 @@ async function loadBooks() {
  * @param {Array} booksList - Lista de libros a renderizar
  */
 function renderBooks(booksList) {
-    const grid = document.getElementById("booksGrid");
+    const grid = document.getElementById("booksGrid") || document.getElementById("books-grid");
     if (!grid) {
-        console.error("❌ booksGrid no encontrado en el DOM");
+        console.warn("⚠️ booksGrid no encontrado en el DOM, omitiendo renderizado");
         return;
     }
     grid.innerHTML = "";
@@ -338,7 +376,8 @@ function readBook(bookId) {
  * Filtra los libros por texto de búsqueda y tags activos (multi-selección)
  */
 function filterBooks() {
-    const query = document.getElementById("searchInput").value.toLowerCase().trim();
+    const searchInput = document.getElementById("searchInput");
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
 
     let filtered = books;
 
@@ -822,33 +861,47 @@ function switchTab(tabName) {
         'configuracion': 'Configuración'
     };
 
-    document.getElementById("currentSectionTitle").textContent = titles[tabName] || "Dashboard";
+    const sectionTitle = document.getElementById("currentSectionTitle");
+    if (sectionTitle) {
+        sectionTitle.textContent = titles[tabName] || "Dashboard";
+    }
 
     if (tabName === 'libros') {
-        loadBooks();
+        try { loadBooks(); } catch (err) { console.error(err); }
     } else {
-        const grid = document.getElementById("booksGrid");
-        grid.innerHTML = `
-            <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #1E4B65; background: #FFFFFF; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 64px; height: 64px; margin-bottom: 16px;">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-                <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 8px;">Sección en Desarrollo</h3>
-                <p style="color: #666; max-width: 460px; margin: 0 auto; font-size: 0.95rem; line-height: 1.5;">Esta pestaña estará conectada con los endpoints correspondientes del backend próximamente. Por ahora, puedes gestionar plenamente el catálogo de libros.</p>
-            </div>
-        `;
+        const grid = document.getElementById("booksGrid") || document.getElementById("books-grid");
+        if (!grid) return;
+        try {
+            grid.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #1E4B65; background: #FFFFFF; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 64px; height: 64px; margin-bottom: 16px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 8px;">Sección en Desarrollo</h3>
+                    <p style="color: #666; max-width: 460px; margin: 0 auto; font-size: 0.95rem; line-height: 1.5;">Esta pestaña estará conectada con los endpoints correspondientes del backend próximamente. Por ahora, puedes gestionar plenamente el catálogo de libros.</p>
+                </div>
+            `;
+        } catch (_) { /* sin acciones */ }
     }
 }
 
 /**
  * Alterna el estado abierto/cerrado de la barra lateral en versión móvil
+ * Definida explícitamente en el ámbito global para evitar ReferenceError
+ * al invocarla desde onclick="toggleSidebar()" en el HTML.
  */
-function toggleSidebar() {
+window.toggleSidebar = function () {
     const sidebar = document.getElementById("sidebar");
+    if (!sidebar) return;
     sidebar.classList.toggle("active");
-}
+
+    const overlay = document.getElementById("sidebar-overlay");
+    if (overlay) {
+        overlay.classList.toggle("active");
+    }
+};
 
 // ==========================================================================
 // MODERACIÓN — CENTRO DE SOLICITUDES (solo ADMIN)
@@ -861,9 +914,24 @@ let currentModTab = "books"; // "books" | "writers"
  */
 async function loadModerationCounts() {
     try {
-        const response = await authFetch(`${API_URL}/moderation/counts`);
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.message || "Error al cargar conteos");
+        let response;
+        try {
+            response = await authFetch(`${API_URL}/moderation/counts`);
+        } catch (networkErr) {
+            console.warn("⚠️ No se pudo conectar para conteos de moderación:", networkErr.message);
+            return;
+        }
+        let data;
+        try {
+            data = await response.json();
+        } catch (parseErr) {
+            console.warn("⚠️ Respuesta inválida en conteos de moderación");
+            return;
+        }
+        if (!response.ok) {
+            console.warn("⚠️", data.message || "Error al cargar conteos");
+            return;
+        }
 
         const pendingBooks = data.pendingBooks || 0;
         const pendingWriters = data.pendingWriters || 0;
