@@ -21,7 +21,7 @@
     if (menuToggle && !menuToggle.dataset.bound) {
       menuToggle.dataset.bound = "true";
       menuToggle.addEventListener("click", function (e) {
-        e.stopPropagation();
+        e.preventDefault();
         global.toggleSidebar();
       });
     }
