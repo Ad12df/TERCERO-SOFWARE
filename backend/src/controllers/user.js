@@ -277,6 +277,68 @@ class UserController {
       });
     }
   }
+
+  // ─── PUT /api/user/avatar ───────────────────────────────────
+  // Sube la foto de perfil al bucket 'Perfil' de Supabase Storage
+  // y guarda la URL pública en la columna 'foto' de la base de datos Neon
+  static async updateAvatar(req, res) {
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (!token) {
+        return res.status(401).json({
+          success: false,
+          message: "Token no proporcionado",
+        });
+      }
+
+      const AuthService = require("../services/auth");
+      const decoded = AuthService.verifyToken(token);
+      if (!decoded) {
+        return res.status(401).json({
+          success: false,
+          message: "Token inválido",
+        });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "No se proporcionó ningún archivo de imagen",
+        });
+      }
+
+      const { uploadAvatarFromBuffer } = require("../config/supabase");
+
+      // 1. Subir imagen a Supabase Storage (bucket 'Perfil')
+      const { secure_url } = await uploadAvatarFromBuffer(
+        req.file.buffer,
+        req.file.originalname
+      );
+
+      // 2. Actualizar campo 'foto' en Neon DB
+      await User.update(
+        { foto: secure_url },
+        { where: { id: decoded.id } }
+      );
+
+      // 3. Obtener usuario actualizado
+      const user = await User.findByPk(decoded.id, {
+        attributes: { exclude: ["password"] },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Foto de perfil actualizada exitosamente",
+        data: user,
+      });
+    } catch (error) {
+      console.error("❌ Error al actualizar foto de perfil:", error);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "Error al subir la foto de perfil",
+      });
+    }
+  }
 }
 
 module.exports = UserController;

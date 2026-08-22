@@ -97,7 +97,7 @@
     // 5. Sincronización global del avatar (foto o inicial)
     // ------------------------------------------------------------------
     global.renderGlobalAvatar = function () {
-        const savedPhoto = localStorage.getItem("avatarPhoto");
+        let savedPhoto = localStorage.getItem("avatarPhoto");
         let initial = "A";
         try {
             const rawUser = localStorage.getItem("user");
@@ -105,6 +105,10 @@
                 const u = JSON.parse(rawUser);
                 const name = u.name || u.email || "A";
                 initial = name.charAt(0).toUpperCase();
+                if (!savedPhoto && u.foto) {
+                    savedPhoto = u.foto;
+                    localStorage.setItem("avatarPhoto", u.foto);
+                }
             }
         } catch (e) {}
 

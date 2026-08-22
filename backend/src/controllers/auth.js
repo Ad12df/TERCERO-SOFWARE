@@ -58,6 +58,7 @@ class AuthController {
           name: newUser.name,
           email: newUser.email,
           role: newUser.role,
+          foto: newUser.foto,
         },
       });
     } catch (error) {
@@ -111,6 +112,7 @@ class AuthController {
           name: user.name,
           email: user.email,
           role: user.role,
+          foto: user.foto,
         },
       });
     } catch (error) {

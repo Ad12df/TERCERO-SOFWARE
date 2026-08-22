@@ -18,6 +18,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 // ─── Nombres de buckets ──────────────────────────────────────
 const BUCKET_PORTADAS = "portadas";
 const BUCKET_PDFS = "pdfs";
+const BUCKET_PERFIL = "Perfil";
 
 // ─── Middleware de Multer (memoryStorage) ────────────────────
 // Acepta los campos 'foto' (portada) y 'pdf' (documento) en una sola petición.
@@ -30,6 +31,12 @@ const uploadBookFiles = multer({
   { name: "foto", maxCount: 1 },
   { name: "pdf", maxCount: 1 },
 ]);
+
+// Multer para avatar de usuario (un solo campo 'foto')
+const uploadAvatarFiles = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB máximo
+}).single("foto");
 
 // ─── Helpers de subida a Supabase Storage ────────────────────
 // Genera un nombre de archivo ÚNICO, PLANO y SEGURO para Supabase Storage.
@@ -76,10 +83,6 @@ function buildUniqueName(originalName) {
 
 // Sube una imagen de portada al bucket 'portadas' desde un buffer.
 // Devuelve la URL pública del archivo subido.
-//
-// ⚠️ SDK Supabase JS v2: `getPublicUrl()` devuelve
-//    { data: { publicUrl } }  (con 'u' minúscula).
-//    La API antigua `publicURL` (mayúscula) ya NO existe y devuelve undefined.
 async function uploadImageFromBuffer(buffer, originalName) {
   const fileName = buildUniqueName(originalName);
 
@@ -100,6 +103,45 @@ async function uploadImageFromBuffer(buffer, originalName) {
   const publicUrl = data?.publicUrl;
   if (!publicUrl) {
     throw new Error("No se pudo obtener la URL pública de la portada.");
+  }
+
+  return { secure_url: publicUrl, public_id: fileName };
+}
+
+// Sube un avatar de usuario al bucket 'Perfil' (o 'perfil') desde un buffer.
+// Devuelve la URL pública del archivo subido.
+async function uploadAvatarFromBuffer(buffer, originalName) {
+  const fileName = buildUniqueName(originalName);
+
+  // Intentar con 'Perfil'
+  let targetBucket = BUCKET_PERFIL;
+  let uploadRes = await supabase.storage
+    .from(targetBucket)
+    .upload(fileName, buffer, {
+      contentType: "image/*",
+      upsert: false,
+    });
+
+  // Fallback con minúscula si falla por nombre de bucket
+  if (uploadRes.error && uploadRes.error.message?.includes("Bucket not found")) {
+    targetBucket = "perfil";
+    uploadRes = await supabase.storage
+      .from(targetBucket)
+      .upload(fileName, buffer, {
+        contentType: "image/*",
+        upsert: false,
+      });
+  }
+
+  if (uploadRes.error) throw uploadRes.error;
+
+  const { data } = supabase.storage
+    .from(targetBucket)
+    .getPublicUrl(fileName);
+
+  const publicUrl = data?.publicUrl;
+  if (!publicUrl) {
+    throw new Error("No se pudo obtener la URL pública de la foto de perfil.");
   }
 
   return { secure_url: publicUrl, public_id: fileName };
@@ -136,7 +178,10 @@ module.exports = {
   supabase,
   BUCKET_PORTADAS,
   BUCKET_PDFS,
+  BUCKET_PERFIL,
   uploadBookFiles,
+  uploadAvatarFiles,
   uploadImageFromBuffer,
+  uploadAvatarFromBuffer,
   uploadPdfFromBuffer,
 };

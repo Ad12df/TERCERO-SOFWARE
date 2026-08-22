@@ -34,12 +34,18 @@ async function loadUserProfile() {
 
         if (data.success && data.data) {
             const u = data.data;
+            if (u.foto) {
+                localStorage.setItem('avatarPhoto', u.foto);
+            }
             applyProfileToUI(u);
 
             // Actualizar localStorage
             const stored = getUserData() || {};
-            const updated = { ...stored, name: u.name, email: u.email, role: u.role };
+            const updated = { ...stored, name: u.name, email: u.email, role: u.role, foto: u.foto };
             localStorage.setItem('user', JSON.stringify(updated));
+            if (typeof window.renderGlobalAvatar === 'function') {
+                window.renderGlobalAvatar();
+            }
         }
     } catch (err) {
         console.error('Error al cargar perfil:', err);
@@ -68,7 +74,7 @@ function applyProfileToUI(user) {
     }
 
     // ── Avatar principal (settings) ──
-    updateAvatarFromStorage(name);
+    updateAvatarFromStorage(name, user.foto);
 
     // ── Topbar ──
     syncTopbarProfile(name, role);
@@ -78,9 +84,9 @@ function applyProfileToUI(user) {
  * Actualiza el avatar grande de settings y el topbar.
  * Si hay foto en localStorage la usa; de lo contrario muestra inicial.
  */
-function updateAvatarFromStorage(nameOrEmail) {
+function updateAvatarFromStorage(nameOrEmail, explicitPhoto) {
     const initial = (nameOrEmail || 'A').charAt(0).toUpperCase();
-    const savedPhoto = localStorage.getItem('avatarPhoto');
+    const savedPhoto = explicitPhoto || localStorage.getItem('avatarPhoto');
 
     // ── Settings avatar ──
     const settingsAvatar    = document.getElementById('settingsAvatar');
@@ -136,10 +142,10 @@ function syncTopbarProfile(name, role) {
 }
 
 // =========================================================================
-// CAMBIO DE FOTO DE PERFIL (solo frontend – guarda en localStorage)
+// CAMBIO DE FOTO DE PERFIL (Sube a Supabase Storage y guarda en Neon DB)
 // =========================================================================
 
-function previewAndSaveAvatar(input) {
+async function previewAndSaveAvatar(input) {
     if (!input.files || !input.files[0]) return;
     const file = input.files[0];
 
@@ -148,23 +154,55 @@ function previewAndSaveAvatar(input) {
         return;
     }
 
+    // 1. Mostrar vista previa local mientras se sube
     const reader = new FileReader();
     reader.onload = function (e) {
-        const dataUrl = e.target.result;
-
-        // Guardar en localStorage para persistencia entre páginas
-        localStorage.setItem('avatarPhoto', dataUrl);
-
-        // Aplicar inmediatamente
-        const user = getUserData() || {};
-        updateAvatarFromStorage(user.name || user.email || 'A');
-        if (typeof window.renderGlobalAvatar === 'function') {
-            window.renderGlobalAvatar();
-        }
-
-        showNotification('Foto de perfil actualizada', 'success');
+        updateAvatarFromStorage(null, e.target.result);
     };
     reader.readAsDataURL(file);
+
+    // 2. Subir al backend -> Supabase Storage (bucket 'Perfil') + Neon DB (tabla 'users')
+    const formData = new FormData();
+    formData.append('foto', file);
+
+    const token = (typeof getToken === 'function') ? getToken() : localStorage.getItem('token');
+
+    try {
+        showNotification('Subiendo foto de perfil a Supabase...', 'info');
+
+        const res = await fetch(`${API_URL}/user/avatar`, {
+            method: 'PUT',
+            headers: {
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            },
+            body: formData
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+            showNotification(data.message || 'Error al subir la imagen', 'error');
+            return;
+        }
+
+        const publicUrl = data.data?.foto;
+        if (publicUrl) {
+            localStorage.setItem('avatarPhoto', publicUrl);
+            const stored = (typeof getUserData === 'function' ? getUserData() : null) || {};
+            localStorage.setItem('user', JSON.stringify({ ...stored, foto: publicUrl }));
+
+            updateAvatarFromStorage(stored.name || stored.email || 'A', publicUrl);
+
+            if (typeof window.renderGlobalAvatar === 'function') {
+                window.renderGlobalAvatar();
+            }
+        }
+
+        showNotification('Foto de perfil guardada exitosamente en Supabase y base de datos', 'success');
+    } catch (err) {
+        console.error('Error al subir foto de perfil:', err);
+        showNotification('No se pudo guardar la imagen en el servidor', 'error');
+    }
 }
 
 // =========================================================================

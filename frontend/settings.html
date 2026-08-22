@@ -129,19 +129,21 @@
                             <div class="profile-hero">
                                 <!-- Zona de avatar editable -->
                                 <div class="avatar-zone">
-                                    <div class="avatar-ring" id="avatarRingWrap">
-                                        <img id="settingsAvatarImg" src="" alt="Foto de perfil"
-                                             style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;">
-                                        <div class="avatar avatar-large" id="settingsAvatar">A</div>
+                                    <div class="avatar-wrapper-relative">
+                                        <div class="avatar-ring" id="avatarRingWrap">
+                                            <img id="settingsAvatarImg" src="" alt="Foto de perfil"
+                                                 style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                                            <div class="avatar avatar-large" id="settingsAvatar">A</div>
+                                        </div>
+                                        <!-- Botón cambiar foto posicionado en la esquina de la imagen -->
+                                        <label class="avatar-upload-btn" for="avatarFileInput" title="Cambiar foto de perfil">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                                <circle cx="12" cy="13" r="4"></circle>
+                                            </svg>
+                                        </label>
+                                        <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="previewAndSaveAvatar(this)">
                                     </div>
-                                    <!-- Botón cambiar foto -->
-                                    <label class="avatar-upload-btn" for="avatarFileInput" title="Cambiar foto de perfil">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                                            <circle cx="12" cy="13" r="4"></circle>
-                                        </svg>
-                                    </label>
-                                    <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="previewAndSaveAvatar(this)">
                                     <p class="avatar-hint">Clic en la cámara para cambiar</p>
                                 </div>
 
