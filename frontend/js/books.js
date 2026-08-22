@@ -562,7 +562,21 @@ document.addEventListener("keydown", (e) => {
 });
 
 /**
- * Actualiza el label del input de archivo cuando se selecciona un archivo
+/**
+ * Limpia la selección de un archivo y actualiza la UI
+ * @param {string} inputId - ID del input file
+ * @param {string} labelId - ID del label asociado
+ */
+function clearFileInput(inputId, labelId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = "";
+        updateFileLabel(input, labelId);
+    }
+}
+
+/**
+ * Actualiza el label y la tarjeta de previsualización cuando se selecciona un archivo
  * @param {HTMLInputElement} input - El input file
  * @param {string} labelId - ID del label a actualizar
  */
@@ -570,33 +584,47 @@ function updateFileLabel(input, labelId) {
     const label = document.getElementById(labelId);
     if (!label) return;
 
-    const preview = labelId === "coverLabel"
+    const isCover = labelId === "coverLabel";
+    const preview = isCover
         ? document.getElementById("coverPreview")
         : document.getElementById("pdfPreview");
 
     if (input.files && input.files.length > 0) {
         const file = input.files[0];
         const fileSize = (file.size / (1024 * 1024)).toFixed(2);
-        label.classList.add("has-file");
-        label.querySelector("span").textContent = file.name;
-        label.querySelector("small").textContent = `${fileSize} MB`;
+        label.style.display = "none";
 
         if (preview) {
             preview.style.display = "flex";
-            preview.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; flex-shrink:0;">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span class="file-name">${file.name}</span>
-                <span style="color:#9CA3AF; margin-left:auto;">${fileSize} MB</span>
-            `;
+            if (isCover) {
+                const objectUrl = URL.createObjectURL(file);
+                preview.innerHTML = `
+                    <img src="${objectUrl}" alt="Vista previa" class="preview-thumb" onload="URL.revokeObjectURL(this.src)">
+                    <div class="preview-info">
+                        <span class="preview-name" title="${file.name}">${file.name}</span>
+                        <span class="preview-size"><i class="fas fa-check-circle"></i> Imagen lista (${fileSize} MB)</span>
+                    </div>
+                    <button type="button" class="btn-remove-file" onclick="clearFileInput('${input.id}', '${labelId}')" title="Quitar archivo" aria-label="Quitar archivo">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                `;
+            } else {
+                preview.innerHTML = `
+                    <div class="preview-pdf-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="preview-info">
+                        <span class="preview-name" title="${file.name}">${file.name}</span>
+                        <span class="preview-size"><i class="fas fa-check-circle"></i> PDF listo (${fileSize} MB)</span>
+                    </div>
+                    <button type="button" class="btn-remove-file" onclick="clearFileInput('${input.id}', '${labelId}')" title="Quitar archivo" aria-label="Quitar archivo">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                `;
+            }
         }
     } else {
-        label.classList.remove("has-file");
-        const isCover = labelId === "coverLabel";
-        label.querySelector("span").textContent = isCover ? "Subir portada" : "Subir PDF";
-        label.querySelector("small").textContent = isCover ? "(JPG, PNG — máx. 5 MB)" : "(PDF — máx. 50 MB)";
-
+        label.style.display = "flex";
         if (preview) {
             preview.style.display = "none";
             preview.innerHTML = "";
@@ -620,8 +648,17 @@ function openAddModal() {
     document.getElementById("serverError").style.display = "none";
     document.getElementById("uploadStatus").style.display = "none";
     populateCategorySelect();
-    updateFileLabel(document.getElementById("bookCover"), "coverLabel");
-    updateFileLabel(document.getElementById("bookPdf"), "pdfLabel");
+    
+    // Resetear dropzones y previews
+    const coverPreview = document.getElementById("coverPreview");
+    const pdfPreview = document.getElementById("pdfPreview");
+    const coverLabel = document.getElementById("coverLabel");
+    const pdfLabel = document.getElementById("pdfLabel");
+    if (coverPreview) { coverPreview.style.display = "none"; coverPreview.innerHTML = ""; }
+    if (pdfPreview) { pdfPreview.style.display = "none"; pdfPreview.innerHTML = ""; }
+    if (coverLabel) coverLabel.style.display = "flex";
+    if (pdfLabel) pdfLabel.style.display = "flex";
+
     document.getElementById("bookModal").classList.add("active");
 }
 
@@ -653,8 +690,54 @@ async function editBook(id) {
     document.getElementById("bookAddress").value = book.direccion || "";
     document.getElementById("bookDescription").value = book.descripcion || "";
 
-    updateFileLabel(document.getElementById("bookCover"), "coverLabel");
-    updateFileLabel(document.getElementById("bookPdf"), "pdfLabel");
+    // Resetear inputs de archivo
+    document.getElementById("bookCover").value = "";
+    document.getElementById("bookPdf").value = "";
+
+    const coverPreview = document.getElementById("coverPreview");
+    const coverLabel = document.getElementById("coverLabel");
+    const pdfPreview = document.getElementById("pdfPreview");
+    const pdfLabel = document.getElementById("pdfLabel");
+
+    // Si ya tiene portada en backend, mostrar preview informativo
+    if (book.foto && coverPreview && coverLabel) {
+        coverLabel.style.display = "none";
+        coverPreview.style.display = "flex";
+        coverPreview.innerHTML = `
+            <img src="${book.foto}" alt="Portada actual" class="preview-thumb">
+            <div class="preview-info">
+                <span class="preview-name">Portada actual</span>
+                <span class="preview-size"><i class="fas fa-image"></i> Guardada en catálogo</span>
+            </div>
+            <button type="button" class="btn-remove-file" onclick="clearFileInput('bookCover', 'coverLabel')" title="Cambiar portada" aria-label="Cambiar portada">
+                <i class="fas fa-rotate"></i>
+            </button>
+        `;
+    } else {
+        if (coverPreview) { coverPreview.style.display = "none"; coverPreview.innerHTML = ""; }
+        if (coverLabel) coverLabel.style.display = "flex";
+    }
+
+    // Si ya tiene PDF en backend, mostrar preview informativo
+    if (book.pdf && pdfPreview && pdfLabel) {
+        pdfLabel.style.display = "none";
+        pdfPreview.style.display = "flex";
+        pdfPreview.innerHTML = `
+            <div class="preview-pdf-icon">
+                <i class="fas fa-file-pdf"></i>
+            </div>
+            <div class="preview-info">
+                <span class="preview-name">PDF actual del libro</span>
+                <span class="preview-size"><i class="fas fa-check-circle"></i> Documento cargado</span>
+            </div>
+            <button type="button" class="btn-remove-file" onclick="clearFileInput('bookPdf', 'pdfLabel')" title="Cambiar PDF" aria-label="Cambiar PDF">
+                <i class="fas fa-rotate"></i>
+            </button>
+        `;
+    } else {
+        if (pdfPreview) { pdfPreview.style.display = "none"; pdfPreview.innerHTML = ""; }
+        if (pdfLabel) pdfLabel.style.display = "flex";
+    }
 
     document.getElementById("bookModal").classList.add("active");
 }
@@ -667,6 +750,16 @@ function closeModal() {
     document.getElementById("bookForm").reset();
     document.getElementById("serverError").style.display = "none";
     document.getElementById("uploadStatus").style.display = "none";
+
+    const coverPreview = document.getElementById("coverPreview");
+    const pdfPreview = document.getElementById("pdfPreview");
+    const coverLabel = document.getElementById("coverLabel");
+    const pdfLabel = document.getElementById("pdfLabel");
+    if (coverPreview) { coverPreview.style.display = "none"; coverPreview.innerHTML = ""; }
+    if (pdfPreview) { pdfPreview.style.display = "none"; pdfPreview.innerHTML = ""; }
+    if (coverLabel) coverLabel.style.display = "flex";
+    if (pdfLabel) pdfLabel.style.display = "flex";
+
     editId = null;
 }
 
@@ -1115,7 +1208,7 @@ async function loadWriterRequests() {
     } catch (error) {
         console.error("❌ Error al cargar solicitudes de escritor:", error);
         container.innerHTML = "";
-        container.innerHTML = `<div class="mod-empty"><p style="color:#EF4444;">${error.message}</p></div>`;
+        container.innerHTML = `<div class="mod-empty moderation-empty-state"><p style="color:#EF4444;">${error.message}</p></div>`;
     }
 }
 

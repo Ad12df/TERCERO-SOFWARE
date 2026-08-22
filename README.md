@@ -8,9 +8,26 @@
 [![Sequelize](https://img.shields.io/badge/Sequelize-6.x-blue)](https://sequelize.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Storage-3ECF8E.svg)](https://supabase.com/)
 [![PWA](https://img.shields.io/badge/PWA-Installable-purple.svg)](https://web.dev/progressive-web-apps/)
-[![Android](https://img.shields.io/badge/Android-TWA-3DDC84.svg)](https://developer.android.com/training/wearables/apps/twa)
+[![Capacitor](https://img.shields.io/badge/Capacitor-6.x-119DEF.svg)](https://capacitorjs.com/)
+[![Android](https://img.shields.io/badge/Android-APK-3DDC84.svg)](https://developer.android.com/)
 
-## 🎯 Propósito del Portal
+---
+
+## � Nuevas Funcionalidades
+
+Funcionalidades añadidas recientemente al proyecto:
+
+| Funcionalidad | Descripción | Módulos afectados |
+|---------------|-------------|-------------------|
+| **Recuperación de contraseña** | Solicitud de restablecimiento por email con token + formulario de nueva contraseña | `forgot-password.html`, `reset-password.html`, `nodemailer`, `PasswordReset` model |
+| **Página de Descargados** | Vista dedicada a libros descargados para lectura offline | `descargados.html`, `descargados.js` |
+| **UI centralizada** | Sidebar y navegación global unificados en `ui.js` con delegación de eventos | `js/ui.js`, todos los HTML del dashboard |
+| **Service Worker robusto** | Filtros de seguridad para esquemas no HTTP y métodos no GET; `skipWaiting` + `clients.claim` | `sw.js` |
+| **Modal de Moderación rediseñado** | Interfaz moderna con tabs, acciones en lote y empty states optimizados | `books.html`, CSS del modal |
+
+---
+
+## �� Propósito del Portal
 
 **BiblioTech** es un portal web de biblioteca digital colaborativa cuyo objetivo es permitir a una comunidad de usuarios descubrir, leer y valorar libros digitales en formato PDF directamente desde el navegador. El portal combina un catálogo público navegable con un sistema de roles y moderación que garantiza la calidad del contenido:
 
@@ -21,12 +38,15 @@
 - **Gestión personal**: listas de lectura ("Mi Lista") e historial de libros leídos
 - **Sistema comunitario**: reseñas con puntuación de estrellas y comentarios de discusión
 - **Preferencias personalizables**: tema visual, idioma, tamaño de letra y notificaciones
+- **Recuperación de contraseña** vía email con tokens de un solo uso
+
+---
 
 ## 🚀 Demo
 
 - **Frontend (Web/PWA)**: https://tercero-sofware.vercel.app/
 - **Backend API**: https://tercero-sofware.onrender.com/api
-- **App Android (TWA)**: APK generada con Bubblewrap — package `app.vercel.tercero_sofware.twa`
+- **App Android (Capacitor)**: APK nativa con `com.bibliotech.app` (soporte offline + acceso al sistema de archivos)
 
 ---
 
@@ -36,6 +56,7 @@
 - Registro e inicio de sesión con email y contraseña
 - Contraseñas cifradas con bcrypt (10 rondas de salt)
 - Tokens de autenticación (Base64 con id, email y role del usuario)
+- **Recuperación de contraseña**: envío de email con enlace firmado (token expirable) y formulario de restablecimiento
 - **Tres roles de usuario**:
   - `admin` — Acceso total: gestión de libros, moderación, aprobación/rechazo de contenido y solicitudes de escritor
   - `escritor` — Puede subir libros (quedan en estado PENDIENTE hasta aprobación) y solicitar ascenso de rol
@@ -47,6 +68,7 @@
 - Los administradores pueden aprobar o rechazar libros individualmente o en lote
 - Flujo de solicitudes de ascenso: los usuarios pueden solicitar ser `escritor` y los admins aprueban o rechazan
 - Panel de moderación con conteos de elementos pendientes
+- Modal "Centro de Moderación" rediseñado: tabs, acciones globales (aprobar/rechazar todo) y empty states optimizados
 
 ### ⚙️ Preferencias de Usuario
 - Tema visual: claro / oscuro
@@ -81,6 +103,7 @@
 ### 📋 Gestión Personal
 - **Mi Lista**: Libros guardados para leer después (`/api/lists`)
 - **Leídos**: Historial de libros completados (`/api/lists/read`)
+- **Descargados**: Libros descargados localmente para lectura offline (`descargados.html`)
 - Verificación de si un libro ya está en la lista personal
 - Perfil de usuario con nombre y badge de rol
 
@@ -103,6 +126,7 @@
 | dotenv | 17.x | Variables de entorno |
 | nodemon | 3.x | Recarga automática en desarrollo |
 | multer | 2.x | Subida de archivos (portadas y PDFs) |
+| nodemailer | 9.x | Envío de emails (recuperación de contraseña) |
 | @supabase/supabase-js | 2.x | Cliente de Supabase Storage |
 | axios | 1.x | Peticiones HTTP (proxy de descarga) |
 | pg / pg-hstore | 2.x | Driver PostgreSQL para Sequelize |
@@ -123,10 +147,11 @@
 | Tecnología | Propósito |
 |------------|----------|
 | Web App Manifest (`manifest.json`) | Metadatos de la PWA (nombre, iconos, tema, display standalone) |
-| Service Worker (`sw.js`) | Cache offline con estrategia network-first |
+| Service Worker (`sw.js`) | Cache offline con estrategia network-first + filtros de seguridad |
 | Iconos PWA (`icon-192.png`, `icon-512.png`) | Iconos instalables (192px y 512px, maskable) |
-| Bubblewrap CLI | Generación de APK Android a partir de la PWA (TWA) |
-| Digital Asset Links (`.well-known/assetlinks.json`) | Verificación de propiedad para fullscreen nativo en Android |
+| **Capacitor 6.x** | Runtime nativo para empaquetar el frontend como APK Android (WebView nativa + plugins) |
+| **@capacitor/filesystem** | Plugin para acceder al sistema de archivos del dispositivo (guardar PDFs offline) |
+| Android Studio SDK | Compilación y firma de la APK nativa |
 
 ---
 
@@ -137,6 +162,7 @@ Antes de ejecutar el proyecto, asegúrate de tener instalado:
 - **Node.js** versión 18 o superior
 - **PostgreSQL** versión 16 o superior
 - **npm** o **yarn** (gestor de paquetes)
+- **SMTP / servicio de email** (opcional, solo si usas recuperación de contraseña: configurar variables en `.env`)
 
 ---
 
@@ -188,10 +214,20 @@ DB_SSL=true
 FRONTEND_URL=http://localhost:5500
 SUPABASE_URL=https://tu-proyecto.supabase.co
 SUPABASE_KEY=tu-service-role-key
+
+# ── Email (Recuperación de contraseña) ──
+SMTP_HOST=smtp.ejemplo.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=tu-correo@ejemplo.com
+SMTP_PASS=tu-contraseña-de-aplicacion
+EMAIL_FROM="BiblioTech <no-reply@ejemplo.com>"
 ```
 
 > **Nota:** Si usas Neon (PostgreSQL cloud), activa `DB_SSL=true` para la conexión.
 > Las claves de Supabase se usan para subir portadas y PDFs a los buckets `portadas` y `pdfs`.
+
+> ⚠️ **Email opcional:** Las variables de `SMTP_*` solo son necesarias para habilitar la recuperación de contraseña. Si no se configuran, el endpoint `/forgot-password` devolverá un error informativo.
 
 ### 4. Iniciar el Servidor
 
@@ -231,6 +267,10 @@ python -m http.server 5500
 ```
 TERCERO-SOFWARE/
 ├── README.md                 # Este archivo
+├── APK_README.md             # Notas específicas de compilación de la APK
+├── package.json              # Scripts y dependencias de Capacitor (raíz)
+├── package-lock.json
+├── capacitor.config.json     # Configuración de Capacitor (appId, webDir, androidScheme)
 │
 ├── backend/                  # API REST (Node.js + Express)
 │   ├── package.json
@@ -242,7 +282,7 @@ TERCERO-SOFWARE/
 │       │   ├── supabase.js   # Cliente de Supabase Storage (buckets)
 │       │   └── cloudinary.js # Config de Cloudinary (legacy, no usado)
 │       ├── controllers/
-│       │   ├── auth.js       # Endpoints de autenticación
+│       │   ├── auth.js       # Endpoints de autenticación + recuperación de contraseña
 │       │   ├── books.js       # CRUD de libros + subida a Supabase
 │       │   ├── download.js   # Proxy de descarga de PDFs
 │       │   ├── moderation.js  # Aprobación/rechazo de libros y escritores
@@ -260,10 +300,11 @@ TERCERO-SOFWARE/
 │       │   ├── UserList.js   # Modelo de Mi Lista
 │       │   ├── UserRead.js   # Modelo de libros leídos
 │       │   ├── WriterRequest.js # Solicitudes de ascenso a escritor
+│       │   ├── PasswordReset.js  # Tokens de recuperación de contraseña
 │       │   └── userSettings.js # Modelo de preferencias
 │       ├── routes/
 │       │   ├── index.js      # Router principal (/api)
-│       │   ├── auth.js       # Rutas de autenticación
+│       │   ├── auth.js       # Rutas de autenticación (register, login, forgot/reset password)
 │       │   ├── moderation.js # Rutas de moderación (admin)
 │       │   ├── user.js       # Rutas de usuario (legacy CRUD)
 │       │   ├── books/
@@ -275,39 +316,111 @@ TERCERO-SOFWARE/
 │       │   └── cleanupBooks.js # Script de limpieza (borra libros y reseñas)
 │       ├── services/
 │       │   ├── auth.js       # Lógica de autenticación (token Base64)
-│       │   └── users.js      # Lógica de usuarios
+│       │   ├── users.js      # Lógica de usuarios
+│       │   └── email.js      # Servicio de envío de emails (nodemailer)
 │       └── utils/
 │           └── password.js   # Utilidades de contraseña
 │
-└── frontend/                 # Interfaz Web (PWA)
-    ├── index.html             # Login / Registro
-    ├── books.html             # Dashboard / Catálogo
-    ├── book-detail.html       # Detalle de libro + reseñas + comentarios
-    ├── reader.html            # Lector de PDF
-    ├── settings.html          # Configuración de usuario
-    ├── my-list.html           # Mi Lista de lectura
-    ├── read-books.html        # Historial de libros leídos
-    ├── manifest.json          # Web App Manifest (PWA)
-    ├── sw.js                  # Service Worker (cache offline)
-    ├── icon-192.png           # Icono PWA 192x192 (maskable)
-    ├── icon-512.png           # Icono PWA 512x512 (maskable)
-    ├── .well-known/
-    │   └── assetlinks.json    # Digital Asset Links (TWA fullscreen Android)
-    ├── css/
-    │   ├── style.css          # Estilos principales
-    │   ├── book-detail.css    # Estilos detalle libro
-    │   ├── reader.css         # Estilos lector PDF
-    │   └── settings.css       # Estilos configuración
-    └── js/
-        ├── api.js             # Configuración API + auth helpers
-        ├── login.js           # Lógica de autenticación
-        ├── books.js           # Lógica del catálogo
-        ├── bookDetail.js      # Lógica detalle libro
-        ├── reader.js          # Lógica del lector PDF
-        ├── settings.js        # Lógica de configuración
-        ├── myList.js          # Lógica de Mi Lista
-        └── readBooks.js       # Lógica de libros leídos
+├── frontend/                 # Interfaz Web (PWA) — origen webDir para Capacitor
+│   ├── index.html             # Login / Registro
+│   ├── forgot-password.html   # Solicitar recuperación de contraseña
+│   ├── reset-password.html    # Establecer nueva contraseña
+│   ├── books.html             # Dashboard / Catálogo / Centro de Moderación
+│   ├── book-detail.html       # Detalle de libro + reseñas + comentarios
+│   ├── reader.html            # Lector de PDF
+│   ├── settings.html          # Configuración de usuario
+│   ├── my-list.html           # Mi Lista de lectura
+│   ├── read-books.html        # Historial de libros leídos
+│   ├── descargados.html       # Libros descargados (offline)
+│   ├── manifest.json          # Web App Manifest (PWA)
+│   ├── sw.js                  # Service Worker (cache offline + filtros de seguridad)
+│   ├── icon-192.png           # Icono PWA 192x192 (maskable)
+│   ├── icon-512.png           # Icono PWA 512x512 (maskable)
+│   ├── prueba.pdf             # PDF de prueba
+│   ├── .well-known/
+│   │   └── assetlinks.json    # (Legacy) Digital Asset Links — no requerido con Capacitor
+│   ├── css/
+│   │   ├── style.css          # Estilos principales
+│   │   ├── book-detail.css    # Estilos detalle libro
+│   │   ├── reader.css         # Estilos lector PDF
+│   │   ├── settings.css       # Estilos configuración
+│   │   └── forgot-password.css # Estilos recuperación de contraseña
+│   └── js/
+│       ├── ui.js              # ⭐ UI global (sidebar, navegación) — FUENTE DE VERDAD ÚNICA
+│       ├── api.js             # Configuración API + auth helpers
+│       ├── login.js           # Lógica de autenticación
+│       ├── books.js           # Lógica del catálogo y moderación
+│       ├── bookDetail.js      # Lógica detalle libro
+│       ├── reader.js          # Lógica del lector PDF
+│       ├── settings.js        # Lógica de configuración
+│       ├── myList.js          # Lógica de Mi Lista
+│       ├── readBooks.js       # Lógica de libros leídos
+│       ├── descargados.js     # Lógica de libros descargados (usa @capacitor/filesystem en Android)
+│       ├── forgot-password.js # Lógica de solicitud de recuperación
+│       └── reset-password.js  # Lógica de restablecimiento de contraseña
+│
+└── android/                   # Proyecto nativo Android (generado por Capacitor)
+    ├── app/
+    │   ├── build.gradle
+    │   ├── proguard-rules.pro
+    │   └── src/main/
+    │       ├── AndroidManifest.xml    # Permisos (INTERNET, WRITE_EXTERNAL_STORAGE, etc.)
+    │       ├── java/com/bibliotech/app/MainActivity.java
+    │       ├── res/                   # Iconos launcher mipmap, splash screen, temas
+    │       └── xml/file_paths.xml     # Configuración FileProvider para PDFs
+    ├── build.gradle
+    ├── settings.gradle
+    ├── variables.gradle
+    ├── gradle.properties
+    ├── gradlew / gradlew.bat          # Wrapper de Gradle
+    ├── capacitor.build.gradle
+    ├── capacitor.settings.gradle
+    └── gradle/wrapper/
 ```
+
+---
+
+## 📏 Convenciones de Desarrollo Frontend
+
+Convenciones obligatorias para mantener consistencia en el proyecto:
+
+### Orden de carga de scripts
+```html
+<!-- 1. UI global (siempre primero, con defer) -->
+<script src="js/ui.js" defer></script>
+<!-- 2. Configuración API y helpers -->
+<script src="js/api.js"></script>
+<!-- 3. Script específico de la página -->
+<script src="js/books.js"></script>
+```
+
+### Estructura HTML obligatoria para páginas del dashboard
+```html
+<div class="dashboard-layout">
+  <main class="main-content">
+    <section class="dashboard-container">
+      <!-- Contenido de la página -->
+    </section>
+  </main>
+</div>
+```
+
+### UI centralizada en `ui.js`
+- **Sidebar, botón hamburguesa, navegación activa y overlay** se gestionan **solo** desde `js/ui.js`.
+- No redefinir `toggleSidebar` ni agregar `onclick` inline en los HTML del dashboard.
+- La navegación activa se marca automáticamente comparando la ruta actual normalizada.
+
+### Delegación de eventos
+- Usar **delegación de eventos** en `document` para disparadores de UI (soporta DOM dinámico).
+- Preferir `e.preventDefault()` sobre `e.stopPropagation()` en botones de menú para no interferir con la delegación global.
+
+### Botones y formularios
+- Todos los botones de acción deben usar `type="button"` para evitar envíos accidentales de formulario.
+
+### Estilos visuales
+- Modales: `border-radius: 16px`, sombras suaves.
+- Contenedores de pestañas: fondo `#f1f5f9`.
+- Iconos/SVG en **empty states de moderación**: tamaño máximo `64x64px`.
 
 ---
 
@@ -322,6 +435,8 @@ TERCERO-SOFWARE/
 | POST | `/api/auth/register` | Registrar nuevo usuario | No |
 | POST | `/api/auth/login` | Iniciar sesión | No |
 | GET | `/api/auth/me` | Obtener usuario actual | Sí |
+| POST | `/api/auth/forgot-password` | Solicitar enlace de recuperación de contraseña por email | No |
+| POST | `/api/auth/reset-password` | Restablecer contraseña con token recibido por email | No |
 
 #### POST /api/auth/register
 
@@ -386,6 +501,45 @@ TERCERO-SOFWARE/
     "email": "correo@ejemplo.com",
     "role": "user"
   }
+}
+```
+
+#### POST /api/auth/forgot-password
+
+Solicita el envío de un email con un enlace para restablecer la contraseña.
+
+**Body:**
+```json
+{
+  "email": "correo@ejemplo.com"
+}
+```
+
+**Respuesta (siempre exitosa, por seguridad):**
+```json
+{
+  "success": true,
+  "message": "Si el email existe, recibirás un enlace para restablecer tu contraseña."
+}
+```
+
+#### POST /api/auth/reset-password
+
+Restablece la contraseña usando el token recibido en el email.
+
+**Body:**
+```json
+{
+  "token": "token-de-64-caracteres",
+  "password": "nueva-contraseña-segura123"
+}
+```
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "message": "Contraseña restablecida correctamente."
 }
 ```
 
@@ -549,6 +703,22 @@ TERCERO-SOFWARE/
 | `createdAt` | TIMESTAMP | Automático (Sequelize) |
 | `updatedAt` | TIMESTAMP | Automático (Sequelize) |
 
+### Tabla `password_resets`
+
+Tokens de un solo uso para recuperación de contraseña.
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | INTEGER | Clave primaria, autoincremental |
+| `user_id` | INTEGER | FK a users (el usuario que solicita recuperación) |
+| `token` | STRING | Token único (hash) para verificar el enlace de email |
+| `expires_at` | DATE | Fecha de expiración (ej: 1 hora después de la creación) |
+| `used` | BOOLEAN | `true` si el token ya fue consumido (default: `false`) |
+| `createdAt` | TIMESTAMP | Automático |
+| `updatedAt` | TIMESTAMP | Automático |
+
+> Índice único en `token`. Un token solo puede usarse una vez y expira tras el tiempo definido.
+
 ### Tabla `user_settings`
 
 | Campo | Tipo | Descripción |
@@ -651,34 +821,45 @@ TERCERO-SOFWARE/
 |--------|---------------|--------|
 | **Cifrado de contraseñas** | bcrypt con 10 rondas de salt | ✅ Implementado |
 | **Tokens de autenticación** | Codificación Base64 de JSON `{id, email, role}` | ⚠️ Ver nota |
+| **Recuperación de contraseña** | Tokens de un solo uso con `expires_at` y flag `used` | ✅ Implementado |
 | **Control de acceso por roles (RBAC)** | Middleware `authorize(...roles)` con 3 roles | ✅ Implementado |
 | **Cabeceras HTTP seguras** | Helmet con defaults | ✅ Implementado |
 | **CORS** | Whitelist: URL de Vercel + `localhost:5500` | ✅ Implementado |
 | **Validación de entrada** | Verificación de email único, contraseña mín. 6 caracteres | ✅ Implementado |
-| **Variables de entorno** | Credenciales DB y claves en `.env` | ✅ Implementado |
+| **Variables de entorno** | Credenciales DB, claves y SMTP en `.env` | ✅ Implementado |
 | **Exclusión de password** | El campo `password` nunca se incluye en respuestas JSON | ✅ Implementado |
 | **Límite de subida** | Multer con límite de 50 MB por archivo | ✅ Implementado |
 | **Almacenamiento de archivos** | Supabase Storage (buckets "portadas" y "pdfs") | ✅ Implementado |
+| **Service Worker hardening** | Filtros de protocolo (solo http/https) y método (solo GET) | ✅ Implementado |
 
 > ⚠️ **Advertencia de seguridad — Tokens:** Los tokens actuales son una codificación Base64 simple de un JSON con `id`, `email` y `role`. **No son JWT firmados**, no tienen firma criptográfica ni fecha de expiración (`exp`). Cualquiera con el token puede decodificarlo y modificar su contenido. Para producción se recomienda migrar a JWT firmados con secreto y expiración.
 >
 > ⚠️ **Advertencia de seguridad — Claves Supabase:** La `SERVICE_ROLE_KEY` de Supabase está actualmente hardcodeada en `config/supabase.js`. Debería moverse a variables de entorno (`SUPABASE_SERVICE_KEY`).
 >
 > ⚠️ **Advertencia de seguridad — Rutas legacy:** El router `routes/user/index.js` (CRUD de usuarios) no tiene middleware de autenticación. Debería protegerse o eliminarse si no se usa.
+>
+> ⚠️ **Advertencia — SMTP:** Si no se configuran las variables `SMTP_*` en `.env`, el endpoint `/forgot-password` no puede enviar emails. Asegúrate de usar contraseñas de aplicación (no la contraseña principal de la cuenta) para servicios como Gmail.
 
 ---
 
 ## 🎨 Vistas de la Aplicación
 
 ### Login (`index.html`)
-Formulario de inicio de sesión y registro con diseño moderno tipo "píldora". Incluye validación de email y contraseña. Redirecciona al dashboard tras autenticarse.
+Formulario de inicio de sesión y registro con diseño moderno tipo "píldora". Incluye validación de email y contraseña. Redirecciona al dashboard tras autenticarse. Incluye enlace a "Olvidé mi contraseña".
+
+### Recuperación de Contraseña (`forgot-password.html`)
+Formulario para solicitar el envío de un enlace de recuperación por email. Muestra mensajes informativos (sin revelar si el email existe o no, por seguridad).
+
+### Restablecimiento de Contraseña (`reset-password.html`)
+Formulario para establecer una nueva contraseña. Valida el token recibido en la URL y solicita confirmación de la nueva contraseña.
 
 ### Dashboard (`books.html`)
-- Sidebar con navegación
+- Sidebar con navegación (centralizado en `ui.js`)
 - Catálogo de libros en formato grid
 - Tabs: **Libros**, **Mi Lista**, **Leídos**
 - Barra de búsqueda
 - Perfil de usuario en la esquina superior
+- **Centro de Moderación** (solo admin): modal rediseñado con tabs de libros pendientes y solicitudes de escritor, acciones en lote y empty states optimizados.
 
 ### Detalle del Libro (`book-detail.html`)
 - Información completa del libro
@@ -709,6 +890,11 @@ Formulario de inicio de sesión y registro con diseño moderno tipo "píldora". 
 - Estadísticas de lectura
 - Re-acceso a libros ya leídos
 
+### Descargados (`descargados.html`)
+- Libros descargados localmente para lectura offline
+- Gestión de archivos descargados
+- Acceso sin conexión a los PDFs guardados
+
 ---
 
 ## 📝 Flujo de Capas (Backend)
@@ -717,14 +903,16 @@ Formulario de inicio de sesión y registro con diseño moderno tipo "píldora". 
 Petición HTTP
     → Routes      (define URL y método: GET, POST, PUT, DELETE)
     → Controllers (procesa req/res, códigos de estado HTTP)
-    → Services    (reglas de negocio, cifrado)
+    → Services    (reglas de negocio, cifrado, envío de emails)
     → Models      (consultas a PostgreSQL vía Sequelize)
     → PostgreSQL  (almacenamiento de datos)
 ```
 
 ---
 
-## 🔧 Scripts del Backend
+## 🔧 Scripts Disponibles
+
+### Backend (`cd backend`)
 
 | Comando | Acción |
 |---------|--------|
@@ -732,6 +920,16 @@ Petición HTTP
 | `npm start` | Producción (`node src/server.js`) |
 | `node src/scripts/cleanupBooks.js` | Borra todos los libros y reseñas (solo para pruebas) |
 | `npm test` | No configurado |
+
+### Capacitor / APK (en la raíz del proyecto)
+
+| Comando | Acción |
+|---------|--------|
+| `npm install` | Instala Capacitor CLI, @capacitor/core, @capacitor/android y @capacitor/filesystem |
+| `npm run copy` | Copia los assets de `frontend/` al proyecto Android (`cap copy android`) |
+| `npm run sync` | Sincroniza dependencias + assets y plugins con Android (`cap sync android`) |
+| `npm run open` | Abre el proyecto Android en Android Studio (`cap open android`) |
+| `npm run build:apk` | Compila APK debug directamente con Gradle (`./gradlew assembleDebug`) |
 
 ---
 
@@ -743,23 +941,27 @@ Petición HTTP
 | El frontend no carga datos | Backend no corriendo | Ejecutar `npm run dev` en `backend/` |
 | Error CORS o `fetch` bloqueado | Abrir HTML como `file://` | Usar `npx serve frontend` o Live Server |
 | Puerto 3000 en uso | Otra app usa el puerto | Cambiar `PORT` en `.env` y `API_URL` en el frontend |
-| APK muestra `404: NOT_FOUND` | URL incorrecta en `twa-manifest.json` | Verificar que `host` sea `tercero-sofware.vercel.app` (con una sola "f") |
-| APK muestra barra de navegador | `assetlinks.json` no accesible o SHA-256 incorrecto | Verificar `https://tercero-sofware.vercel.app/.well-known/assetlinks.json` y que el SHA-256 coincida con el keystore |
-| APK no se instala (INSTALL_FAILED) | Firma diferente a la versión anterior | Desinstalar la app anterior primero: `adb uninstall app.vercel.tercero_sofware.twa` |
-| `bubblewrap build` pide contraseña | Es normal — la necesita para firmar la APK | Usar `159753` para keystore y key |
+| Service Worker: `TypeError chrome-extension://` | Extensiones de Chrome interceptan `fetch` | Ya resuelto en `sw.js`: filtra esquemas no HTTP antes de cachear |
+| Sidebar no responde en página X | Falta cargar `ui.js` o hay un `onclick` inline duplicado | Ver orden de scripts y no redefinir `toggleSidebar` fuera de `ui.js` |
+| `/forgot-password` no envía emails | Variables `SMTP_*` no configuradas en `.env` o credenciales inválidas | Revisar configuración SMTP y usar contraseña de aplicación |
+| **Capacitor:** `cap: command not found` | No se instalaron dependencias de la raíz | Ejecutar `npm install` en la raíz del proyecto (no en `backend/`) |
+| **Capacitor:** APK no carga el frontend | No se copiaron los assets | Ejecutar `npm run copy` (o `npm run sync`) antes de compilar |
+| **Capacitor:** INSTALL_FAILED_VERSION_DOWNGRADE | Versión instalada > versión a instalar | Desinstalar app anterior: `adb uninstall com.bibliotech.app` |
+| **Capacitor:** PDFs no se guardan en Android | Falta permiso WRITE_EXTERNAL_STORAGE o FileProvider mal configurado | Revisar `AndroidManifest.xml` y `res/xml/file_paths.xml` |
+| **Capacitor:** Android Studio no detecta el SDK | ANDROID_SDK_ROOT no configurado | Definir variable de entorno o abrir el proyecto desde `npm run open` |
 
 ---
 
-## � Configuración PWA y App Móvil (Android TWA)
+## 📱 Configuración PWA y App Móvil (Capacitor Android)
 
-El frontend está configurado como **Progressive Web App (PWA)** y se ha empaquetado como **Trusted Web Activity (TWA)** para generar una APK nativa de Android mediante [Bubblewrap](https://github.com/GoogleChromeLabs/bubblewrap).
+El frontend está configurado como **Progressive Web App (PWA)** y se empaqueta como **APK Android nativa** mediante [Capacitor 6](https://capacitorjs.com/). A diferencia de una TWA, Capacitor ejecuta el frontend dentro de un WebView nativo, permitiendo integración con plugins y acceso al sistema de archivos del dispositivo (ej: guardar PDFs offline).
 
 ### Archivos PWA
 
 | Archivo | Descripción |
 |---------|-------------|
 | `frontend/manifest.json` | Manifest con `display: standalone`, `theme_color: #1E4B65`, iconos maskable 192px y 512px |
-| `frontend/sw.js` | Service Worker con estrategia **network-first** (cache `bibliotech-v1`) |
+| `frontend/sw.js` | Service Worker con estrategia **network-first** (cache `bibliotech-v1`) + filtros de seguridad |
 | `frontend/icon-192.png` | Icono instalable 192×192 |
 | `frontend/icon-512.png` | Icono instalable 512×512 |
 
@@ -768,51 +970,117 @@ Todos los HTML incluyen:
 - `<meta name="theme-color" content="#1E4B65">`
 - Registro del Service Worker (`navigator.serviceWorker.register('/sw.js')`)
 
-### Digital Asset Links (`.well-known/assetlinks.json`)
+### Service Worker — Seguridad y ciclo de vida
 
-Para que la TWA se abra en **modo pantalla completa nativo** (sin barra de navegador), Android verifica la propiedad del sitio mediante Digital Asset Links:
+El `sw.js` incluye protecciones para evitar errores al interceptar peticiones no compatibles:
 
-- **Ubicación**: `frontend/.well-known/assetlinks.json` → accesible en `https://tercero-sofware.vercel.app/.well-known/assetlinks.json`
-- **Contenido**: JSON con `package_name` (`app.vercel.tercero_sofware.twa`) y `sha256_cert_fingerprints` del keystore de firma
-- **SHA-256 actual**: `1D:79:EB:EB:4C:FE:DD:67:09:C6:76:97:67:9E:07:B3:02:3C:9C:70:88:C4:11:81:C9:E3:FA:73:2E:3D:F0:E0`
+1. **Filtros previos a caché:**
+   - Solo procesa peticiones con protocolo `http://` o `https://` (ignora `chrome-extension://`, `data:`, `capacitor://`, etc.)
+   - Solo procesa peticiones de método `GET` (ignora `POST`, `PUT`, `PATCH`, `DELETE`)
 
-> Si regeneras el keystore, debes extraer el nuevo SHA-256 y actualizar este archivo.
+2. **Exclusión de la API:**
+   - Peticiones al host de Render (`tercero-sofware.onrender.com`) o rutas `/api/*` pasan directamente a `fetch`, sin tocar la caché.
 
-### Generar/Actualizar la APK con Bubblewrap
+3. **Ciclo de vida:**
+   - `install` → `self.skipWaiting()`: activa el nuevo SW inmediatamente sin esperar.
+   - `activate` → `clients.claim()`: toma control de todas las pestañas abiertas al momento.
 
-**Requisitos previos:**
-- Java JDK 17+
-- Bubblewrap CLI instalado: `npm install -g @bubblewrap/cli`
-- Keystore en `bibliotech-twa/android.keystore` (alias `android`, contraseña `159753`)
+4. **Robustez:**
+   - `cache.put()` envuelto en `try/catch` con `await` para no romper la promesa si un recurso no se puede cachear (ej: sin `Content-Length`).
 
-**Pasos:**
+### Configuración de Capacitor
 
-```powershell
-# 1. Subir cambios del frontend a GitHub (Vercel despliega automáticamente)
-cd c:\Users\javie\OneDrive\Documentos\GitHub\TERCERO-SOFWARE
-git add .
-git commit -m "descripción del cambio"
-git push
+Archivo principal: `capacitor.config.json`
 
-# 2. Esperar 1-2 min a que Vercel despliegue...
-
-# 3. Actualizar y reconstruir la APK
-cd c:\Users\javie\OneDrive\Documentos\GitHub\bibliotech-twa
-bubblewrap update
-bubblewrap build
-# (pedirá contraseña del keystore: 159753 y del key: 159753)
-
-# 4. Instalar en el teléfono (conectado por USB con depuración activada)
-& "C:\Users\javie\.bubblewrap\android_sdk\platform-tools\adb.exe" install -r "C:\Users\javie\OneDrive\Documentos\GitHub\bibliotech-twa\app-release-signed.apk"
+```json
+{
+  "appId": "com.bibliotech.app",
+  "appName": "BiblioTech",
+  "webDir": "frontend",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}
 ```
 
-> **Nota:** Si solo cambiaste contenido del frontend (HTML/CSS/JS) y ya está en Vercel, **no necesitas reconstruir la APK** — la TWA carga el contenido desde la web. Solo reconstruye si cambiaste algo en `twa-manifest.json` (URL, iconos, package name, etc.).
+| Campo | Valor | Propósito |
+|-------|-------|-----------|
+| `appId` | `com.bibliotech.app` | Identificador único de la app Android (package name) |
+| `appName` | `BiblioTech` | Nombre visible en el launcher |
+| `webDir` | `frontend` | Carpeta de origen que Capacitor copia al proyecto Android |
+| `server.androidScheme` | `https` | Esquema de URL para el WebView (usa `https` en lugar de `http`) |
+| `android.allowMixedContent` | `false` | Bloquea contenido mixto (HTTP dentro de HTTPS) |
 
-> **Cache de Android:** Si la barra de navegador sigue apareciendo tras instalar, ve a *Ajustes → Aplicaciones → BiblioTech → Almacenamiento → Borrar caché* y vuelve a abrir la app.
+### Generar/Actualizar la APK con Capacitor
+
+**Requisitos previos (una sola vez):**
+- **Node.js 18+** (instalado en el sistema)
+- **Java JDK 17+** (Android Studio lo incluye)
+- **Android Studio** + Android SDK (API 24+) — variable `ANDROID_SDK_ROOT` configurada
+- **Gradle** (viene incluido en el proyecto con `gradlew` wrapper)
+
+**Dependencias del proyecto (raíz):**
+```json
+{
+  "@capacitor/core": "^6.1.2",
+  "@capacitor/android": "^6.2.1",
+  "@capacitor/filesystem": "^6.0.4",
+  "@capacitor/cli": "^6.2.1"
+}
+```
+
+**Flujo completo (desde cero):**
+
+```powershell
+# ── 1. Instalar dependencias ──────────────────────────────
+# En la RAÍZ del proyecto (NO en backend/)
+cd c:\Users\javie\Documents\GitHub\TERCERO-SOFWARE
+npm install
+
+# (Solo si es la PRIMERA vez, sin carpeta android/)
+# npx cap add android
+
+# ── 2. Copiar frontend actualizado a Android ─────────────
+# Cada cambio en HTML/CSS/JS requiere este paso antes de compilar
+npm run copy       # o: npx cap copy android
+# O si cambiaron dependencias/plugins:
+npm run sync       # o: npx cap sync android
+
+# ── 3. Compilar la APK ──────────────────────────────────
+# Opción A: Abrir en Android Studio (interfaz gráfica)
+npm run open       # o: npx cap open android
+# → Dentro de Android Studio: Build → Build Bundle(s)/APK → Build APK(s)
+
+# Opción B: Compilar APK debug por CLI con Gradle
+npm run build:apk
+# APK resultante: android/app/build/outputs/apk/debug/app-debug.apk
+
+# ── 4. Instalar en el teléfono ──────────────────────────
+# (Conectado por USB con depuración activada)
+& adb devices    # Ver dispositivo conectado
+& adb install -r "c:\Users\javie\Documents\GitHub\TERCERO-SOFWARE\android\app\build\outputs\apk\debug\app-debug.apk"
+```
+
+### Diferencia: Capacitor vs Bubblewrap/TWA
+
+| Aspecto | **Capacitor (actual)** | Bubblewrap/TWA (anterior) |
+|---------|-------------------------|---------------------------|
+| Origen del contenido | Embebido en la APK (`webDir` → `www/`) | Cargado desde la web (Vercel) en tiempo real |
+| **¿Necesita internet para abrir?** | ❌ No — funciona 100% offline | ✅ Sí — requiere conexión al dominio |
+| Plugins nativos | ✅ `@capacitor/filesystem`, cámara, notificaciones, etc. | ❌ Limitado a APIs web |
+| Plataformas | Android + **iOS** (si se agrega `ios/`) | Solo Android |
+| Barra de navegador | ❌ Nunca aparece (WebView nativo) | ✅ Aparecía si fallaba `assetlinks.json` |
+| Keystore / assetlinks | No requiere Digital Asset Links | Requiere `.well-known/assetlinks.json` + SHA-256 |
+| Actualizar cambios | `npm run copy` + recompilar APK | Subir a Vercel (sin recompilar) |
+
+> ⚠️ **Importante:** Con Capacitor, **cada cambio del frontend debe reflejarse con `npm run copy` antes de compilar**. La APK lleva los assets embebidos y no consulta Vercel al abrirse.
 
 ---
 
-## �📝 Notas de Desarrollo
+## 🧾�️ Notas de Desarrollo
 
 - El backend crea automáticamente todas las tablas en la base de datos al iniciar (`sequelize.sync({ alter: true })`)
 - El rol `admin` puede crear/editar/eliminar libros directamente; `escritor` puede crear libros pero quedan `PENDIENTE` hasta aprobación
@@ -822,6 +1090,25 @@ bubblewrap build
 - Los archivos (portadas y PDFs) se suben a **Supabase Storage** mediante Multer con `memoryStorage`
 - La descarga de PDFs se realiza a través de un endpoint proxy del backend que obtiene el archivo del bucket de Supabase
 - El script `cleanupBooks.js` borra todos los libros y reseñas — usar solo en entornos de prueba
+- **UI centralizada:** `js/ui.js` es la única fuente de verdad para sidebar, navegación activa y eventos de menú; no redefinir estas funciones en otros scripts
+- **Service Worker:** El filtro de esquemas HTTP y métodos GET evita el error `Uncaught (in promise) TypeError` causado por extensiones de Chrome
+
+---
+
+## 🗺️ Roadmap (Planes futuros)
+
+Funcionalidades y mejoras planeadas para versiones próximas:
+
+| Prioridad | Tarea | Descripción |
+|-----------|-------|-------------|
+| 🔴 Alta | **Migrar tokens a JWT firmados** | Reemplazar Base64 por JWT con `secret`, `exp` (expiración) y `iat` (issued at). Middleware de verificación. |
+| 🔴 Alta | **Mover SERVICE_ROLE_KEY a `.env`** | Eliminar hardcode en `config/supabase.js` y leer de variable de entorno. |
+| 🟡 Media | **Proteger rutas legacy `/routes/user.js`** | Agregar middleware `authorize('admin')` o eliminar el CRUD legacy de usuarios. |
+| 🟡 Media | **Rate limiting en auth** | Agregar `express-rate-limit` a `/login`, `/register`, `/forgot-password` para prevenir fuerza bruta. |
+| 🟡 Media | **Validación avanzada de entrada** | Integrar `express-validator` o `zod` para validar esquemas de todos los endpoints. |
+| 🟢 Baja | **PWA: Push notifications** | Implementar suscripción a notificaciones push con VAPID (Web Push Protocol). |
+| 🟢 Baja | **Soporte offline extendido** | Cachear catálogo básico (libros aprobados) en IndexedDB para modo sin conexión. |
+| 🟢 Baja | **Test suite** | Configurar Jest + Supertest para endpoints y Vitest para utilidades frontend. |
 
 ---
 
