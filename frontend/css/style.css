@@ -2468,6 +2468,19 @@ body.users-page {
     transform: scale(0.95);
 }
 
+/* Píldora azul — Ver / Leer Libro */
+.btn-pill-info {
+    background: #DBEAFE !important;
+    color: #1D4ED8 !important;
+    border: 1.5px solid #BFDBFE !important;
+}
+
+.btn-pill-info:hover {
+    background: #BFDBFE !important;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.25);
+}
+
 /* Píldora verde — Aceptar / Aprobar */
 .btn-pill-success {
     background: #D1FAE5 !important;

@@ -1113,12 +1113,12 @@ async function loadPendingBooks() {
             }) : "";
             return `
             <div class="request-card-horizontal">
-                <div class="request-card-left">
+                <div class="request-card-left" style="cursor:pointer;" onclick="previewPendingBook(${book.id})" title="Clic para leer y revisar libro">
                     ${book.foto
                         ? `<img src="${book.foto}" alt="${book.nombre}" class="request-card-cover">`
-                        : `<div class="request-card-cover-placeholder"><i class="fas fa-file-pdf"></i></div>`}
+                        : `<div class="request-card-cover-placeholder"><i class="fas fa-book-open"></i></div>`}
                 </div>
-                <div class="request-card-body">
+                <div class="request-card-body" style="cursor:pointer;" onclick="previewPendingBook(${book.id})" title="Clic para leer y revisar libro">
                     <p class="request-card-title">${book.nombre}</p>
                     <span class="request-card-badge">${book.categoria || "Sin categoría"}</span>
                     <p class="request-card-requester">
@@ -1127,10 +1127,13 @@ async function loadPendingBooks() {
                     ${formattedDate ? `<p class="request-card-date"><i class="fas fa-calendar"></i> ${formattedDate}</p>` : ""}
                 </div>
                 <div class="request-card-actions">
-                    <button class="btn-pill btn-pill-success" title="Aprobar" onclick="approveBook(${book.id})">
+                    <button class="btn-pill btn-pill-info" title="Leer / Revisar libro" onclick="previewPendingBook(${book.id})">
+                        <i class="fas fa-book-open"></i>
+                    </button>
+                    <button class="btn-pill btn-pill-success" title="Aprobar libro" onclick="approveBook(${book.id})">
                         <i class="fas fa-check"></i>
                     </button>
-                    <button class="btn-pill btn-pill-danger" title="Rechazar" onclick="rejectBook(${book.id})">
+                    <button class="btn-pill btn-pill-danger" title="Rechazar libro" onclick="rejectBook(${book.id})">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -1141,6 +1144,14 @@ async function loadPendingBooks() {
         console.error("❌ Error al cargar libros pendientes:", error);
         list.innerHTML = `<div class="mod-empty"><p style="color:#EF4444;">${error.message}</p></div>`;
     }
+}
+
+/**
+ * Abre el lector para revisar el libro pendiente
+ * @param {number} id - ID del libro
+ */
+function previewPendingBook(id) {
+    window.open(`reader.html?id=${id}`, '_blank');
 }
 
 /**
@@ -1234,7 +1245,6 @@ function renderModEmpty(message) {
  * @param {number} id - ID del libro
  */
 async function approveBook(id) {
-    if (!confirm("¿Aprobar este libro y publicarlo en el catálogo?")) return;
     try {
         const response = await authFetch(`${API_URL}/moderation/books/${id}/approve`, { method: "PUT" });
         const data = await response.json();
@@ -1251,7 +1261,6 @@ async function approveBook(id) {
  * @param {number} id - ID del libro
  */
 async function rejectBook(id) {
-    if (!confirm("¿Rechazar y eliminar este libro pendiente?")) return;
     try {
         const response = await authFetch(`${API_URL}/moderation/books/${id}/reject`, { method: "PUT" });
         const data = await response.json();
@@ -1268,7 +1277,6 @@ async function rejectBook(id) {
  * @param {number} id - ID de la solicitud
  */
 async function approveWriterRequest(id) {
-    if (!confirm("¿Aprobar esta solicitud y ascender al usuario a escritor?")) return;
     try {
         const response = await authFetch(`${API_URL}/moderation/writer-requests/${id}/approve`, { method: "PUT" });
         const data = await response.json();
@@ -1285,7 +1293,6 @@ async function approveWriterRequest(id) {
  * @param {number} id - ID de la solicitud
  */
 async function rejectWriterRequest(id) {
-    if (!confirm("¿Rechazar esta solicitud de ascenso?")) return;
     try {
         const response = await authFetch(`${API_URL}/moderation/writer-requests/${id}/reject`, { method: "PUT" });
         const data = await response.json();
@@ -1304,7 +1311,6 @@ async function approveAllRequests() {
     const endpoint = currentModTab === "books"
         ? `${API_URL}/moderation/books/approve-all`
         : `${API_URL}/moderation/writer-requests/approve-all`;
-    if (!confirm("¿Aprobar TODOS los elementos de esta pestaña?")) return;
     try {
         const response = await authFetch(endpoint, { method: "PUT" });
         const data = await response.json();
@@ -1323,7 +1329,6 @@ async function denyAllRequests() {
     const endpoint = currentModTab === "books"
         ? `${API_URL}/moderation/books/reject-all`
         : `${API_URL}/moderation/writer-requests/reject-all`;
-    if (!confirm("¿Rechazar TODOS los elementos de esta pestaña?")) return;
     try {
         const response = await authFetch(endpoint, { method: "PUT" });
         const data = await response.json();
