@@ -2301,6 +2301,7 @@ body.users-page {
     flex-direction: column;
     overflow: hidden;
     padding: 0;
+    position: relative;
 }
 
 .requests-modal-content .modal-title {
@@ -2313,8 +2314,36 @@ body.users-page {
 }
 
 .requests-modal-content > .modal-close {
+    position: absolute;
     top: 18px;
     right: 22px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #F1F5F9;
+    color: #64748B;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+}
+
+.requests-modal-content > .modal-close:hover {
+    background: #E2E8F0;
+    color: #0F172A;
+    transform: rotate(90deg) scale(1.05);
+}
+
+.requests-modal-content > .modal-close svg {
+    width: 20px !important;
+    height: 20px !important;
+    max-width: 20px !important;
+    max-height: 20px !important;
+    margin: 0 !important;
+    display: block !important;
 }
 
 /* --- Cabecera del modal: pestañas + acciones globales --- */
@@ -2403,12 +2432,13 @@ body.users-page {
     margin-bottom: 12px;
 }
 
-/* --- Botón píldora genérico (reset nativo + estilo pill) --- */
-.btn-pill {
+/* --- Botones píldora de moderación (no sobreescriben el login) --- */
+.global-actions .btn-pill,
+.request-card-actions .btn-pill {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    padding: 8px 16px;
     border: none;
     outline: none;
     background: transparent;
@@ -2421,39 +2451,45 @@ body.users-page {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+    min-width: auto;
 }
 
-.btn-pill i.fas {
+.global-actions .btn-pill {
+    padding: 8px 16px;
+}
+
+.global-actions .btn-pill i.fas {
     font-size: 0.8rem;
     line-height: 1;
 }
 
-.btn-pill:active {
+.global-actions .btn-pill:active,
+.request-card-actions .btn-pill:active {
     transform: scale(0.95);
 }
 
 /* Píldora verde — Aceptar / Aprobar */
 .btn-pill-success {
-    background: #D1FAE5;
-    color: #059669;
-    border: 1.5px solid #A7F3D0;
+    background: #D1FAE5 !important;
+    color: #059669 !important;
+    border: 1.5px solid #A7F3D0 !important;
 }
 
 .btn-pill-success:hover {
-    background: #A7F3D0;
+    background: #A7F3D0 !important;
     transform: translateY(-1px);
     box-shadow: 0 3px 8px rgba(16, 185, 129, 0.25);
 }
 
 /* Píldora roja — Denegar / Rechazar (outline) */
 .btn-pill-danger {
-    background: transparent;
-    color: #DC2626;
-    border: 1.5px solid #FECACA;
+    background: transparent !important;
+    color: #DC2626 !important;
+    border: 1.5px solid #FECACA !important;
 }
 
 .btn-pill-danger:hover {
-    background: #FEE2E2;
+    background: #FEE2E2 !important;
     transform: translateY(-1px);
     box-shadow: 0 3px 8px rgba(239, 68, 68, 0.2);
 }
@@ -2610,14 +2646,19 @@ body.users-page {
     align-self: center;
 }
 
-/* Dentro de las tarjetas, los btn-pill son más compactos */
+/* Dentro de las tarjetas, los botones son compactos */
 .request-card-actions .btn-pill {
-    padding: 6px 12px;
-    font-size: 0.74rem;
+    min-width: 36px !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    font-size: 0.85rem !important;
 }
 
 .request-card-actions .btn-pill i.fas {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
+    line-height: 1;
 }
 
 /* --- Estado vacío --- */
@@ -2634,35 +2675,16 @@ body.users-page {
 
 .mod-empty-state svg,
 .mod-empty-state i,
-#pendingBooksList svg,
-#writerRequestsList svg {
-    width: 64px !important;
-    height: 64px !important;
-    max-width: 64px !important;
-    max-height: 64px !important;
-    margin: 0 auto 16px;
-    display: block;
-    color: #CBD5E1;
-}
-
-#requestsModal svg,
-#requestsModal img,
-.mod-empty-state svg {
+.mod-empty svg,
+#pendingBooksList .mod-empty-state svg,
+#writerRequestsList .mod-empty-state svg {
     width: 64px !important;
     height: 64px !important;
     max-width: 64px !important;
     max-height: 64px !important;
     margin: 0 auto 16px !important;
     display: block !important;
-}
-
-.mod-empty svg {
-    width: 64px;
-    height: 64px;
-    max-width: 64px;
-    max-height: 64px;
-    margin: 0 auto 12px;
-    opacity: 0.5;
+    color: #CBD5E1;
 }
 
 .mod-empty p,
