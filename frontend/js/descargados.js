@@ -25,20 +25,19 @@ document.addEventListener("DOMContentLoaded", () => {
 function initializeProfile() {
     const user = getUserData();
     const profileEmail = document.getElementById("profileEmail");
-    const avatarLetter = document.getElementById("avatarLetter");
     const profileName = document.getElementById("profileName");
 
-    if (!profileEmail && !avatarLetter && !profileName) return;
-
     if (user) {
-        if (profileEmail) profileEmail.textContent = user.email;
-        if (profileName) profileName.textContent = user.name || user.email;
-        if (avatarLetter) avatarLetter.textContent = (user.name || user.email).charAt(0).toUpperCase();
-        return;
+        if (profileEmail) profileEmail.textContent = user.email || "";
+        if (profileName) profileName.textContent = user.name || user.email || "";
+    } else {
+        if (profileEmail) profileEmail.textContent = "visitante@bibliotech.com";
+        if (profileName) profileName.textContent = "Visitante";
     }
-    if (profileEmail) profileEmail.textContent = "visitante@bibliotech.com";
-    if (profileName) profileName.textContent = "Visitante";
-    if (avatarLetter) avatarLetter.textContent = "V";
+
+    if (typeof window.renderGlobalAvatar === "function") {
+        window.renderGlobalAvatar();
+    }
 }
 
 /**
@@ -47,6 +46,7 @@ function initializeProfile() {
 function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("avatarPhoto");
     window.location.href = "index.html";
 }
 

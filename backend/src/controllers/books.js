@@ -306,7 +306,7 @@ class BookController {
           {
             model: require("../models").User,
             as: "user",
-            attributes: ["id", "name", "email"],
+            attributes: ["id", "name", "email", "foto"],
           },
         ],
         order: [["createdAt", "DESC"]],
@@ -359,7 +359,7 @@ class BookController {
           {
             model: require("../models").User,
             as: "user",
-            attributes: ["id", "name", "email"],
+            attributes: ["id", "name", "email", "foto"],
           },
         ],
       });

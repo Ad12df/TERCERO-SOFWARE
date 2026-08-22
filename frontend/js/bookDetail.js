@@ -316,14 +316,19 @@ function renderComments(comments) {
 
     container.innerHTML = comments.map(comment => {
         const authorName = (comment.user && comment.user.name) || comment.autor || comment.author || "Anónimo";
+        const authorPhoto = (comment.user && comment.user.foto) || "";
         const initial = authorName.charAt(0).toUpperCase();
         const dateStr = comment.fecha_creacion || comment.date || comment.created_at;
         const formattedDate = dateStr ? formatDate(dateStr) : "";
         const text = escapeHtml(comment.contenido || comment.text);
 
+        const avatarHtml = authorPhoto
+            ? `<div class="comment-avatar" style="position:relative;overflow:hidden;padding:0;"><img src="${authorPhoto}" alt="${escapeHtml(authorName)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>`
+            : `<div class="comment-avatar">${initial}</div>`;
+
         return `
             <div class="comment-item">
-                <div class="comment-avatar">${initial}</div>
+                ${avatarHtml}
                 <div class="comment-content">
                     <div class="comment-header">
                         <span class="comment-author">${escapeHtml(authorName)}</span>
@@ -601,23 +606,23 @@ document.addEventListener("DOMContentLoaded", () => {
 function initializeProfile() {
     const userStr = localStorage.getItem("user");
     const profileEmail = document.getElementById("profileEmail");
-    const avatarLetter = document.getElementById("avatarLetter");
 
     if (userStr) {
         try {
             const user = JSON.parse(userStr);
             if (user && user.email) {
-                profileEmail.textContent = user.email;
-                avatarLetter.textContent = user.email.charAt(0).toUpperCase();
-                return;
+                if (profileEmail) profileEmail.textContent = user.email;
             }
         } catch (e) {
             console.error("Error al parsear el usuario:", e);
         }
+    } else {
+        if (profileEmail) profileEmail.textContent = "visitante@bibliotech.com";
     }
-    // Valores por defecto
-    profileEmail.textContent = "visitante@bibliotech.com";
-    avatarLetter.textContent = "V";
+
+    if (typeof window.renderGlobalAvatar === "function") {
+        window.renderGlobalAvatar();
+    }
 }
 
 /**
@@ -641,7 +646,10 @@ function switchTab(tabName) {
  * Borra la sesión local y redirige al login
  */
 function logout() {
+    localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("avatarPhoto");
+    window.location.href = "index.html";
 }
 
 /**

@@ -86,7 +86,7 @@ function initializeProfile() {
 
     const name = user ? (user.name || user.email || 'Visitante') : 'Visitante';
     const initial = name.charAt(0).toUpperCase();
-    const savedPhoto = localStorage.getItem('avatarPhoto');
+    const userPhoto = user && user.foto ? user.foto : null;
 
     if (user) {
         if (profileEmail) profileEmail.textContent = user.email || '';
@@ -101,7 +101,10 @@ function initializeProfile() {
     }
 
     // Aplicar foto o inicial en avatar del topbar
-    applyTopbarAvatar(initial, savedPhoto);
+    applyTopbarAvatar(initial, userPhoto);
+    if (typeof window.renderGlobalAvatar === 'function') {
+        window.renderGlobalAvatar();
+    }
 }
 
 /**
@@ -161,6 +164,7 @@ function applyRoleVisibility() {
 function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("avatarPhoto");
     window.location.href = "index.html";
 }
 

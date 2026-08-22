@@ -128,8 +128,15 @@ async function login() {
         name: userData.name,
         email: userData.email,
         role: userData.role,
+        foto: userData.foto || null,
       }),
     );
+
+    if (userData.foto) {
+      localStorage.setItem("avatarPhoto", userData.foto);
+    } else {
+      localStorage.removeItem("avatarPhoto");
+    }
 
     // Redirección hacia el gestor de libros/biblioteca una vez logueado
     window.location.href = "books.html";

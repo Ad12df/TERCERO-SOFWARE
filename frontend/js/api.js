@@ -114,6 +114,7 @@ function isAuthenticated() {
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
+  localStorage.removeItem("avatarPhoto");
   localStorage.removeItem("bibliotech_offline_queue");
   window.location.href = "index.html";
 }

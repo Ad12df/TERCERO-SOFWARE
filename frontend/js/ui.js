@@ -97,27 +97,23 @@
     // 5. Sincronización global del avatar (foto o inicial)
     // ------------------------------------------------------------------
     global.renderGlobalAvatar = function () {
-        let savedPhoto = localStorage.getItem("avatarPhoto");
-        let initial = "A";
+        let user = null;
         try {
             const rawUser = localStorage.getItem("user");
             if (rawUser) {
-                const u = JSON.parse(rawUser);
-                const name = u.name || u.email || "A";
-                initial = name.charAt(0).toUpperCase();
-                if (!savedPhoto && u.foto) {
-                    savedPhoto = u.foto;
-                    localStorage.setItem("avatarPhoto", u.foto);
-                }
+                user = JSON.parse(rawUser);
             }
         } catch (e) {}
 
+        const userPhoto = user && user.foto ? user.foto : null;
+        const initial = user ? (user.name || user.email || "A").charAt(0).toUpperCase() : "A";
+
         const avatars = document.querySelectorAll(".avatar:not(.avatar-large):not(.comment-avatar)");
         avatars.forEach((el) => {
-            if (savedPhoto) {
+            if (userPhoto) {
                 el.style.position = "relative";
                 el.style.overflow = "hidden";
-                el.innerHTML = `<img src="${savedPhoto}" alt="Avatar" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                el.innerHTML = `<img src="${userPhoto}" alt="Avatar" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
             } else {
                 el.style.position = "";
                 el.style.overflow = "";
