@@ -105,7 +105,10 @@
 
                 <div class="topbar-actions">
                     <div class="user-profile">
-                        <div class="avatar" id="avatarLetter">A</div>
+                        <div class="avatar" id="avatarLetter" style="position:relative;overflow:hidden;">
+                            <img id="topbarAvatarImg" src="" alt="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                            <span id="avatarInitial">A</span>
+                        </div>
                         <div class="user-info">
                             <p class="user-name" id="profileName">Usuario</p>
                             <p class="user-email" id="profileEmail">user@bibliotech.com</p>

@@ -79,24 +79,53 @@ function initializeProfile() {
     const user = getUserData();
     const profileEmail = document.getElementById("profileEmail");
     const avatarLetter = document.getElementById("avatarLetter");
-    const profileName = document.getElementById("profileName");
+    const profileName  = document.getElementById("profileName");
 
-    // En algunas páginas (ej. book-detail.html) estos elementos no existen
+    // En algunas páginas estos elementos no existen
     if (!profileEmail && !avatarLetter && !profileName) return;
 
+    const name = user ? (user.name || user.email || 'Visitante') : 'Visitante';
+    const initial = name.charAt(0).toUpperCase();
+    const savedPhoto = localStorage.getItem('avatarPhoto');
+
     if (user) {
-        if (profileEmail) profileEmail.textContent = user.email;
-        if (profileName) profileName.textContent = user.name || user.email;
-        if (avatarLetter) avatarLetter.textContent = (user.name || user.email).charAt(0).toUpperCase();
+        if (profileEmail) profileEmail.textContent = user.email || '';
+        if (profileName)  profileName.textContent  = name;
         if (String(user.role).toLowerCase() === "admin") {
             const adminBadge = document.getElementById("adminBadge");
             if (adminBadge) adminBadge.style.display = "inline-block";
         }
-        return;
+    } else {
+        if (profileEmail) profileEmail.textContent = "visitante@bibliotech.com";
+        if (profileName)  profileName.textContent  = "Visitante";
     }
-    if (profileEmail) profileEmail.textContent = "visitante@bibliotech.com";
-    if (profileName) profileName.textContent = "Visitante";
-    if (avatarLetter) avatarLetter.textContent = "V";
+
+    // Aplicar foto o inicial en avatar del topbar
+    applyTopbarAvatar(initial, savedPhoto);
+}
+
+/**
+ * Aplica la foto de perfil o la inicial al avatar del topbar.
+ * Compatible con las páginas que tienen `avatarLetterWrap` + `topbarAvatarImg`
+ * y con las que solo tienen `avatarLetter`.
+ */
+function applyTopbarAvatar(initial, photoDataUrl) {
+    const avatarLetter   = document.getElementById('avatarLetter');
+    const topbarImg      = document.getElementById('topbarAvatarImg');
+
+    if (photoDataUrl) {
+        if (topbarImg) {
+            topbarImg.src           = photoDataUrl;
+            topbarImg.style.display = 'block';
+        }
+        if (avatarLetter) avatarLetter.style.display = 'none';
+    } else {
+        if (topbarImg) topbarImg.style.display = 'none';
+        if (avatarLetter) {
+            avatarLetter.style.display = '';
+            avatarLetter.textContent   = initial;
+        }
+    }
 }
 
 /**

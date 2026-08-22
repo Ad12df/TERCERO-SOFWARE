@@ -1,9 +1,9 @@
 /* ==========================================================================
-   CONFIGURACIÓN - ESTILOS DE LA PÁGINA DE CONFIGURACIÓN
+   CONFIGURACIÓN - ESTILOS DE LA PÁGINA DE CONFIGURACIÓN (v2)
    ========================================================================== */
 
 /* ==========================================================================
-   CONTENEDOR PRINCIPAL DE CONFIGURACIÓN
+   CONTENEDOR PRINCIPAL
    ========================================================================== */
 
 .settings-container {
@@ -12,17 +12,17 @@
     gap: 24px;
     max-width: 800px;
     margin: 0 auto;
-    padding: 8px 0 40px;
+    padding: 8px 0 48px;
 }
 
 /* ==========================================================================
-   TARJETA DE CONFIGURACIÓN
+   TARJETA
    ========================================================================== */
 
 .settings-card {
     background: #FFFFFF;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    border-radius: 20px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
     overflow: hidden;
     animation: fadeInSlideUp 0.4s ease-out both;
 }
@@ -32,12 +32,11 @@
 .settings-card:nth-child(3) { animation-delay: 0.15s; }
 .settings-card:nth-child(4) { animation-delay: 0.2s; }
 
-/* Header de la tarjeta */
 .settings-card-header {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 20px 24px;
+    padding: 20px 28px;
     border-bottom: 1px solid #F1F5F9;
 }
 
@@ -48,7 +47,7 @@
     width: 48px;
     height: 48px;
     background: linear-gradient(135deg, #1E4B65, #2D6A8F);
-    border-radius: 12px;
+    border-radius: 14px;
     flex-shrink: 0;
 }
 
@@ -56,405 +55,249 @@
     width: 22px;
     height: 22px;
     color: #FFFFFF;
+    stroke: #FFFFFF;
 }
 
-.settings-card-title-group {
-    flex: 1;
-}
+.settings-card-title-group { flex: 1; }
 
 .settings-card-title {
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700;
     color: #1E293B;
     margin: 0 0 2px;
 }
 
 .settings-card-subtitle {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: #94A3B8;
     margin: 0;
 }
 
-/* Body de la tarjeta */
 .settings-card-body {
-    padding: 24px;
+    padding: 28px;
 }
 
 /* ==========================================================================
-   SECCIÓN DE PERFIL
+   HERO DE PERFIL
    ========================================================================== */
 
-.profile-section {
+.profile-hero {
     display: flex;
-    gap: 24px;
-    margin-bottom: 24px;
+    gap: 36px;
+    align-items: flex-start;
 }
 
-.avatar-edit {
-    position: relative;
+/* ── Avatar zone ── */
+.avatar-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
     flex-shrink: 0;
+}
+
+.avatar-ring {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1E4B65, #2D6A8F);
+    padding: 3px;
+    box-shadow: 0 4px 18px rgba(30, 75, 101, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
 .avatar-large {
-    width: 80px;
-    height: 80px;
-    font-size: 2rem;
+    width: 104px;
+    height: 104px;
+    font-size: 2.6rem;
     border-radius: 50%;
     background: linear-gradient(135deg, #1E4B65, #2D6A8F);
     color: #FFFFFF;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: -1px;
 }
 
-.avatar-change-btn {
+/* Cuando hay foto, ocupa el anillo completo */
+.avatar-ring img {
     position: absolute;
-    bottom: -4px;
-    right: -4px;
-    width: 32px;
-    height: 32px;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Botón cámara flotante */
+.avatar-upload-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 34px;
+    height: 34px;
     background: #FFFFFF;
-    border: 2px solid #E2E8F0;
+    border: 2.5px solid #E2E8F0;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    z-index: 2;
 }
 
-.avatar-change-btn:hover {
+.avatar-upload-btn:hover {
     background: #1E4B65;
     border-color: #1E4B65;
+    transform: scale(1.1);
 }
 
-.avatar-change-btn:hover svg {
-    color: #FFFFFF;
+.avatar-upload-btn:hover svg {
+    stroke: #FFFFFF;
 }
 
-.avatar-change-btn svg {
-    width: 14px;
-    height: 14px;
-    color: #64748B;
-}
-
-.profile-fields {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-/* ==========================================================================
-   CAMPOS DE CONFIGURACIÓN
-   ========================================================================== */
-
-.settings-field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.settings-field label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #64748B;
-}
-
-.settings-field input {
-    padding: 12px 16px;
-    border: 1.5px solid #E2E8F0;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    color: #1E293B;
-    background: #F8FAFC;
-    transition: all 0.2s ease;
-}
-
-.settings-field input:focus {
-    outline: none;
-    border-color: #1E4B65;
-    background: #FFFFFF;
-    box-shadow: 0 0 0 3px rgba(30, 75, 101, 0.1);
-}
-
-/* Campo de solo lectura (rol) */
-.settings-field input[readonly] {
-    background: #F1F5F9;
-    color: #64748B;
-    cursor: default;
-    border-style: dashed;
-}
-
-.settings-field input[readonly]:focus {
-    border-color: #E2E8F0;
-    box-shadow: none;
-}
-
-/* Badge de rol */
-.role-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.role-badge.admin {
-    background: rgba(239, 68, 68, 0.1);
-    color: #EF4444;
-}
-
-.role-badge.escritor {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3B82F6;
-}
-
-.role-badge.user {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10B981;
-}
-
-/* ==========================================================================
-   BOTONES DE ACCIÓN
-   ========================================================================== */
-
-.settings-actions {
-    display: flex;
-    justify-content: flex-end;
-    padding-top: 16px;
-    border-top: 1px solid #F1F5F9;
-}
-
-.btn-save-settings {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    background: linear-gradient(135deg, #1E4B65, #2D6A8F);
-    color: #FFFFFF;
-    border: none;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.25s ease;
-}
-
-.btn-save-settings:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(30, 75, 101, 0.3);
-}
-
-.btn-save-settings svg {
-    width: 18px;
-    height: 18px;
-}
-
-/* ==========================================================================
-   TOGGLES DE PREFERENCIAS
-   ========================================================================== */
-
-.settings-toggles {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.settings-toggle-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px;
-    background: #F8FAFC;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-}
-
-.settings-toggle-item:hover {
-    background: #F1F5F9;
-}
-
-.toggle-info {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    flex: 1;
-}
-
-.toggle-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    flex-shrink: 0;
-}
-
-.toggle-icon svg {
-    width: 20px;
-    height: 20px;
-}
-
-.dark-mode-icon {
-    background: rgba(30, 41, 59, 0.1);
-    color: #1E293B;
-}
-
-.notifications-icon {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22C55E;
-}
-
-.language-icon {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3B82F6;
-}
-
-.toggle-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.toggle-label {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: #1E293B;
-}
-
-.toggle-description {
-    font-size: 0.8rem;
-    color: #94A3B8;
-}
-
-/* ==========================================================================
-   SELECTOR DE IDIOMA
-   ========================================================================== */
-
-.language-select {
-    padding: 10px 16px;
-    border: 1.5px solid #E2E8F0;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    color: #1E293B;
-    background: #FFFFFF;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    min-width: 140px;
-}
-
-.language-select:focus {
-    outline: none;
-    border-color: #1E4B65;
-    box-shadow: 0 0 0 3px rgba(30, 75, 101, 0.1);
-}
-
-/* ==========================================================================
-   SECCIÓN DE SEGURIDAD (CONTRASEÑA)
-   ========================================================================== */
-
-.security-section {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.security-item {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px;
-    background: #F8FAFC;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-}
-
-.security-item:hover {
-    background: #F1F5F9;
-}
-
-.security-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    background: rgba(239, 68, 68, 0.1);
-    border-radius: 10px;
-    flex-shrink: 0;
-}
-
-.security-icon svg {
-    width: 22px;
-    height: 22px;
-    color: #EF4444;
-}
-
-.security-info {
-    flex: 1;
-}
-
-.security-info h4 {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #1E293B;
-    margin: 0 0 4px;
-}
-
-.security-info p {
-    font-size: 0.8rem;
-    color: #94A3B8;
-    margin: 0;
-}
-
-.btn-security {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 18px;
-    background: #FFFFFF;
-    color: #1E4B65;
-    border: 1.5px solid #1E4B65;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-}
-
-.btn-security:hover {
-    background: #1E4B65;
-    color: #FFFFFF;
-}
-
-.btn-security svg {
+.avatar-upload-btn svg {
     width: 16px;
     height: 16px;
+    stroke: #1E4B65;
+    transition: stroke 0.2s;
 }
 
-/* Campo de contraseña con toggle */
-.password-field-wrapper {
+.avatar-hint {
+    font-size: 0.72rem;
+    color: #94A3B8;
+    margin: 0;
+    text-align: center;
+    line-height: 1.3;
+}
+
+/* ── Campos de solo lectura ── */
+.profile-readonly-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    justify-content: center;
+}
+
+.readonly-field {
+    background: #F8FAFC;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 14px 18px;
+    transition: background 0.2s;
+}
+
+.readonly-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+.readonly-label svg {
+    width: 13px;
+    height: 13px;
+    stroke: #94A3B8;
+    flex-shrink: 0;
+}
+
+.readonly-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #1E293B;
+}
+
+/* Chip de rol */
+.role-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    background: rgba(30, 75, 101, 0.1);
+    color: #1E4B65;
+}
+
+.role-chip.chip-admin   { background: rgba(239, 68, 68, 0.1);  color: #DC2626; }
+.role-chip.chip-escritor{ background: rgba(59, 130, 246, 0.1); color: #2563EB; }
+.role-chip.chip-user    { background: rgba(16, 185, 129, 0.1); color: #059669; }
+
+/* ==========================================================================
+   SECCIÓN CONTRASEÑA
+   ========================================================================== */
+
+.password-fields-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.pw-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.pw-field label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748B;
+}
+
+.pw-input-wrap {
     position: relative;
     display: flex;
     align-items: center;
 }
 
-.password-field-wrapper input {
-    padding-right: 44px;
+.pw-icon {
+    position: absolute;
+    left: 14px;
+    width: 17px;
+    height: 17px;
+    stroke: #94A3B8;
+    pointer-events: none;
 }
 
-.password-toggle-btn {
+.pw-input-wrap input {
+    width: 100%;
+    padding: 13px 48px 13px 42px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    color: #1E293B;
+    background: #F8FAFC;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.pw-input-wrap input:focus {
+    outline: none;
+    border-color: #1E4B65;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(30, 75, 101, 0.1);
+}
+
+.pw-eye {
     position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
+    right: 12px;
     background: none;
     border: none;
     cursor: pointer;
@@ -463,16 +306,50 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    border-radius: 8px;
+    transition: all 0.2s;
 }
 
-.password-toggle-btn:hover {
+.pw-eye:hover {
     color: #1E4B65;
-    background: rgba(30, 75, 101, 0.05);
+    background: rgba(30, 75, 101, 0.06);
 }
 
-.password-toggle-btn svg {
+.pw-eye svg {
+    width: 18px;
+    height: 18px;
+}
+
+.pw-action-row {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #F1F5F9;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-save-password {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 28px;
+    background: linear-gradient(135deg, #0F766E, #14B8A6);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.btn-save-password:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(15, 118, 110, 0.35);
+}
+
+.btn-save-password svg {
     width: 18px;
     height: 18px;
 }
@@ -484,41 +361,33 @@
 .account-actions {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
 }
 
 .action-item {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 16px;
+    padding: 16px 20px;
     background: #F8FAFC;
-    border-radius: 12px;
+    border-radius: 14px;
     transition: all 0.2s ease;
+    border: 1.5px solid transparent;
 }
 
 .action-item:hover {
     background: #F1F5F9;
+    border-color: #E2E8F0;
 }
 
 .action-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
     flex-shrink: 0;
-}
-
-.action-icon.writer {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3B82F6;
-}
-
-.action-icon.contact {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10B981;
 }
 
 .action-icon svg {
@@ -526,34 +395,46 @@
     height: 22px;
 }
 
-.action-info {
-    flex: 1;
+.action-icon-writer {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3B82F6;
 }
 
+.action-icon-writer svg { stroke: #3B82F6; }
+
+.action-icon-contact {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+}
+
+.action-icon-contact svg { stroke: #10B981; }
+
+.action-info { flex: 1; min-width: 0; }
+
 .action-info h4 {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 600;
     color: #1E293B;
-    margin: 0 0 4px;
+    margin: 0 0 3px;
 }
 
 .action-info p {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: #94A3B8;
     margin: 0;
 }
 
 .btn-action {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
     padding: 10px 18px;
-    background: #FFFFFF;
-    color: #1E4B65;
-    border: 1.5px solid #1E4B65;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 500;
+    background: linear-gradient(135deg, #1E4B65, #2D6A8F);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.84rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
@@ -561,17 +442,25 @@
 }
 
 .btn-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(30, 75, 101, 0.3);
+}
+
+.btn-action-outline {
+    background: transparent;
+    color: #1E4B65;
+    border: 1.5px solid #1E4B65;
+}
+
+.btn-action-outline:hover {
     background: #1E4B65;
     color: #FFFFFF;
 }
 
-.btn-action svg {
-    width: 16px;
-    height: 16px;
-}
+.btn-action svg { width: 16px; height: 16px; }
 
 .btn-action.btn-disabled {
-    opacity: 0.6;
+    opacity: 0.55;
     cursor: not-allowed;
     pointer-events: none;
     background: #F1F5F9;
@@ -579,7 +468,97 @@
     border-color: #E2E8F0;
 }
 
-.btn-action .spinner {
+/* ==========================================================================
+   TARJETA INFO APP
+   ========================================================================== */
+
+.settings-card-info {
+    background: linear-gradient(135deg, #1E4B65 0%, #0F2D42 100%);
+    color: #FFFFFF;
+}
+
+.settings-card-info .app-info {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 28px;
+}
+
+.settings-card-info .app-logo {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    backdrop-filter: blur(4px);
+}
+
+.settings-card-info .app-logo svg {
+    width: 30px;
+    height: 30px;
+    stroke: #FFFFFF;
+}
+
+.settings-card-info .app-details h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: #FFFFFF;
+}
+
+.settings-card-info .app-details p {
+    font-size: 0.85rem;
+    margin: 0;
+    opacity: 0.75;
+    color: #FFFFFF;
+}
+
+.settings-card-info .app-copyright {
+    margin-top: 6px !important;
+    font-size: 0.72rem !important;
+    opacity: 0.5 !important;
+}
+
+/* ==========================================================================
+   TOPBAR AVATAR CON FOTO
+   ========================================================================== */
+
+.topbar-avatar-wrap {
+    position: relative;
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   ANIMACIONES
+   ========================================================================== */
+
+@keyframes fadeInSlideUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideOutRight {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(100%); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   SPINNER
+   ========================================================================== */
+
+.spinner {
     display: inline-block;
     width: 14px;
     height: 14px;
@@ -591,391 +570,38 @@
     margin-right: 6px;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* ==========================================================================
-   ACERCA DEL PORTAL
-   ========================================================================== */
-
-.about-section {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.about-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 14px 16px;
-    background: #F8FAFC;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-}
-
-.about-item:hover {
-    background: #F1F5F9;
-}
-
-.about-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    flex-shrink: 0;
-}
-
-.about-icon.version {
-    background: rgba(139, 92, 246, 0.1);
-    color: #8B5CF6;
-}
-
-.about-icon.license {
-    background: rgba(245, 158, 11, 0.1);
-    color: #F59E0B;
-}
-
-.about-icon.team {
-    background: rgba(236, 72, 153, 0.1);
-    color: #EC4899;
-}
-
-.about-icon svg {
-    width: 20px;
-    height: 20px;
-}
-
-.about-info {
-    flex: 1;
-}
-
-.about-info h4 {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #1E293B;
-    margin: 0 0 2px;
-}
-
-.about-info p {
-    font-size: 0.8rem;
-    color: #94A3B8;
-    margin: 0;
-}
-
-/* ==========================================================================
-   TOGGLE SWITCH
-   ========================================================================== */
-
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 52px;
-    height: 28px;
-    flex-shrink: 0;
-}
-
-.toggle-switch.small {
-    width: 48px;
-    height: 26px;
-}
-
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.toggle-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #CBD5E1;
-    transition: 0.3s;
-    border-radius: 28px;
-}
-
-.toggle-slider:before {
-    position: absolute;
-    content: "";
-    height: 22px;
-    width: 22px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: 0.3s;
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.toggle-switch.small .toggle-slider:before {
-    height: 20px;
-    width: 20px;
-}
-
-.toggle-switch input:checked + .toggle-slider {
-    background: linear-gradient(135deg, #1E4B65, #2D6A8F);
-}
-
-.toggle-switch input:checked + .toggle-slider:before {
-    transform: translateX(24px);
-}
-
-.toggle-switch.small input:checked + .toggle-slider:before {
-    transform: translateX(22px);
-}
-
-/* ==========================================================================
-   TARJETA DE INFORMACIÓN DE LA APP
-   ========================================================================== */
-
-.settings-card-info {
-    background: linear-gradient(135deg, #1E4B65, #2D6A8F);
-    color: #FFFFFF;
-}
-
-.settings-card-info .app-info {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 24px;
-}
-
-.settings-card-info .app-logo {
-    width: 56px;
-    height: 56px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.settings-card-info .app-logo svg {
-    width: 28px;
-    height: 28px;
-    color: #FFFFFF;
-}
-
-.settings-card-info .app-details h4 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0 0 4px;
-    color: #FFFFFF;
-}
-
-.settings-card-info .app-details p {
-    font-size: 0.85rem;
-    margin: 0;
-    opacity: 0.8;
-}
-
-.settings-card-info .app-copyright {
-    margin-top: 8px !important;
-    font-size: 0.75rem !important;
-    opacity: 0.6 !important;
-}
-
-/* ==========================================================================
-   MODAL DE CONTRASEÑA
-   ========================================================================== */
-
-.modal-password {
-    max-width: 420px;
-    padding: 32px;
-}
-
-.modal-password .modal-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1E293B;
-    margin: 0 0 24px;
-    text-align: center;
-}
-
-.auth-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.input-pill {
-    width: 100%;
-}
-
-.input-pill input {
-    width: 100%;
-    padding: 14px 18px;
-    border: 1.5px solid #E2E8F0;
-    border-radius: 50px;
-    font-size: 0.95rem;
-    color: #1E293B;
-    background: #F8FAFC;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
-}
-
-.input-pill input:focus {
-    outline: none;
-    border-color: #1E4B65;
-    background: #FFFFFF;
-    box-shadow: 0 0 0 3px rgba(30, 75, 101, 0.1);
-}
-
-.btn-save-password {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    padding: 14px 24px;
-    background: linear-gradient(135deg, #1E4B65, #2D6A8F);
-    color: #FFFFFF;
-    border: none;
-    border-radius: 50px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    margin-top: 8px;
-}
-
-.btn-save-password:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(30, 75, 101, 0.3);
-}
-
-.btn-save-password svg {
-    width: 18px;
-    height: 18px;
-}
-
-/* ==========================================================================
-   ANIMACIONES
-   ========================================================================== */
-
-@keyframes fadeInSlideUp {
-    from {
-        opacity: 0;
-        transform: translateY(16px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(100%);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes slideOutRight {
-    from {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateX(100%);
-    }
-}
-
-/* ==========================================================================
-   NOTIFICACIONES TOAST
-   ========================================================================== */
-
-.notification-toast {
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 20px;
-    background: #FFFFFF;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    z-index: 9999;
-    animation: slideInRight 0.3s ease forwards;
-    max-width: 400px;
-    font-size: 0.9rem;
-    color: #1E293B;
-}
-
-.notification-toast.removing {
-    animation: slideOutRight 0.3s ease forwards;
-}
-
-.notification-toast.success {
-    border-left: 4px solid #10B981;
-}
-
-.notification-toast.error {
-    border-left: 4px solid #EF4444;
-}
-
-.notification-toast.info {
-    border-left: 4px solid #3B82F6;
-}
-
-.notification-toast svg {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-}
-
-.notification-toast.success svg {
-    color: #10B981;
-}
-
-.notification-toast.error svg {
-    color: #EF4444;
-}
-
-.notification-toast.info svg {
-    color: #3B82F6;
-}
-
 /* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 
 @media (max-width: 640px) {
-    .profile-section {
+    .profile-hero {
         flex-direction: column;
         align-items: center;
-        text-align: center;
     }
 
-    .settings-toggle-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+    .avatar-zone {
+        align-self: center;
     }
 
-    .toggle-switch {
-        align-self: flex-end;
+    .profile-readonly-fields {
+        width: 100%;
     }
 
-    .security-item {
+    .pw-action-row {
+        justify-content: stretch;
+    }
+
+    .btn-save-password {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .action-item {
         flex-wrap: wrap;
     }
 
-    .btn-security {
+    .btn-action {
         width: 100%;
         justify-content: center;
     }

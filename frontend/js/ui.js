@@ -94,12 +94,42 @@
     }
 
     // ------------------------------------------------------------------
-    // 5. Init global.
+    // 5. Sincronización global del avatar (foto o inicial)
+    // ------------------------------------------------------------------
+    global.renderGlobalAvatar = function () {
+        const savedPhoto = localStorage.getItem("avatarPhoto");
+        let initial = "A";
+        try {
+            const rawUser = localStorage.getItem("user");
+            if (rawUser) {
+                const u = JSON.parse(rawUser);
+                const name = u.name || u.email || "A";
+                initial = name.charAt(0).toUpperCase();
+            }
+        } catch (e) {}
+
+        const avatars = document.querySelectorAll(".avatar:not(.avatar-large):not(.comment-avatar)");
+        avatars.forEach((el) => {
+            if (savedPhoto) {
+                el.style.position = "relative";
+                el.style.overflow = "hidden";
+                el.innerHTML = `<img src="${savedPhoto}" alt="Avatar" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            } else {
+                el.style.position = "";
+                el.style.overflow = "";
+                el.textContent = initial;
+            }
+        });
+    };
+
+    // ------------------------------------------------------------------
+    // 6. Init global.
     // ------------------------------------------------------------------
     function initUI() {
         bindDelegatedEvents();
         bindEscapeClose();
         setActiveLink();
+        global.renderGlobalAvatar();
     }
 
     if (document.readyState === "loading") {

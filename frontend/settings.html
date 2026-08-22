@@ -92,7 +92,11 @@
 
                 <div class="topbar-actions">
                     <div class="user-profile">
-                        <div class="avatar" id="avatarLetter">A</div>
+                        <!-- Avatar en topbar: muestra foto o inicial -->
+                        <div class="avatar topbar-avatar-wrap" id="avatarLetterWrap">
+                            <img id="topbarAvatarImg" src="" alt="" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                            <span id="avatarLetter">A</span>
+                        </div>
                         <div class="user-info">
                             <p class="user-name" id="profileEmail">Admin@bibliotech.com</p>
                             <p class="user-role">Bibliotecario Administrador</p>
@@ -104,8 +108,8 @@
             <!-- Área de Configuración -->
             <section class="dashboard-container">
                 <div class="settings-container">
-                    
-                    <!-- Sección 1: Perfil de Usuario -->
+
+                    <!-- ═══ Sección 1: Perfil de Usuario ═══ -->
                     <div class="settings-card">
                         <div class="settings-card-header">
                             <div class="settings-card-icon">
@@ -116,89 +120,145 @@
                             </div>
                             <div class="settings-card-title-group">
                                 <h3 class="settings-card-title">Perfil de Usuario</h3>
-                                <p class="settings-card-subtitle">Gestiona tu información personal y seguridad</p>
+                                <p class="settings-card-subtitle">Tu foto de perfil se sincroniza en toda la plataforma</p>
                             </div>
                         </div>
                         <div class="settings-card-body">
-                            <!-- Datos del perfil -->
-                            <div class="profile-section">
-                                <div class="avatar-edit">
-                                    <div class="avatar avatar-large" id="settingsAvatar">A</div>
+
+                            <!-- Avatar editable + info de solo lectura -->
+                            <div class="profile-hero">
+                                <!-- Zona de avatar editable -->
+                                <div class="avatar-zone">
+                                    <div class="avatar-ring" id="avatarRingWrap">
+                                        <img id="settingsAvatarImg" src="" alt="Foto de perfil"
+                                             style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                                        <div class="avatar avatar-large" id="settingsAvatar">A</div>
+                                    </div>
+                                    <!-- Botón cambiar foto -->
+                                    <label class="avatar-upload-btn" for="avatarFileInput" title="Cambiar foto de perfil">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                            <circle cx="12" cy="13" r="4"></circle>
+                                        </svg>
+                                    </label>
+                                    <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="previewAndSaveAvatar(this)">
+                                    <p class="avatar-hint">Clic en la cámara para cambiar</p>
                                 </div>
-                                <div class="profile-fields">
-                                    <div class="settings-field">
-                                        <label for="settingsName">Nombre</label>
-                                        <input type="text" id="settingsName" placeholder="Tu nombre">
+
+                                <!-- Datos de perfil (solo lectura visual) -->
+                                <div class="profile-readonly-fields">
+                                    <!-- Nombre -->
+                                    <div class="readonly-field">
+                                        <div class="readonly-label">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                            Nombre
+                                        </div>
+                                        <div class="readonly-value" id="displayName">—</div>
                                     </div>
-                                    <div class="settings-field">
-                                        <label for="settingsEmail">Correo Electrónico</label>
-                                        <input type="email" id="settingsEmail" placeholder="tu@correo.com">
+                                    <!-- Correo -->
+                                    <div class="readonly-field">
+                                        <div class="readonly-label">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                                <polyline points="22,6 12,13 2,6"></polyline>
+                                            </svg>
+                                            Correo electrónico
+                                        </div>
+                                        <div class="readonly-value" id="displayEmail">—</div>
                                     </div>
-                                    <div class="settings-field">
-                                        <label for="settingsRole">Rol actual</label>
-                                        <input type="text" id="settingsRole" disabled class="input-disabled">
+                                    <!-- Rol -->
+                                    <div class="readonly-field">
+                                        <div class="readonly-label">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                            </svg>
+                                            Rol en la plataforma
+                                        </div>
+                                        <div class="readonly-value" id="displayRole">
+                                            <span class="role-chip" id="roleChip">—</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="settings-actions">
-                                <button class="btn-save-settings" onclick="saveProfile()">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                                        <polyline points="7 3 7 8 15 8"></polyline>
-                                    </svg>
-                                    Guardar Cambios
-                                </button>
                             </div>
 
-                            <!-- Cambio de contraseña inline -->
-                            <div class="password-section">
-                                <h4 class="password-section-title">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
-                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                    </svg>
-                                    Cambiar Contraseña
-                                </h4>
-                                <div class="password-fields">
-                                    <div class="settings-field">
-                                        <label for="currentPassword">Contraseña actual</label>
-                                        <div class="password-input-wrapper">
-                                            <input type="password" id="currentPassword" placeholder="••••••••">
-                                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('currentPassword', this)" title="Mostrar/ocultar">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                    <circle cx="12" cy="12" r="3"></circle>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="settings-field">
-                                        <label for="newPassword">Nueva contraseña</label>
-                                        <div class="password-input-wrapper">
-                                            <input type="password" id="newPassword" placeholder="••••••••">
-                                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('newPassword', this)" title="Mostrar/ocultar">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                    <circle cx="12" cy="12" r="3"></circle>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="settings-field">
-                                        <label for="confirmPassword">Confirmar nueva contraseña</label>
-                                        <div class="password-input-wrapper">
-                                            <input type="password" id="confirmPassword" placeholder="••••••••">
-                                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirmPassword', this)" title="Mostrar/ocultar">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                    <circle cx="12" cy="12" r="3"></circle>
-                                                </svg>
-                                            </button>
-                                        </div>
+                        </div>
+                    </div>
+
+                    <!-- ═══ Sección 2: Cambiar Contraseña ═══ -->
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <div class="settings-card-icon" style="background: linear-gradient(135deg, #0F766E, #14B8A6);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </div>
+                            <div class="settings-card-title-group">
+                                <h3 class="settings-card-title">Cambiar Contraseña</h3>
+                                <p class="settings-card-subtitle">Actualiza tu contraseña de acceso de forma segura</p>
+                            </div>
+                        </div>
+                        <div class="settings-card-body">
+                            <div class="password-fields-grid">
+                                <!-- Contraseña actual -->
+                                <div class="pw-field">
+                                    <label for="currentPassword">Contraseña actual</label>
+                                    <div class="pw-input-wrap">
+                                        <svg class="pw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                        </svg>
+                                        <input type="password" id="currentPassword" placeholder="••••••••">
+                                        <button type="button" class="pw-eye" onclick="togglePasswordVisibility('currentPassword', this)" title="Mostrar/ocultar">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
-                                <button class="btn-save-password" onclick="changePassword()">
+
+                                <!-- Nueva contraseña -->
+                                <div class="pw-field">
+                                    <label for="newPassword">Nueva contraseña</label>
+                                    <div class="pw-input-wrap">
+                                        <svg class="pw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                        </svg>
+                                        <input type="password" id="newPassword" placeholder="••••••••">
+                                        <button type="button" class="pw-eye" onclick="togglePasswordVisibility('newPassword', this)" title="Mostrar/ocultar">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Confirmar nueva contraseña -->
+                                <div class="pw-field">
+                                    <label for="confirmPassword">Confirmar nueva contraseña</label>
+                                    <div class="pw-input-wrap">
+                                        <svg class="pw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        <input type="password" id="confirmPassword" placeholder="••••••••">
+                                        <button type="button" class="pw-eye" onclick="togglePasswordVisibility('confirmPassword', this)" title="Mostrar/ocultar">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pw-action-row">
+                                <button class="btn-save-password" onclick="changePassword()" id="btnSavePassword">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
@@ -209,7 +269,7 @@
                         </div>
                     </div>
 
-                    <!-- Sección 2: Acciones de Cuenta -->
+                    <!-- ═══ Sección 3: Acciones de Cuenta ═══ -->
                     <div class="settings-card">
                         <div class="settings-card-header">
                             <div class="settings-card-icon">
@@ -266,7 +326,7 @@
                         </div>
                     </div>
 
-                    <!-- Sección 3: Acerca de este Portal -->
+                    <!-- ═══ Sección 4: Acerca de ═══ -->
                     <div class="settings-card settings-card-info">
                         <div class="app-info">
                             <div class="app-logo">
@@ -286,38 +346,6 @@
                 </div>
             </section>
         </main>
-    </div>
-
-    <!-- Modal para cambiar contraseña -->
-    <div class="modal" id="passwordModal">
-        <div class="modal-content modal-password">
-            <span class="modal-close" onclick="closePasswordModal()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px;">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </span>
-            <h3 class="modal-title">Cambiar Contraseña</h3>
-            <form class="auth-form" id="passwordForm" onsubmit="return false;">
-                <div class="input-pill">
-                    <input id="currentPassword" type="password" placeholder="Contraseña actual" required>
-                </div>
-                <div class="input-pill">
-                    <input id="newPassword" type="password" placeholder="Nueva contraseña" required>
-                </div>
-                <div class="input-pill">
-                    <input id="confirmPassword" type="password" placeholder="Confirmar nueva contraseña" required>
-                </div>
-                <button type="button" class="btn-save-password" onclick="savePassword()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                        <polyline points="7 3 7 8 15 8"></polyline>
-                    </svg>
-                    Actualizar Contraseña
-                </button>
-            </form>
-        </div>
     </div>
 
     <!-- Scripts -->
