@@ -137,11 +137,14 @@ class ModerationController {
   static async getWriterRequests(req, res) {
     try {
       const requests = await WriterRequest.findAll({
+        where: {
+          estado: "PENDIENTE",
+        },
         include: [
           {
             model: User,
             as: "user",
-            attributes: ["id", "name", "email"],
+            attributes: ["id", "name", "email", "role"],
           },
         ],
         order: [["createdAt", "DESC"]],

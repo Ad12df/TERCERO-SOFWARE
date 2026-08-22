@@ -1104,8 +1104,9 @@ async function loadPendingBooks() {
         }
 
         list.innerHTML = pending.map(book => {
-            const writerName = book.Writer?.name || book.Writer?.email || book.writer_name || "Escritor desconocido";
-            const writerEmail = book.Writer?.email || book.writer_email || "";
+            const creator = book.creador || book.Writer || book.user || {};
+            const writerName = creator.name || creator.email || book.writer_name || "Escritor desconocido";
+            const writerEmail = creator.email || book.writer_email || "";
             const created = book.createdAt || book.created_at || book.fecha;
             const formattedDate = created ? new Date(created).toLocaleDateString("es-ES", {
                 day: "2-digit", month: "short", year: "numeric"
@@ -1171,9 +1172,10 @@ async function loadWriterRequests() {
 
         // Si HAY solicitudes, renderizar las tarjetas horizontales (sin empty state)
         container.innerHTML = requests.map(req => {
-            const fullName = req.User?.name || req.user_name || "Usuario #" + (req.user_id || req.id);
-            const email = req.User?.email || req.user_email || "";
-            const currentRole = req.User?.role || req.user_role || "user";
+            const userObj = req.user || req.User || {};
+            const fullName = userObj.name || req.user_name || req.name || ("Usuario #" + (req.user_id || req.id));
+            const email = userObj.email || req.user_email || req.email || "";
+            const currentRole = userObj.role || req.user_role || "user";
             const created = req.createdAt || req.created_at || req.fecha;
             const formattedDate = created ? new Date(created).toLocaleDateString("es-ES", {
                 day: "2-digit", month: "short", year: "numeric"
@@ -1188,9 +1190,7 @@ async function loadWriterRequests() {
                 <div class="request-card-body">
                     <p class="request-card-title">${fullName}</p>
                     <span class="request-card-badge">Solicitud #${req.id}</span>
-                    <p class="request-card-requester">
-                        <i class="fas fa-envelope"></i> ${email}
-                    </p>
+                    ${email ? `<p class="request-card-requester"><i class="fas fa-envelope"></i> ${email}</p>` : ""}
                     <span class="request-card-role">Rol actual: ${String(currentRole).toLowerCase()}</span>
                     ${formattedDate ? `<p class="request-card-date"><i class="fas fa-calendar"></i> ${formattedDate}</p>` : ""}
                 </div>
