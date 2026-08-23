@@ -13,16 +13,19 @@ router.get("/", BookController.getBooks);
 router.get("/:id", BookController.getBookById);
 
 // GET /api/books/:id/download - Proxy de descarga de PDF (público)
-// Descarga el PDF desde Cloudinary del lado del servidor y se lo envía al cliente
-// Manejo explícito de preflight OPTIONS para CORS cruzado Vercel → Render
+// Manejo explícito de preflight OPTIONS para CORS cruzado Vercel → Render / Capacitor Android
 router.options("/:id/download", (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  const origin = req.headers.origin || "*";
+  res.setHeader("Access-Control-Allow-Origin", origin);
+  res.setHeader("Vary", "Origin");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader("Access-Control-Max-Age", "86400");
   return res.status(200).end();
 });
 router.get("/:id/download", downloadBookPDF);
+
 
 // POST /api/books - Crear un libro (admin o escritor)
 // ⚠️ El middleware de Multer va ANTES del controlador

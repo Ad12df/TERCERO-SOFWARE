@@ -575,13 +575,37 @@ async function downloadCurrentBook() {
         }
 
         const downloadUrl = `${API_URL}/books/${currentBook.id}/download`;
-        const response = await fetch(downloadUrl);
+
+        // Timeout de 60 segundos (los PDFs pueden ser grandes)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+        // Incluir token de autorización para que el backend no rechace la petición
+        const token = getAuthToken ? getAuthToken() : localStorage.getItem("token");
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        const response = await fetch(downloadUrl, {
+            method: "GET",
+            headers: headers,
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+            let errMsg = `Error del servidor (${response.status})`;
+            try {
+                const errBody = await response.json();
+                if (errBody && errBody.message) errMsg = errBody.message;
+            } catch (_) {}
+            throw new Error(errMsg);
         }
 
         const blob = await response.blob();
+
+        if (!blob || blob.size === 0) {
+            throw new Error("El servidor devolvió un archivo vacío");
+        }
 
         // Guardar en IndexedDB
         await savePdfToIndexedDB(currentBook.id, blob);
@@ -619,9 +643,17 @@ async function downloadCurrentBook() {
             btn.classList.remove("downloading");
             if (btnText) btnText.textContent = "Descargar";
         }
-        showToast("No se pudo descargar el libro. Verifica tu conexión.", "error");
+        // Mensaje más descriptivo según el tipo de error
+        if (err.name === "AbortError") {
+            showToast("La descarga tardó demasiado. Intenta con mejor señal.", "error");
+        } else if (!navigator.onLine) {
+            showToast("Sin conexión a Internet. Conéctate e intenta de nuevo.", "error");
+        } else {
+            showToast(`No se pudo descargar: ${err.message}`, "error");
+        }
     }
 }
+
 
 function savePdfToIndexedDB(bookId, blob) {
     return new Promise((resolve, reject) => {

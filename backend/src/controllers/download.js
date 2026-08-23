@@ -120,12 +120,15 @@ exports.downloadBookPDF = async (req, res) => {
             .trim();
 
         // ── 7. Enviar cabeceras y el binario al cliente ─────────────
+        const origin = req.headers.origin || "*";
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Length', buffer.length);
         res.setHeader('Content-Disposition', `attachment; filename="${filename}.pdf"`);
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Vary', 'Origin');
         res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
 
         console.log(`✅ PDF "${book.nombre}" enviado correctamente (${buffer.length} bytes)`);
         return res.end(buffer);
