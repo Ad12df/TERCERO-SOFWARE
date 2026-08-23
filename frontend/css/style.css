@@ -637,9 +637,9 @@ body.users-page {
     height: 20px;
 }
 
-/* Opción Descargados: Oculto en escritorio, visible en responsive móvil (<= 768px) o APK Capacitor */
+/* Opción Descargados: Oculto en escritorio (primera imagen), visible EXCLUSIVAMENTE en responsive móvil (<= 768px, segunda imagen) o APK nativo */
 .mobile-only-menu-item {
-    display: none;
+    display: none !important;
 }
 
 @media (max-width: 768px) {
@@ -649,8 +649,7 @@ body.users-page {
 }
 
 html.is-native-app .mobile-only-menu-item,
-body.is-native-app .mobile-only-menu-item,
-.users-page .mobile-only-menu-item {
+body.is-native-app .mobile-only-menu-item {
     display: list-item !important;
 }
 
