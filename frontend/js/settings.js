@@ -401,7 +401,7 @@ async function requestWriterPromotion() {
 // =========================================================================
 
 function openContactModal() {
-    showNotification('Escríbenos a: bibliotech@soporte.com', 'info');
+    showNotification('Escríbenos a: clickylee@soporte.com', 'info');
 }
 
 // =========================================================================

@@ -1,5 +1,5 @@
 // ==========================================================================
-// LÓGICA DE CONTROL DEL DASHBOARD - GESTIÓN DE LIBROS (BIBLIOTECH)
+// LÓGICA DE CONTROL DEL DASHBOARD - GESTIÓN DE LIBROS (CLICK Y LEE)
 // ==========================================================================
 
 let editId = null;
@@ -96,7 +96,7 @@ function initializeProfile() {
             if (adminBadge) adminBadge.style.display = "inline-block";
         }
     } else {
-        if (profileEmail) profileEmail.textContent = "visitante@bibliotech.com";
+        if (profileEmail) profileEmail.textContent = "visitante@clickylee.com";
         if (profileName)  profileName.textContent  = "Visitante";
     }
 
@@ -166,7 +166,7 @@ function logout() {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         localStorage.removeItem("avatarPhoto");
-        localStorage.removeItem("bibliotech_offline_queue");
+        localStorage.removeItem("clickylee_offline_queue");
     } catch (e) {
         console.warn("Error al limpiar sesión:", e);
     }

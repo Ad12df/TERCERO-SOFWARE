@@ -1,6 +1,6 @@
 /**
  * reader.js - Controlador del Lector de PDF (Theater Mode)
- * BiblioTech - Lector cinematográfico basado en PDF.js (Mozilla)
+ * Click y Lee - Lector cinematográfico basado en PDF.js (Mozilla)
  */
 
 (function() {
@@ -113,7 +113,7 @@
     // ===================================
     // INDEXEDDB - Caché local de PDFs
     // ===================================
-    const DB_NAME = 'bibliotech_pdf_cache';
+    const DB_NAME = 'clickylee_pdf_cache';
     const DB_VERSION = 1;
     const STORE_NAME = 'pdfs';
 
@@ -169,7 +169,7 @@
     function syncDownloadedBookMetadata(book) {
         if (!book || !book.id) return;
         try {
-            const key = 'bibliotech_downloaded_books';
+            const key = 'clickylee_downloaded_books';
             let list = JSON.parse(localStorage.getItem(key) || '[]');
             const idx = list.findIndex(b => String(b.id) === String(book.id));
             const bookData = {
@@ -225,7 +225,7 @@
         }
 
         // Restaurar progreso de lectura guardado localmente
-        const savedBooks = JSON.parse(localStorage.getItem('bibliotech_books') || '[]');
+        const savedBooks = JSON.parse(localStorage.getItem('clickylee_books') || '[]');
         const savedBook = savedBooks.find(b => b.id == state.bookId);
         if (savedBook && savedBook.currentPage) {
             state.currentPage = savedBook.currentPage;
@@ -627,7 +627,7 @@
             state.book.lastRead = new Date().toISOString();
             state.book.totalPages = state.totalPages || state.book.totalPages;
 
-            const books = JSON.parse(localStorage.getItem('bibliotech_books') || '[]');
+            const books = JSON.parse(localStorage.getItem('clickylee_books') || '[]');
             const index = books.findIndex(b => b.id == state.bookId);
 
             // Guardar solo metadatos de progreso (no el blob)
@@ -646,7 +646,7 @@
                 books.push(progressData);
             }
 
-            localStorage.setItem('bibliotech_books', JSON.stringify(books));
+            localStorage.setItem('clickylee_books', JSON.stringify(books));
 
             // ─── Sincronizar con la API del backend ───────────────
             saveProgressToAPI();
@@ -688,11 +688,11 @@
     }
 
     function savePreferences() {
-        localStorage.setItem('bibliotech_preferences', JSON.stringify(state.preferences));
+        localStorage.setItem('clickylee_preferences', JSON.stringify(state.preferences));
     }
 
     function loadPreferences() {
-        const saved = localStorage.getItem('bibliotech_preferences');
+        const saved = localStorage.getItem('clickylee_preferences');
         if (saved) {
             try {
                 state.preferences = { ...state.preferences, ...JSON.parse(saved) };

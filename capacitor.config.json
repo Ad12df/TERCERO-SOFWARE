@@ -1,6 +1,6 @@
-﻿{
-  "appId": "com.bibliotech.app",
-  "appName": "BiblioTech",
+{
+  "appId": "com.clickylee.app",
+  "appName": "Click y Lee",
   "bundledWebAssets": {
     "platform": "android",
     "webDir": "www"

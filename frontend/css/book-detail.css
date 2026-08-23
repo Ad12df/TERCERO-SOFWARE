@@ -1,5 +1,5 @@
 /* ==========================================================================
-   PÁGINA DE DETALLE DE LIBRO - BIBLIOTECH
+   PÁGINA DE DETALLE DE LIBRO - CLICK Y LEE
    Diseño Claro con Paleta Aqua Sofisticada
    ========================================================================== */
 
@@ -315,14 +315,14 @@ body.book-detail-light .dashboard-container {
     height: 18px;
 }
 
-/* Botón Descargar Libro para Lectura Offline */
+/* Botón Descargar Libro: Oculto en escritorio, visible solo en móvil (<= 768px) o APK Capacitor */
 .btn-download-book {
-    display: flex;
+    display: none !important;
     align-items: center;
     justify-content: center;
     gap: 10px;
     width: 100%;
-    padding: 12px 20px;
+    padding: 12px 16px;
     background: #F0FDF4;
     border: 1.5px solid #BBF7D0;
     border-radius: var(--radius-md);
@@ -331,6 +331,7 @@ body.book-detail-light .dashboard-container {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.25s ease;
+    box-sizing: border-box;
 }
 
 .btn-download-book:hover {
@@ -353,6 +354,7 @@ body.book-detail-light .dashboard-container {
 .btn-download-book svg {
     width: 18px;
     height: 18px;
+    flex-shrink: 0;
 }
 
 /* Botón Principal Leer Ahora */
@@ -360,18 +362,19 @@ body.book-detail-light .dashboard-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
     width: 100%;
-    padding: 14px 24px;
+    padding: 12px 16px;
     background: linear-gradient(135deg, var(--aqua-500) 0%, var(--aqua-600) 100%);
     border: none;
     border-radius: var(--radius-md);
     color: #fff;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.25s ease;
     box-shadow: 0 4px 16px rgba(0, 137, 123, 0.3);
+    box-sizing: border-box;
 }
 
 .btn-read-main:hover {
@@ -385,21 +388,52 @@ body.book-detail-light .dashboard-container {
 }
 
 .btn-read-main svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
 }
 
 /* Contenedor de Botones en Horizontal */
 .buttons-row {
     display: flex;
     flex-direction: row;
-    gap: 12px;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .buttons-row .btn-add-list,
 .buttons-row .btn-read-main {
     flex: 1;
+    min-width: 0;
     justify-content: center;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   RESPONSIVIDAD: BOTONES EN VISTA MÓVIL (<= 768px) O APK CAPACITOR
+   ========================================================================== */
+@media (max-width: 768px) {
+    .btn-download-book {
+        display: flex !important;
+    }
+
+    .buttons-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .buttons-row .btn-add-list,
+    .buttons-row .btn-download-book,
+    .buttons-row .btn-read-main {
+        width: 100%;
+        flex: none;
+    }
+}
+
+html.is-native-app .btn-download-book,
+body.is-native-app .btn-download-book {
+    display: flex !important;
 }
 
 /* ==========================================================================

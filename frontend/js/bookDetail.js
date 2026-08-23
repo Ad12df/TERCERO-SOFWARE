@@ -1,5 +1,5 @@
 // ==========================================================================
-// PÁGINA DE DETALLE DE LIBRO - BIBLIOTECH
+// PÁGINA DE DETALLE DE LIBRO - CLICK Y LEE
 // ==========================================================================
 
 let selectedBookId = null;
@@ -70,7 +70,7 @@ async function initializeDetailPage() {
         checkMyListStatus();
 
         // Cargar notas guardadas de localStorage
-        const notesKey = `bibliotech_notes_${book.id}`;
+        const notesKey = `clickylee_notes_${book.id}`;
         const savedNotes = localStorage.getItem(notesKey);
         const notesTextarea = document.getElementById("detailNotes");
         if (notesTextarea && savedNotes) {
@@ -78,7 +78,7 @@ async function initializeDetailPage() {
         }
 
         // Cargar comentarios guardados de localStorage
-        const commentsKey = `bibliotech_comments_${book.id}`;
+        const commentsKey = `clickylee_comments_${book.id}`;
         const savedComments = JSON.parse(localStorage.getItem(commentsKey) || "[]");
         renderComments(savedComments);
 
@@ -354,7 +354,7 @@ function saveBookNotes() {
     }
     
     const notes = document.getElementById("detailNotes").value;
-    const notesKey = `bibliotech_notes_${currentBook.id}`;
+    const notesKey = `clickylee_notes_${currentBook.id}`;
     localStorage.setItem(notesKey, notes);
     console.log("📝 Notas guardadas para libro", currentBook.id);
     
@@ -532,7 +532,7 @@ async function checkDownloadStatus(bookId) {
     if (!id) return;
 
     try {
-        const key = "bibliotech_downloaded_books";
+        const key = "clickylee_downloaded_books";
         const list = JSON.parse(localStorage.getItem(key) || "[]");
         const exists = list.some(b => String(b.id) === String(id));
 
@@ -587,7 +587,7 @@ async function downloadCurrentBook() {
         await savePdfToIndexedDB(currentBook.id, blob);
 
         // Guardar metadatos en localStorage
-        const key = "bibliotech_downloaded_books";
+        const key = "clickylee_downloaded_books";
         let downloadedList = JSON.parse(localStorage.getItem(key) || "[]");
         const idx = downloadedList.findIndex(b => String(b.id) === String(currentBook.id));
         const bookData = {
@@ -625,7 +625,7 @@ async function downloadCurrentBook() {
 
 function savePdfToIndexedDB(bookId, blob) {
     return new Promise((resolve, reject) => {
-        const DB_NAME = "bibliotech_pdf_cache";
+        const DB_NAME = "clickylee_pdf_cache";
         const STORE_NAME = "pdfs";
         const req = indexedDB.open(DB_NAME, 1);
         req.onupgradeneeded = (e) => {
@@ -750,7 +750,7 @@ function initializeProfile() {
             console.error("Error al parsear el usuario:", e);
         }
     } else {
-        if (profileEmail) profileEmail.textContent = "visitante@bibliotech.com";
+        if (profileEmail) profileEmail.textContent = "visitante@clickylee.com";
     }
 
     if (typeof window.renderGlobalAvatar === "function") {
@@ -783,7 +783,7 @@ function logout() {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         localStorage.removeItem("avatarPhoto");
-        localStorage.removeItem("bibliotech_offline_queue");
+        localStorage.removeItem("clickylee_offline_queue");
     } catch (e) {
         console.warn("Error al limpiar sesión:", e);
     }

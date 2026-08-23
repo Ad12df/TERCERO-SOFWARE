@@ -14,7 +14,7 @@ const isNativeApp = typeof window.Capacitor !== 'undefined' &&
 // ESTADO DE CONEXIÓN
 // ===================================
 const OfflineQueue = {
-  KEY: 'bibliotech_offline_queue',
+  KEY: 'clickylee_offline_queue',
 
   init() {
     window.addEventListener('online', () => {
@@ -126,7 +126,7 @@ function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("avatarPhoto");
-    localStorage.removeItem("bibliotech_offline_queue");
+    localStorage.removeItem("clickylee_offline_queue");
   } catch (e) {
     console.warn("Error al limpiar almacenamiento:", e);
   }

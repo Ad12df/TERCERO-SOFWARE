@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">BiblioTech</string>
-    <string name="title_activity_main">BiblioTech</string>
-    <string name="package_name">com.bibliotech.app</string>
-    <string name="custom_url_scheme">com.bibliotech.app</string>
+    <string name="app_name">Click y Lee</string>
+    <string name="title_activity_main">Click y Lee</string>
+    <string name="package_name">com.clickylee.app</string>
+    <string name="custom_url_scheme">com.clickylee.app</string>
 </resources>

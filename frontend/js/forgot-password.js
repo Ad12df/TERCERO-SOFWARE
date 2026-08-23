@@ -1,6 +1,6 @@
 /**
  * ============================================================
- * BiblioTech — Lógica de "Olvidé mi contraseña"
+ * Click y Lee — Lógica de "Olvidé mi contraseña"
  * ============================================================
  *
  * Flujo:

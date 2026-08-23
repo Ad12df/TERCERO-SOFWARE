@@ -1,5 +1,5 @@
 // ==========================================================================
-// UI GLOBAL — BiblioTech
+// UI GLOBAL — Click y Lee
 // ÚNICA FUENTE DE VERDAD del sidebar y marcado de enlace activo.
 // No definir toggleSidebar ni listeners de menú en ningún otro script.
 // ==========================================================================

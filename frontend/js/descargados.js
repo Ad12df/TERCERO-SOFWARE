@@ -1,13 +1,13 @@
 // ==========================================================================
-// DESCARGADOS — BiblioTech (Solo APK)
+// DESCARGADOS — Click y Lee (Solo APK)
 // ==========================================================================
 
 let downloadedBooks = [];
 
 // Claves de almacenamiento local
-const DOWNLOADED_KEY = "bibliotech_downloaded_books"; // libros marcados como descargados
-const PROGRESS_KEY = "bibliotech_books";              // progreso de lectura local
-const PDF_DB_NAME = "bibliotech_pdf_cache";           // IndexedDB con los PDFs cacheados
+const DOWNLOADED_KEY = "clickylee_downloaded_books"; // libros marcados como descargados
+const PROGRESS_KEY = "clickylee_books";              // progreso de lectura local
+const PDF_DB_NAME = "clickylee_pdf_cache";           // IndexedDB con los PDFs cacheados
 const PDF_STORE = "pdfs";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -31,7 +31,7 @@ function initializeProfile() {
         if (profileEmail) profileEmail.textContent = user.email || "";
         if (profileName) profileName.textContent = user.name || user.email || "";
     } else {
-        if (profileEmail) profileEmail.textContent = "visitante@bibliotech.com";
+        if (profileEmail) profileEmail.textContent = "visitante@clickylee.com";
         if (profileName) profileName.textContent = "Visitante";
     }
 
@@ -48,7 +48,7 @@ function logout() {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         localStorage.removeItem("avatarPhoto");
-        localStorage.removeItem("bibliotech_offline_queue");
+        localStorage.removeItem("clickylee_offline_queue");
     } catch (e) {
         console.warn("Error al limpiar sesión:", e);
     }

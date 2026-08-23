@@ -1,4 +1,4 @@
-const CACHE = "bibliotech-v1";
+const CACHE = "clickylee-v1";
 
 // Dominios/rutas que NO deben cachearse: API en Render y peticiones POST/PUT/DELETE.
 // El Service Worker solo cachea assets estáticos del propio frontend (GET same-origin).

@@ -1,6 +1,6 @@
 /**
  * ============================================================
- * BiblioTech — Lógica de "Restablecer contraseña"
+ * Click y Lee — Lógica de "Restablecer contraseña"
  * ============================================================
  *
  * Flujo:
