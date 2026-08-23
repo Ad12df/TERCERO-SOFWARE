@@ -103,10 +103,20 @@ class AuthController {
         });
       }
 
-      // ─── 4. Retornar estado 200 con los datos del usuario ──────
+      // ─── 4. Retornar estado 200 con el token y datos del usuario ──────
+      const token = Buffer.from(
+        JSON.stringify({
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          iat: Date.now(),
+        })
+      ).toString("base64");
+
       return res.status(200).json({
         success: true,
         message: "Login exitoso",
+        token,
         data: {
           id: user.id,
           name: user.name,

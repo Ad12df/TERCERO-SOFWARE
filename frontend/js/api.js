@@ -88,7 +88,11 @@ function isOnline() {
  * @returns {string|null} El token de autenticación o null si no existe
  */
 function getAuthToken() {
-  return localStorage.getItem("token");
+  try {
+    return localStorage.getItem("token");
+  } catch (e) {
+    return null;
+  }
 }
 
 /**
@@ -96,27 +100,37 @@ function getAuthToken() {
  * @returns {object|null} Los datos del usuario o null si no existe
  */
 function getUserData() {
-  const user = localStorage.getItem("user");
-  return user ? JSON.parse(user) : null;
+  try {
+    const user = localStorage.getItem("user");
+    return user ? JSON.parse(user) : null;
+  } catch (e) {
+    return null;
+  }
 }
 
 /**
- * Verifica si el usuario está autenticado
+ * Verifica si el usuario está autenticado y tiene sesión válida
  * @returns {boolean} True si el usuario está autenticado
  */
 function isAuthenticated() {
-  return !!getAuthToken();
+  const token = getAuthToken();
+  const user = getUserData();
+  return !!(token && user && (user.id || user.email));
 }
 
 /**
- * Cierra la sesión del usuario
+ * Cierra la sesión del usuario y redirige al login
  */
 function logout() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  localStorage.removeItem("avatarPhoto");
-  localStorage.removeItem("bibliotech_offline_queue");
-  window.location.href = "index.html";
+  try {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("avatarPhoto");
+    localStorage.removeItem("bibliotech_offline_queue");
+  } catch (e) {
+    console.warn("Error al limpiar almacenamiento:", e);
+  }
+  window.location.replace("index.html");
 }
 
 /**

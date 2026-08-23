@@ -1,6 +1,9 @@
 // ==========================================================================
-// LÓGICA DE CONTROL DEL LOGIN Y REGISTRO (CON TRANSICIÓN DESLIZANTE SUAVE)
+// AUTO-CHECK DE SESIÓN EXISTENTE (PERSISTENCIA DE SESIÓN)
 // ==========================================================================
+if (typeof isAuthenticated === "function" && isAuthenticated()) {
+  window.location.replace("books.html");
+}
 
 // Elementos de la interfaz recuperados del DOM
 const authWrapper = document.getElementById("authWrapper");

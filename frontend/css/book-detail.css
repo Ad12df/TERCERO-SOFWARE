@@ -315,6 +315,46 @@ body.book-detail-light .dashboard-container {
     height: 18px;
 }
 
+/* Botón Descargar Libro para Lectura Offline */
+.btn-download-book {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 20px;
+    background: #F0FDF4;
+    border: 1.5px solid #BBF7D0;
+    border-radius: var(--radius-md);
+    color: #166534;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-download-book:hover {
+    background: #DCFCE7;
+    border-color: #86EFAC;
+    transform: translateY(-1px);
+}
+
+.btn-download-book.downloaded {
+    background: #DCFCE7;
+    border-color: #22C55E;
+    color: #15803D;
+}
+
+.btn-download-book.downloading {
+    opacity: 0.75;
+    pointer-events: none;
+}
+
+.btn-download-book svg {
+    width: 18px;
+    height: 18px;
+}
+
 /* Botón Principal Leer Ahora */
 .btn-read-main {
     display: flex;

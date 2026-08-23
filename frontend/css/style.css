@@ -637,6 +637,23 @@ body.users-page {
     height: 20px;
 }
 
+/* Opción Descargados: Oculto en escritorio, visible en responsive móvil (<= 768px) o APK Capacitor */
+.mobile-only-menu-item {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-only-menu-item {
+        display: list-item !important;
+    }
+}
+
+html.is-native-app .mobile-only-menu-item,
+body.is-native-app .mobile-only-menu-item,
+.users-page .mobile-only-menu-item {
+    display: list-item !important;
+}
+
 /* Sidebar bottom section - pushed to bottom with margin-top: auto */
 .sidebar-bottom {
     margin-top: auto;

@@ -10,6 +10,24 @@
     <!-- PWA: manifest y tema -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1E4B65">
+
+    <!-- Auto-redirección si la sesión ya está iniciada (Web, PWA y APK Capacitor) -->
+    <script>
+        (function() {
+            try {
+                var token = localStorage.getItem("token");
+                var user = localStorage.getItem("user");
+                if (token && user) {
+                    var parsedUser = JSON.parse(user);
+                    if (parsedUser && (parsedUser.id || parsedUser.email)) {
+                        window.location.replace("books.html");
+                    }
+                }
+            } catch (e) {
+                console.warn("Error comprobando sesión previa:", e);
+            }
+        })();
+    </script>
 </head>
 
 <body class="auth-page">

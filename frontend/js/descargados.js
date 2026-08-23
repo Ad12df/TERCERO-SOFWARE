@@ -44,10 +44,15 @@ function initializeProfile() {
  * Cierra la sesión del usuario y redirige al login
  */
 function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("avatarPhoto");
-    window.location.href = "index.html";
+    try {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("avatarPhoto");
+        localStorage.removeItem("bibliotech_offline_queue");
+    } catch (e) {
+        console.warn("Error al limpiar sesión:", e);
+    }
+    window.location.replace("index.html");
 }
 
 /**

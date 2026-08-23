@@ -201,6 +201,9 @@ function showBookDetail(book) {
     // ─── Barra de progreso de lectura ───────────────────────────────
     showReadingProgress(book.progreso_porcentaje);
 
+    // ─── Verificar estado de descarga offline ───────────────────────
+    checkDownloadStatus(book.id);
+
     // ─── Cargar comentarios desde la API del backend ───────────────
     loadCommentsFromAPI(book.id);
 
@@ -518,6 +521,136 @@ async function checkMyListStatus() {
 }
 
 /**
+ * Verifica si el libro ya está descargado y guardado en IndexedDB / localStorage
+ */
+async function checkDownloadStatus(bookId) {
+    const btn = document.getElementById("btnDownloadBook");
+    const btnText = document.getElementById("downloadBtnText");
+    if (!btn || !btnText) return;
+
+    const id = bookId || selectedBookId;
+    if (!id) return;
+
+    try {
+        const key = "bibliotech_downloaded_books";
+        const list = JSON.parse(localStorage.getItem(key) || "[]");
+        const exists = list.some(b => String(b.id) === String(id));
+
+        if (exists) {
+            btn.classList.add("downloaded");
+            btnText.textContent = "✓ Descargado";
+        } else {
+            btn.classList.remove("downloaded");
+            btnText.textContent = "Descargar";
+        }
+    } catch(e) {
+        console.warn("Error al verificar estado de descarga:", e);
+    }
+}
+
+/**
+ * Descarga el PDF del libro y lo almacena permanentemente en IndexedDB de la app
+ */
+async function downloadCurrentBook() {
+    const btn = document.getElementById("btnDownloadBook");
+    const btnText = document.getElementById("downloadBtnText");
+    if (!currentBook || !currentBook.id) {
+        showToast("Error: Datos del libro no disponibles", "error");
+        return;
+    }
+
+    if (btn && btn.classList.contains("downloaded")) {
+        showToast("Este libro ya está descargado en tu dispositivo", "warning");
+        return;
+    }
+
+    if (btn) {
+        btn.classList.add("downloading");
+        if (btnText) btnText.textContent = "Descargando...";
+    }
+
+    try {
+        if (navigator.storage && navigator.storage.persist) {
+            await navigator.storage.persist().catch(() => {});
+        }
+
+        const downloadUrl = `${API_URL}/books/${currentBook.id}/download`;
+        const response = await fetch(downloadUrl);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const blob = await response.blob();
+
+        // Guardar en IndexedDB
+        await savePdfToIndexedDB(currentBook.id, blob);
+
+        // Guardar metadatos en localStorage
+        const key = "bibliotech_downloaded_books";
+        let downloadedList = JSON.parse(localStorage.getItem(key) || "[]");
+        const idx = downloadedList.findIndex(b => String(b.id) === String(currentBook.id));
+        const bookData = {
+            id: currentBook.id,
+            nombre: currentBook.nombre || "Libro",
+            autor: currentBook.autor || "Autor",
+            foto: currentBook.foto || null,
+            categoria: currentBook.categoria || "",
+            fecha_descarga: new Date().toISOString()
+        };
+
+        if (idx >= 0) {
+            downloadedList[idx] = { ...downloadedList[idx], ...bookData };
+        } else {
+            downloadedList.unshift(bookData);
+        }
+        localStorage.setItem(key, JSON.stringify(downloadedList));
+
+        if (btn) {
+            btn.classList.remove("downloading");
+            btn.classList.add("downloaded");
+            if (btnText) btnText.textContent = "✓ Descargado";
+        }
+
+        showToast("¡Libro descargado para lectura sin conexión!", "success");
+    } catch(err) {
+        console.error("Error al descargar libro:", err);
+        if (btn) {
+            btn.classList.remove("downloading");
+            if (btnText) btnText.textContent = "Descargar";
+        }
+        showToast("No se pudo descargar el libro. Verifica tu conexión.", "error");
+    }
+}
+
+function savePdfToIndexedDB(bookId, blob) {
+    return new Promise((resolve, reject) => {
+        const DB_NAME = "bibliotech_pdf_cache";
+        const STORE_NAME = "pdfs";
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME);
+            }
+        };
+        req.onsuccess = (e) => {
+            const db = e.target.result;
+            try {
+                const tx = db.transaction(STORE_NAME, "readwrite");
+                const store = tx.objectStore(STORE_NAME);
+                store.put(blob, `pdf_cache_book_${bookId}`);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            } catch(ex) {
+                reject(ex);
+            }
+        };
+        req.onerror = () => reject(req.error);
+    });
+}
+
+/**
  * Muestra una notificación toast
  * @param {string} message - Mensaje a mostrar
  * @param {string} type - Tipo de toast (success, warning, error)
@@ -646,10 +779,15 @@ function switchTab(tabName) {
  * Borra la sesión local y redirige al login
  */
 function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("avatarPhoto");
-    window.location.href = "index.html";
+    try {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("avatarPhoto");
+        localStorage.removeItem("bibliotech_offline_queue");
+    } catch (e) {
+        console.warn("Error al limpiar sesión:", e);
+    }
+    window.location.replace("index.html");
 }
 
 /**

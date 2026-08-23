@@ -166,6 +166,31 @@
         });
     }
 
+    function syncDownloadedBookMetadata(book) {
+        if (!book || !book.id) return;
+        try {
+            const key = 'bibliotech_downloaded_books';
+            let list = JSON.parse(localStorage.getItem(key) || '[]');
+            const idx = list.findIndex(b => String(b.id) === String(book.id));
+            const bookData = {
+                id: book.id,
+                nombre: book.nombre || book.title || 'Libro',
+                autor: book.autor || book.author || 'Autor desconocido',
+                foto: book.foto || null,
+                categoria: book.categoria || '',
+                fecha_descarga: new Date().toISOString()
+            };
+            if (idx >= 0) {
+                list[idx] = { ...list[idx], ...bookData };
+            } else {
+                list.unshift(bookData);
+            }
+            localStorage.setItem(key, JSON.stringify(list));
+        } catch (e) {
+            console.warn('No se pudo sincronizar libro en descargados:', e);
+        }
+    }
+
     // ===================================
     // CARGAR DATOS DEL LIBRO
     // ===================================
@@ -288,6 +313,7 @@
 
             // 3. Guardar en IndexedDB para futuras lecturas
             await setCachedPDF(state.bookId, blob);
+            syncDownloadedBookMetadata(state.book);
 
             // 4. Cargar el PDF desde el blob
             showDownloadIndicator(false);

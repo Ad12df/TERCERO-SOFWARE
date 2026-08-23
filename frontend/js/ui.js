@@ -7,6 +7,18 @@
 (function (global) {
     "use strict";
 
+    // Detección automática de APK / Capacitor para habilitar opciones nativas
+    const isNativeApp = typeof window.Capacitor !== 'undefined' &&
+                        window.Capacitor.isNativeAvailable === true;
+    if (isNativeApp) {
+        document.documentElement.classList.add('is-native-app');
+    }
+
+    // Solicitar almacenamiento persistente para modo offline
+    if (navigator.storage && navigator.storage.persist) {
+        navigator.storage.persist().catch(() => {});
+    }
+
     // ------------------------------------------------------------------
     // 1. Función de toggle — expuesta globalmente de inmediato.
     // ------------------------------------------------------------------
