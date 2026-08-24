@@ -1,10 +1,10 @@
-# 📊 Informe Técnico: 7 Puntos Clave de Click y Lee
+# 📊 Informe Técnico: Puntos Clave de Click y Lee
 
-Este documento desglosa en **7 puntos fundamentales** la evolución técnica, resolución de problemas críticos (con sus causas raíz y diagnósticos) y nuevas capacidades implementadas en la plataforma **Click y Lee** (Frontend Web + Backend REST + Neon PostgreSQL + Supabase Storage + APK Android con Capacitor).
+Este documento desglosa en detalle la evolución técnica, resolución de problemas críticos (con sus causas raíz, diagnósticos y citas de código) y las nuevas capacidades implementadas en la plataforma **Click y Lee** (Frontend Web + Backend REST + Neon PostgreSQL + Supabase Storage + APK Android con Capacitor).
 
 ---
 
-# 🔴 PARTE I: Los 3 Errores Críticos y su Resolución
+# 🔴 PARTE I: Los 4 Errores Críticos y su Resolución
 
 ---
 
@@ -87,7 +87,7 @@ function savePdfToIndexedDB(bookId, blob) {
 
 ---
 
-## 2. Error Estético del SVG de la Estrella Gigante y Fallos de Renderizado en Tarjetas
+## 2. Error Estético del SVG de la Estrella Gigante en "Libros Publicados"
 
 ### 📌 El Problema
 En la sección inferior de la vista de detalle de un libro (`book-detail.html`), dentro de la sección **"Libros publicados" (Sugerencias)**, aparecía un ícono de estrella negra gigante y desproporcionada que ocupaba casi la totalidad de la tarjeta, rompiendo la cuadrícula y el diseño responsive en dispositivos móviles.
@@ -146,13 +146,12 @@ En la sección inferior de la vista de detalle de un libro (`book-detail.html`),
 
 ---
 
-## 3. Desaparición del Menú Lateral (Sidebar) y Ruptura de Funciones de Lectura / CORS
+## 3. Desaparición del Menú Lateral (Sidebar) y Ruptura de Funciones de Lectura
 
 ### 📌 El Problema
-Durante las modificaciones y refactorizaciones iniciales ocurrieron dos fallos graves encadenados:
+Durante las modificaciones y refactorizaciones iniciales ocurrieron dos fallos encadenados:
 1. **El menú lateral desaparecía o quedaba inerte:** Al hacer clic en el botón de hamburguesa (`#menuToggle`) en vista móvil, el menú no se desplegaba, o en ciertas vistas HTML desaparecían opciones esenciales.
 2. **Pérdida de funciones del Lector:** Al abrir el lector (`reader.html`), se generaba un error `API_URL is not defined` o `pdfjsLib is undefined`, impidiendo la lectura tanto online como offline.
-3. **Bloqueo por CORS:** Las peticiones del APK a Render eran rechazadas en los endpoints de descarga y lectura.
 
 ---
 
@@ -166,7 +165,6 @@ Durante las modificaciones y refactorizaciones iniciales ocurrieron dos fallos g
        return; // El lector abortaba aquí
    }
    ```
-3. **CORS con esquema nativo:** Capacitor en Android utiliza `https://localhost` o `capacitor://localhost`, los cuales Render rechazaba por no estar incluidos en el middleware de CORS ni responder a las peticiones preflight `OPTIONS` con `Access-Control-Allow-Origin` dinámico.
 
 ---
 
@@ -201,18 +199,92 @@ Durante las modificaciones y refactorizaciones iniciales ocurrieron dos fallos g
    }
    ```
 2. **Defensa y validación en `reader.js`:** Se añadieron guardias para inicializar PDF.js solo cuando sus dependencias estén listas, asegurando la importación previa de `api.js`.
-3. **CORS y Preflight OPTIONS en `backend/src/routes/books/index.js`:**
-   ```javascript
-   router.options("/:id/download", (req, res) => {
-     const origin = req.headers.origin || "*";
-     res.setHeader("Access-Control-Allow-Origin", origin);
-     res.setHeader("Vary", "Origin");
-     res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-     res.setHeader("Access-Control-Allow-Credentials", "true");
-     return res.status(200).end();
-   });
-   ```
+
+---
+
+## 4. Error de CORS en la Versión Móvil: Bloqueo de Conexión hacia Render
+
+### 📌 El Problema
+Al compilar y ejecutar el APK en un teléfono real con Android, la aplicación **no podía comunicarse con el backend en Render** (`https://tercero-sofware.onrender.com`):
+- No permitía iniciar sesión ni registrar usuarios.
+- No cargaba el catálogo de libros (`books.html` mostraba error o se quedaba en blanco).
+- Rechazaba la descarga de PDFs y la calificación con estrellas.
+- Todas las peticiones fallaban silenciosamente o arrojaban un error de red (*"Network Error"* / *"Failed to fetch"*).
+
+En cambio, al probar en el navegador web desde `localhost:5500`, todo parecía funcionar.
+
+---
+
+### 🔍 ¿Por qué no funcionaba? (Causa Técnica)
+1. **Orígenes Especiales de WebView en Android:**
+   Cuando Capacitor ejecuta el frontend dentro del APK, no corre bajo `http://localhost:5500` ni bajo `https://tercero-sofware.vercel.app`. Corre dentro de un WebView local bajo esquemas propietarios:
+   - `https://localhost` (Esquema por defecto configurado en Capacitor con `androidScheme: "https"`).
+   - `capacitor://localhost` (Esquema nativo de Capacitor en iOS/Android).
+   - `http://localhost` (Fallback de esquemas no seguros).
+2. **Lista Blanca de CORS Incompleta en Express:**
+   En el backend (`backend/src/app.js`), el middleware de CORS solo aceptaba solicitudes provenientes de `tercero-sofware.vercel.app` y `localhost:5500`. Cuando el WebView del celular enviaba el encabezado `Origin: https://localhost`, el servidor de Render respondía rechazando el preflight de CORS.
+3. **Conflicto con Encabezados de Autenticación (`Authorization: Bearer`):**
+   Las peticiones autenticadas envían encabezados personalizados. Por especificación de seguridad web (W3C CORS), cuando una petición lleva credenciales o encabezados de autorización, **el servidor NO PUEDE responder con `Access-Control-Allow-Origin: *`** (comodín). Debe responder exactamente con el `Origin` del solicitante y con `Access-Control-Allow-Credentials: true`.
+4. **Preflight `OPTIONS` no atendido en la descarga de PDFs:**
+   El endpoint `/api/books/:id/download` recibía solicitudes preflight `OPTIONS` que Express no manejaba explícitamente, provocando que Render devolviera un error `404 Not Found` o `405 Method Not Allowed` antes de permitir la descarga.
+
+---
+
+### ⏳ ¿Por qué nos tardamos? (Análisis de Diagnóstico)
+- **Sospechas desorientadas hacia la base de datos o el hosting:** Inicialmente se pensó que Neon DB estaba rechazando las conexiones o que el servidor gratuito de Render estaba "dormido" (*cold start*) y tardaba más de 50 segundos en responder.
+- **Falta de visibilidad de red en el móvil:** El teléfono no mostraba el clásico mensaje de CORS en la consola roja de DevTools como una laptop, sino un mensaje genérico *"Error al cargar libros: No se pudo conectar con el servidor"*, lo que hacía creer que el teléfono no tenía conexión a Internet en lugar de ser un bloqueo de seguridad entre Capacitor y Render.
+
+---
+
+### 🛠️ ¿Cómo se arregló? (Código Implementado)
+
+#### A. Lista Blanca de Orígenes en `backend/src/app.js`:
+Se añadieron todos los orígenes de Capacitor tanto seguros como de fallback:
+```javascript
+// backend/src/app.js - Configuración de CORS completa
+const allowedOrigins = [
+  "https://tercero-sofware.vercel.app",  // Producción Web (Vercel)
+  "http://localhost:5500",                // Desarrollo Live Server
+  "http://127.0.0.1:5500",
+  "http://localhost:3000",
+  "capacitor://localhost",               // ✅ Capacitor iOS/Android
+  "https://localhost",                   // ✅ Capacitor Android (androidScheme: https)
+  "http://localhost"                     // ✅ Capacitor Android fallback
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // Permite peticiones locales / herramientas
+      if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+      return callback(new Error("No permitido por la política CORS"), false);
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
+  })
+);
+```
+
+#### B. Manejador Preflight `OPTIONS` Dinámico en `backend/src/routes/books/index.js`:
+Para el endpoint de descarga de archivos binarios, se implementó un handler explícito que refleja dinámicamente el `Origin` entrante:
+```javascript
+// backend/src/routes/books/index.js
+router.options("/:id/download", (req, res) => {
+  const origin = req.headers.origin || "*";
+  res.setHeader("Access-Control-Allow-Origin", origin);
+  res.setHeader("Vary", "Origin");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Max-Age", "86400"); // Cache de preflight por 24h
+  return res.status(200).end();
+});
+
+router.get("/:id/download", downloadBookPDF);
+```
 
 ---
 
@@ -220,7 +292,7 @@ Durante las modificaciones y refactorizaciones iniciales ocurrieron dos fallos g
 
 ---
 
-## 4. Responsividad Dinámica: Visibilidad Condicional de "Descargados" y Botón "Descargar"
+## 5. Responsividad Dinámica: Visibilidad Condicional de "Descargados" y Botón "Descargar"
 
 ### 🎯 Concepto y Propósito
 El diseño separa la experiencia de **escritorio (PC/Laptop)** de la experiencia **móvil/APK**:
@@ -316,7 +388,7 @@ Toda la interfaz adoptó los colores del logo oficial:
 
 ---
 
-## 5. Sistema de Calificación Interactivo con Estrellas y Persistencia en Neon DB
+## 6. Sistema de Calificación Interactivo con Estrellas y Persistencia en Neon DB
 
 ### 🎯 Concepto y Propósito
 Permitir a los usuarios calificar cualquier libro (1 a 5 estrellas) con iluminación en tiempo real al pasar el ratón (hover) o al tocar en pantallas táctiles, guardando la puntuación en la base de datos PostgreSQL alojada en Neon y recalculando automáticamente la puntuación media y el conteo de votos del libro.
@@ -421,7 +493,7 @@ function setupStarRatingInteractivity() {
 
 ---
 
-## 6. Descarga y Almacenamiento Local de Documentos PDF con IndexedDB v2
+## 7. Descarga y Almacenamiento Local de Documentos PDF con IndexedDB v2
 
 ### 🎯 Concepto y Propósito
 Descargar archivos PDF desde Supabase Storage a través del backend REST y guardarlos en el almacenamiento físico del cliente como datos binarios (`Blob`) mediante IndexedDB versión 2, permitiendo la disponibilidad permanente del archivo.
@@ -480,7 +552,7 @@ async function downloadCurrentBook() {
 
 ---
 
-## 7. Modo de Lectura 100% Offline y Gestión en "Descargados"
+## 8. Modo de Lectura 100% Offline y Gestión en "Descargados"
 
 ### 🎯 Concepto y Propósito
 Garantizar que una vez descargado el libro, el usuario pueda **abrir la app sin conexión a Internet (modo avión o sin cobertura)**, acceder a la vista dedicada **"Descargados" (`descargados.html`)** y abrir el lector (`reader.html`) leyendo directamente desde la memoria interna sin realizar ninguna petición de red.
@@ -524,6 +596,7 @@ async function loadPDF() {
 |---|---|---|
 | `backend/src/controllers/books.js` | Backend | Controladores `rateBook`, `getUserRating` y recálculo en Neon DB |
 | `backend/src/routes/books/index.js` | Backend | Rutas REST de libros, ratings y preflight `OPTIONS` para CORS |
+| `backend/src/app.js` | Backend | Lista blanca CORS (`https://localhost`, `capacitor://localhost`, Vercel) |
 | `frontend/js/ui.js` | Frontend | Delegación global del sidebar, detección nativa de Capacitor y avatar |
 | `frontend/js/bookDetail.js` | Frontend | IndexedDB v2, descarga de PDF, estrellas interactivas y sugerencias |
 | `frontend/js/reader.js` | Frontend | Visor PDF.js con fallback offline instantáneo desde IndexedDB v2 |
