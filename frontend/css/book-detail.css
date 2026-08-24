@@ -8,46 +8,47 @@
    ========================================================================== */
 
 :root {
-    /* Fondos claros */
-    --bg-primary: #FAFCFC;
-    --bg-secondary: #F0F7F7;
+    /* Fondos cálidos inspirados en el logo */
+    --bg-primary: #FAF6F0;
+    --bg-secondary: #F4ECE1;
     --bg-card: #FFFFFF;
-    --bg-elevated: #F8FAFA;
+    --bg-elevated: #FFFDFB;
     
-    /* Tonos Aqua */
-    --aqua-50: #E0F2F1;
-    --aqua-100: #B2DFDB;
-    --aqua-200: #80CBC4;
-    --aqua-300: #4DB6AC;
-    --aqua-400: #26A69A;
-    --aqua-500: #009688;
-    --aqua-600: #00897B;
-    --aqua-700: #00796B;
-    --aqua-dark: #004D40;
+    /* Tonos Mocha / Café (Logo) */
+    --aqua-50: #F7EFEA;
+    --aqua-100: #EAD8CE;
+    --aqua-200: #D8B7A4;
+    --aqua-300: #C2937B;
+    --aqua-400: #9B674B;
+    --aqua-500: #784A33;
+    --aqua-600: #683F2B;
+    --aqua-700: #553322;
+    --aqua-dark: #3B2216;
     
-    /* Acentos */
-    --accent-primary: #00897B;
-    --accent-light: #4DB6AC;
-    --accent-lighter: #80CBC4;
-    --accent-bg: #E0F2F1;
+    /* Acentos Rosa / Durazno Cálido (Logo) */
+    --accent-primary: #784A33;
+    --accent-light: #E08E79;
+    --accent-lighter: #F0A794;
+    --accent-bg: #FBEAE4;
+    --accent-rose: #E08E79;
     
     /* Texto */
-    --text-primary: #1A2E2E;
-    --text-secondary: #4A5C5C;
-    --text-muted: #78909C;
-    --text-light: #B0BEC5;
+    --text-primary: #2A1810;
+    --text-secondary: #5A4035;
+    --text-muted: #8C7265;
+    --text-light: #C4B2A7;
     
     /* Estados */
-    --success: #00897B;
-    --warning: #FFB74D;
-    --error: #EF5350;
+    --success: #6A8E4E;
+    --warning: #F5A623;
+    --error: #D9534F;
     
     /* Bordes y sombras */
-    --border-light: #E0F2F1;
-    --border-medium: #B2DFDB;
-    --shadow-sm: 0 2px 8px rgba(0, 77, 64, 0.06);
-    --shadow-md: 0 4px 16px rgba(0, 77, 64, 0.08);
-    --shadow-lg: 0 8px 32px rgba(0, 77, 64, 0.12);
+    --border-light: #EFE4D8;
+    --border-medium: #DECBC0;
+    --shadow-sm: 0 2px 8px rgba(120, 74, 51, 0.05);
+    --shadow-md: 0 4px 16px rgba(120, 74, 51, 0.08);
+    --shadow-lg: 0 8px 32px rgba(120, 74, 51, 0.12);
     
     /* Espaciado */
     --radius-sm: 8px;
@@ -220,7 +221,7 @@ body.book-detail-light .dashboard-container {
     gap: 20px;
 }
 
-/* Sistema de Valoración */
+/* Sistema de Valoración Interactivo */
 .rating-section {
     display: flex;
     align-items: center;
@@ -232,20 +233,45 @@ body.book-detail-light .dashboard-container {
 .stars-container {
     display: flex;
     gap: 4px;
+    cursor: pointer;
 }
 
 .stars-container .star {
-    font-size: 1.2rem;
+    font-size: 1.35rem;
     color: var(--aqua-200);
-    transition: color 0.2s ease, transform 0.2s ease;
+    transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    user-select: none;
+    line-height: 1;
 }
 
-.stars-container .star.filled {
-    color: #FFB74D;
+.stars-container .star.filled,
+.stars-container .star.hovered {
+    color: #F5A623;
+    text-shadow: 0 0 8px rgba(245, 166, 35, 0.4);
 }
 
-.stars-container .star:hover {
-    transform: scale(1.2);
+.stars-container .star:hover,
+.stars-container .star.hovered {
+    transform: scale(1.25);
+}
+
+.stars-container .star:active {
+    transform: scale(0.95);
+}
+
+.user-rating-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--aqua-500);
+    background: var(--accent-bg);
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    margin-top: 4px;
+    transition: all 0.3s ease;
 }
 
 .rating-info {
@@ -255,7 +281,7 @@ body.book-detail-light .dashboard-container {
 }
 
 .rating-number {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: var(--text-primary);
 }
@@ -842,6 +868,25 @@ body.is-native-app .btn-download-book {
     line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.mini-book-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.mini-book-rating svg {
+    width: 14px;
+    height: 14px;
+    fill: #F5A623;
+    color: #F5A623;
+    flex-shrink: 0;
+    display: inline-block;
 }
 
 /* ==========================================================================

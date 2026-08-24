@@ -44,10 +44,10 @@ html, body {
     border-radius: 50%;
     background: linear-gradient(
         145deg,
-        #1E4B65 0%,   /* Azul océano oscuro */
-        #3A6B82 35%,
-        #7A9AAD 65%,
-        #BAC8D3 100%  /* Gris azulado */
+        #784A33 0%,   /* Azul océano oscuro */
+        #9B674B 35%,
+        #E08E79 65%,
+        #FBEAE4 100%  /* Gris azulado */
     );
     z-index: 0;
     pointer-events: none; /* Asegura que no interfiera con clics de usuario */
@@ -121,16 +121,16 @@ html, body {
         overflow: hidden; /* Impide que el contenido deslizante se desborde */
         transition: transform 0.6s ease-in-out;
         z-index: 10;
-        background: #1E4B65; /* Color base de fondo azul para el panel estético */
+        background: #784A33; /* Color base de fondo azul para el panel estético */
     }
 
     /* Estructura del área interna del panel estético (ocupa el doble del contenedor para poder deslizarse) */
     .overlay {
         background: linear-gradient(
             135deg,
-            #1E4B65 0%,
-            #3A6B82 50%,
-            #1E4B65 100%
+            #784A33 0%,
+            #9B674B 50%,
+            #784A33 100%
         ); /* Gradiente azul profundo premium para todo el panel deslizante */
         background-repeat: no-repeat;
         background-size: cover;
@@ -253,7 +253,7 @@ html, body {
 .form-title {
     font-size: clamp(2rem, 5vw, 2.5rem);
     font-weight: 800;
-    color: #1E4B65;
+    color: #784A33;
     margin-bottom: 4px;
     letter-spacing: -0.5px;
 }
@@ -275,7 +275,7 @@ html, body {
 
 /* Enlaces interactivos principales */
 .link-action {
-    color: #1E4B65;
+    color: #784A33;
     font-weight: 700;
     text-decoration: none;
     transition: color 0.2s ease;
@@ -345,7 +345,7 @@ html, body {
 /* Enlace de contraseña olvidada */
 .link-forgot {
     font-size: 0.82rem;
-    color: #1E4B65;
+    color: #784A33;
     text-decoration: none;
     margin-top: -4px;
     align-self: flex-start;
@@ -398,7 +398,7 @@ html, body {
 }
 
 .form-message.success {
-    color: #1E4B65;
+    color: #784A33;
 }
 
 /* Pie de página para los iconos de redes sociales centrados */
@@ -565,7 +565,7 @@ body.users-page {
 /* Barra Lateral (Sidebar) */
 .sidebar {
     width: 260px;
-    background: #1E4B65; /* Azul océano oscuro premium */
+    background: #784A33; /* Azul océano oscuro premium */
     color: #FFFFFF;
     display: flex;
     flex-direction: column;
@@ -628,8 +628,8 @@ body.users-page {
 }
 
 .menu-item.active {
-    background: #BAC8D3;
-    color: #1E4B65;
+    background: #FBEAE4;
+    color: #784A33;
 }
 
 .menu-item svg {
@@ -687,7 +687,7 @@ body.is-native-app .mobile-only-menu-item {
 .topbar-title {
     font-size: 1.3rem;
     font-weight: 700;
-    color: #1E4B65;
+    color: #784A33;
 }
 
 .topbar-actions {
@@ -703,7 +703,7 @@ body.is-native-app .mobile-only-menu-item {
     gap: 6px;
     padding: 8px 16px;
     background: #F4F7FC;
-    color: #1E4B65;
+    color: #784A33;
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 600;
@@ -720,7 +720,7 @@ body.is-native-app .mobile-only-menu-item {
 .btn-back svg {
     width: 16px;
     height: 16px;
-    stroke: #1E4B65;
+    stroke: #784A33;
 }
 
 .search-bar {
@@ -754,13 +754,13 @@ body.is-native-app .mobile-only-menu-item {
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: #BAC8D3;
-    color: #1E4B65;
+    background: #FBEAE4;
+    color: #784A33;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #1E4B65;
+    border: 2px solid #784A33;
 }
 
 .user-info {
@@ -783,7 +783,7 @@ body.is-native-app .mobile-only-menu-item {
 
 .admin-badge {
     display: inline-block;
-    background: #1E4B65;
+    background: #784A33;
     color: #fff;
     font-size: 0.7rem;
     padding: 2px 8px;
@@ -824,7 +824,7 @@ body.is-native-app .mobile-only-menu-item {
 }
 
 .toolbar-search:focus-within {
-    border-color: #1E4B65;
+    border-color: #784A33;
     background: #FFFFFF;
     box-shadow: 0 0 0 3px rgba(30, 75, 101, 0.1);
 }
@@ -886,14 +886,14 @@ body.is-native-app .mobile-only-menu-item {
 }
 
 .filter-btn:hover {
-    border-color: #1E4B65;
-    color: #1E4B65;
+    border-color: #784A33;
+    color: #784A33;
     background: rgba(30, 75, 101, 0.05);
 }
 
 .filter-btn.active {
-    background: #1E4B65;
-    border-color: #1E4B65;
+    background: #784A33;
+    border-color: #784A33;
     color: #FFFFFF;
     box-shadow: 0 4px 12px rgba(30, 75, 101, 0.25);
 }
@@ -917,7 +917,7 @@ body.is-native-app .mobile-only-menu-item {
     border: 1.5px solid #E2E8F0;
     border-radius: 50px;
     background: #FFFFFF;
-    color: #1E4B65;
+    color: #784A33;
     font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
@@ -926,14 +926,14 @@ body.is-native-app .mobile-only-menu-item {
 }
 
 .filter-toggle-btn:hover {
-    border-color: #1E4B65;
+    border-color: #784A33;
     background: rgba(30, 75, 101, 0.05);
     box-shadow: 0 2px 10px rgba(30, 75, 101, 0.1);
 }
 
 .filter-toggle-btn.active {
-    background: #1E4B65;
-    border-color: #1E4B65;
+    background: #784A33;
+    border-color: #784A33;
     color: #FFFFFF;
     box-shadow: 0 4px 12px rgba(30, 75, 101, 0.25);
 }
@@ -962,7 +962,7 @@ body.is-native-app .mobile-only-menu-item {
 
 .filter-toggle-btn.active .filter-count-badge {
     background: #FFFFFF;
-    color: #1E4B65;
+    color: #784A33;
 }
 
 /* Dropdown / menú desplegable */
@@ -1004,7 +1004,7 @@ body.is-native-app .mobile-only-menu-item {
 .filter-dropdown-header h4 {
     font-size: 0.95rem;
     font-weight: 800;
-    color: #1E4B65;
+    color: #784A33;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1030,7 +1030,7 @@ body.is-native-app .mobile-only-menu-item {
 
 .filter-dropdown-close:hover {
     background: #F0F4F8;
-    color: #1E4B65;
+    color: #784A33;
 }
 
 .filter-dropdown-close svg {
@@ -1066,14 +1066,14 @@ body.is-native-app .mobile-only-menu-item {
 }
 
 .filter-tag:hover {
-    border-color: #1E4B65;
-    color: #1E4B65;
+    border-color: #784A33;
+    color: #784A33;
     background: rgba(30, 75, 101, 0.05);
 }
 
 .filter-tag.selected {
-    background: #1E4B65;
-    border-color: #1E4B65;
+    background: #784A33;
+    border-color: #784A33;
     color: #FFFFFF;
     box-shadow: 0 2px 8px rgba(30, 75, 101, 0.2);
 }
@@ -1184,7 +1184,7 @@ body.is-native-app .mobile-only-menu-item {
 
 /* Botón Añadir Libro Estilo Moderno */
 .btn-add {
-    background: #1E4B65;
+    background: #784A33;
     color: #FFFFFF;
     border: none;
     border-radius: 50px;
@@ -1200,7 +1200,7 @@ body.is-native-app .mobile-only-menu-item {
 }
 
 .btn-add:hover {
-    background: #3A6B82;
+    background: #9B674B;
     transform: translateY(-2px);
 }
 
@@ -1288,7 +1288,7 @@ body.is-native-app .mobile-only-menu-item {
     height: 200px;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #3A6B82 0%, #1E4B65 100%);
+    background: linear-gradient(135deg, #9B674B 0%, #784A33 100%);
 }
 
 /* La portada ocupa todo el header a ancho y alto completos */
@@ -1322,7 +1322,7 @@ body.is-native-app .mobile-only-menu-item {
     right: 12px;
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(10px);
-    color: #1E4B65;
+    color: #784A33;
     padding: 4px 12px;
     border-radius: 50px;
     font-size: 0.72rem;
@@ -1353,7 +1353,7 @@ body.is-native-app .mobile-only-menu-item {
     text-transform: capitalize;
     letter-spacing: 0.3px;
     background: linear-gradient(135deg, #E8F4F8 0%, #D6EAF2 100%);
-    color: #1E4B65;
+    color: #784A33;
     border: 1px solid rgba(30, 75, 101, 0.12);
     margin-bottom: 10px;
     width: fit-content;
@@ -1367,7 +1367,7 @@ body.is-native-app .mobile-only-menu-item {
     width: 11px;
     height: 11px;
     flex-shrink: 0;
-    color: #3A6B82;
+    color: #9B674B;
 }
 
 .book-card-body {
@@ -1424,8 +1424,8 @@ body.is-native-app .mobile-only-menu-item {
 }
 
 .book-btn-edit {
-    background: #BAC8D3;
-    color: #1E4B65;
+    background: #FBEAE4;
+    color: #784A33;
 }
 
 .book-btn-edit:hover {
@@ -1531,7 +1531,7 @@ body.is-native-app .mobile-only-menu-item {
     letter-spacing: 0.02em;
     text-transform: uppercase;
     background: rgba(30, 75, 101, 0.08);
-    color: #1E4B65;
+    color: #784A33;
     margin-bottom: 14px;
 }
 
@@ -1706,7 +1706,7 @@ body.is-native-app .mobile-only-menu-item {
     width: 48px;
     height: 48px;
     border-radius: 14px;
-    background: linear-gradient(135deg, #1E4B65 0%, #2563EB 100%);
+    background: linear-gradient(135deg, #784A33 0%, #E08E79 100%);
     color: #FFFFFF;
     display: flex;
     align-items: center;
@@ -1871,7 +1871,7 @@ body.is-native-app .mobile-only-menu-item {
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    color: #1E4B65;
+    color: #784A33;
     margin-bottom: 2px;
 }
 
@@ -2242,7 +2242,7 @@ body.is-native-app .mobile-only-menu-item {
     align-items: center;
     gap: 9px;
     padding: 11px 28px;
-    background: linear-gradient(135deg, #1E4B65 0%, #2563EB 100%);
+    background: linear-gradient(135deg, #784A33 0%, #E08E79 100%);
     color: #FFFFFF;
     border: none;
     border-radius: 13px;
@@ -2410,13 +2410,13 @@ body.is-native-app .mobile-only-menu-item {
 }
 
 .mod-tab:hover {
-    color: #1E4B65;
+    color: #784A33;
     background: rgba(255, 255, 255, 0.6);
 }
 
 .mod-tab.active {
     color: #FFFFFF;
-    background: #1E4B65;
+    background: #784A33;
     box-shadow: 0 2px 8px rgba(30, 75, 101, 0.25);
 }
 
@@ -2436,7 +2436,7 @@ body.is-native-app .mobile-only-menu-item {
 
 .mod-tab.active .tab-badge {
     background: #FFFFFF;
-    color: #1E4B65;
+    color: #784A33;
 }
 
 /* --- Acciones globales (pills) --- */
@@ -2857,7 +2857,7 @@ body.is-native-app .mobile-only-menu-item {
     cursor: pointer;
     background: none;
     border: none;
-    color: #1E4B65;
+    color: #784A33;
 }
 
 .menu-toggle svg {
@@ -3096,7 +3096,7 @@ body.is-native-app .mobile-only-menu-item {
     height: 110px;
     border-radius: 8px;
     flex-shrink: 0;
-    background: linear-gradient(135deg, #3A6B82 0%, #1E4B65 100%);
+    background: linear-gradient(135deg, #9B674B 0%, #784A33 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3143,7 +3143,7 @@ body.is-native-app .mobile-only-menu-item {
     font-size: 0.7rem;
     font-weight: 700;
     background: #E8F4F8;
-    color: #1E4B65;
+    color: #784A33;
     border: 1px solid rgba(30, 75, 101, 0.12);
 }
 
@@ -3189,7 +3189,7 @@ body.is-native-app .mobile-only-menu-item {
 .horizontal-book-card .hbc-progress-fill {
     height: 100%;
     border-radius: 50px;
-    background: linear-gradient(90deg, #3A6B82 0%, #1E4B65 100%);
+    background: linear-gradient(90deg, #9B674B 0%, #784A33 100%);
     transition: width 0.3s ease;
 }
 

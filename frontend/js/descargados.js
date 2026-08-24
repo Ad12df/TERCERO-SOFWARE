@@ -119,7 +119,7 @@ function getCachedPdfIds() {
             resolve(new Set());
             return;
         }
-        const request = indexedDB.open(PDF_DB_NAME, 1);
+        const request = indexedDB.open(PDF_DB_NAME, 2);
         request.onerror = () => resolve(new Set());
         request.onsuccess = () => {
             const db = request.result;
@@ -269,7 +269,7 @@ function deleteCachedPdf(bookId) {
             resolve();
             return;
         }
-        const request = indexedDB.open(PDF_DB_NAME, 1);
+        const request = indexedDB.open(PDF_DB_NAME, 2);
         request.onerror = () => resolve();
         request.onsuccess = () => {
             const db = request.result;

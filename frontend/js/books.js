@@ -281,7 +281,7 @@ function renderBooks(booksList) {
                 <p class="book-author">por ${book.autor || "Autor desconocido"}</p>
                 <div class="book-meta">
                     <span>ID: <strong>#${book.id}</strong></span>
-                    ${book.puntuacion_media ? `<span>★ <strong>${book.puntuacion_media}</strong></span>` : ""}
+                    <span style="color: #F5A623; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;">★ <strong>${book.puntuacion_media ? Number(book.puntuacion_media).toFixed(1) : '0.0'}</strong></span>
                 </div>
                 <div class="book-actions">
                     ${renderBookCardActions(book)}
@@ -985,7 +985,7 @@ function switchTab(tabName) {
         if (!grid) return;
         try {
             grid.innerHTML = `
-                <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #1E4B65; background: #FFFFFF; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #784A33; background: #FFFFFF; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 64px; height: 64px; margin-bottom: 16px;">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="12" y1="16" x2="12" y2="12"></line>

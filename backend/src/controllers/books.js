@@ -1,4 +1,4 @@
-const { Book, Comment, UserRead, UserList } = require("../models");
+const { Book, Comment, UserRead, UserList, Review } = require("../models");
 const {
   uploadImageFromBuffer,
   uploadPdfFromBuffer,
@@ -374,6 +374,100 @@ class BookController {
       return res.status(500).json({
         success: false,
         message: error.message || "Error al crear el comentario",
+      });
+    }
+  }
+
+  // ─── POST /api/books/:id/ratings ───────────────────────────
+  // Califica un libro con estrellas (1 a 5) y actualiza la media
+  static async rateBook(req, res) {
+    try {
+      const { id } = req.params;
+      const { puntuacion, contenido } = req.body;
+
+      const book = await Book.findByPk(id);
+      if (!book) {
+        return res.status(404).json({
+          success: false,
+          message: "Libro no encontrado",
+        });
+      }
+
+      const score = parseInt(puntuacion, 10);
+      if (isNaN(score) || score < 1 || score > 5) {
+        return res.status(400).json({
+          success: false,
+          message: "La puntuación debe ser un número entero entre 1 y 5",
+        });
+      }
+
+      // Buscar si ya existe una reseña/calificación de este usuario para este libro
+      let review = await Review.findOne({
+        where: {
+          book_id: parseInt(id, 10),
+          user_id: req.user.id,
+        },
+      });
+
+      if (review) {
+        review.puntuacion = score;
+        if (contenido !== undefined) review.contenido = contenido;
+        await review.save();
+      } else {
+        review = await Review.create({
+          puntuacion: score,
+          contenido: contenido || null,
+          book_id: parseInt(id, 10),
+          user_id: req.user.id,
+        });
+      }
+
+      // Refrescar el libro para obtener la nueva puntuacion_media y total_resenas calculadas por el hook
+      await book.reload();
+
+      return res.status(200).json({
+        success: true,
+        message: "¡Calificación guardada con éxito!",
+        data: {
+          userRating: review.puntuacion,
+          puntuacion_media: book.puntuacion_media,
+          total_resenas: book.total_resenas,
+        },
+      });
+    } catch (error) {
+      console.error("❌ Error al calificar libro:", error);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "Error al registrar la calificación",
+      });
+    }
+  }
+
+  // ─── GET /api/books/:id/ratings/me ─────────────────────────
+  // Obtiene la calificación que el usuario actual le dio a un libro
+  static async getUserRating(req, res) {
+    try {
+      const { id } = req.params;
+      const review = await Review.findOne({
+        where: {
+          book_id: parseInt(id, 10),
+          user_id: req.user.id,
+        },
+        attributes: ["id", "puntuacion", "contenido", "updatedAt"],
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          userRating: review ? review.puntuacion : 0,
+          review: review || null,
+        },
+      });
+    } catch (error) {
+      console.error("❌ Error al obtener calificación del usuario:", error);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "Error al obtener la calificación",
       });
     }
   }

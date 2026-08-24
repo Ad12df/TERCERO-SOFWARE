@@ -22,7 +22,7 @@ async function initializeDetailPage() {
                 <div style="text-align: center; padding: 60px; color: #666;">
                     <h2>No se especificó un libro</h2>
                     <p style="margin-top: 16px;">
-                        <a href="books.html" style="color: #1E4B65; text-decoration: underline;">Volver al catálogo</a>
+                        <a href="books.html" style="color: #784A33; text-decoration: underline;">Volver al catálogo</a>
                     </p>
                 </div>
             `;
@@ -43,7 +43,7 @@ async function initializeDetailPage() {
                         <div style="text-align: center; padding: 60px; color: #666;">
                             <h2>Libro no encontrado</h2>
                             <p style="margin-top: 16px;">
-                                <a href="books.html" style="color: #1E4B65; text-decoration: underline;">Volver al catálogo</a>
+                                <a href="books.html" style="color: #784A33; text-decoration: underline;">Volver al catálogo</a>
                             </p>
                         </div>
                     `;
@@ -91,7 +91,7 @@ async function initializeDetailPage() {
                     <h2>Error al cargar el libro</h2>
                     <p style="margin-top: 16px; color: #999;">${escapeHtml(error.message)}</p>
                     <p style="margin-top: 16px;">
-                        <a href="books.html" style="color: #1E4B65; text-decoration: underline;">Volver al catálogo</a>
+                        <a href="books.html" style="color: #784A33; text-decoration: underline;">Volver al catálogo</a>
                     </p>
                 </div>
             `;
@@ -180,16 +180,16 @@ function showBookDetail(book) {
     updateStarDisplay(rating);
 
     const ratingNumber = document.getElementById("ratingNumber");
-    if (ratingNumber) ratingNumber.textContent = rating.toFixed(1);
+    if (ratingNumber) ratingNumber.textContent = Number(rating).toFixed(1);
 
     const ratingScore = document.getElementById("ratingScore");
-    if (ratingScore) ratingScore.textContent = rating.toFixed(1);
+    if (ratingScore) ratingScore.textContent = Number(rating).toFixed(1);
 
     const ratingBarFill = document.getElementById("ratingBarFill");
     if (ratingBarFill) ratingBarFill.style.width = `${(rating / 5) * 100}%`;
 
     const ratingVotes = document.getElementById("ratingVotes");
-    if (ratingVotes) ratingVotes.textContent = `${book.total_resenas || 0} votos`;
+    if (ratingVotes) ratingVotes.textContent = `${book.total_resenas || 0} voto${book.total_resenas === 1 ? '' : 's'}`;
     
     const ratingUsers = document.getElementById("ratingUsers");
     if (ratingUsers) ratingUsers.textContent = `${book.total_resenas || 0} usuarios`;
@@ -197,6 +197,10 @@ function showBookDetail(book) {
     // Visitas (el backend no proporciona contador de visitas)
     const visitsCounter = document.getElementById("visitsCounter");
     if (visitsCounter) visitsCounter.textContent = `0 visitas`;
+
+    // ─── Configurar sistema de calificación interactivo ─────────
+    setupStarRatingInteractivity();
+    loadUserRating(book.id);
 
     // ─── Barra de progreso de lectura ───────────────────────────────
     showReadingProgress(book.progreso_porcentaje);
@@ -211,12 +215,14 @@ function showBookDetail(book) {
     loadSuggestions(book);
 }
 
+let userCurrentRating = 0;
+
 /**
  * Actualiza la visualización de las estrellas
  * @param {number} rating - Valor de 0 a 5
  */
 function updateStarDisplay(rating) {
-    const stars = document.querySelectorAll(".star-large");
+    const stars = document.querySelectorAll("#starsContainer .star, .stars-container .star");
     stars.forEach((star, index) => {
         if (index < Math.round(rating)) {
             star.classList.add("filled");
@@ -224,6 +230,128 @@ function updateStarDisplay(rating) {
             star.classList.remove("filled");
         }
     });
+}
+
+/**
+ * Configura los eventos interactivos del sistema de estrellas
+ */
+function setupStarRatingInteractivity() {
+    const container = document.getElementById("starsContainer");
+    if (!container || container.dataset.initialized) return;
+    container.dataset.initialized = "true";
+
+    const stars = container.querySelectorAll(".star");
+
+    stars.forEach((star, idx) => {
+        const starValue = idx + 1;
+
+        // Hover: iluminar hasta la estrella actual
+        star.addEventListener("mouseenter", () => {
+            stars.forEach((s, sIdx) => {
+                if (sIdx <= idx) {
+                    s.classList.add("hovered");
+                } else {
+                    s.classList.remove("hovered");
+                }
+            });
+        });
+
+        // Click: registrar calificación
+        star.addEventListener("click", () => {
+            rateBook(starValue);
+        });
+    });
+
+    container.addEventListener("mouseleave", () => {
+        stars.forEach(s => s.classList.remove("hovered"));
+        const currentScore = userCurrentRating || (currentBook ? currentBook.puntuacion_media : 0);
+        updateStarDisplay(currentScore);
+    });
+}
+
+/**
+ * Envía la calificación a la API del backend y guarda en Neon DB
+ * @param {number} score - Puntuación de 1 a 5
+ */
+async function rateBook(score) {
+    if (!currentBook || !currentBook.id) return;
+
+    const token = typeof getAuthToken === "function" ? getAuthToken() : localStorage.getItem("token");
+    if (!token) {
+        showToast("Inicia sesión para calificar este libro", "warning");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/books/${currentBook.id}/ratings`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ puntuacion: score })
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Error al calificar el libro");
+        }
+
+        userCurrentRating = score;
+        if (currentBook) {
+            currentBook.puntuacion_media = Number(result.data.puntuacion_media) || score;
+            currentBook.total_resenas = result.data.total_resenas || 1;
+        }
+
+        const ratingNumber = document.getElementById("ratingNumber");
+        if (ratingNumber) ratingNumber.textContent = Number(result.data.puntuacion_media).toFixed(1);
+
+        const ratingVotes = document.getElementById("ratingVotes");
+        if (ratingVotes) ratingVotes.textContent = `${result.data.total_resenas} voto${result.data.total_resenas === 1 ? '' : 's'}`;
+
+        updateStarDisplay(result.data.puntuacion_media);
+        renderUserRatingBadge(score);
+
+        showToast(`¡Calificación guardada: ${score} estrella${score === 1 ? '' : 's'}!`, "success");
+    } catch (err) {
+        console.error("❌ Error al calificar libro:", err);
+        showToast(err.message || "No se pudo guardar tu calificación", "error");
+    }
+}
+
+/**
+ * Consulta la calificación previa que el usuario le dio al libro
+ */
+async function loadUserRating(bookId) {
+    const token = typeof getAuthToken === "function" ? getAuthToken() : localStorage.getItem("token");
+    if (!token || !bookId) return;
+
+    try {
+        const response = await fetch(`${API_URL}/books/${bookId}/ratings/me`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        if (!response.ok) return;
+
+        const result = await response.json();
+        if (result.success && result.data && result.data.userRating) {
+            userCurrentRating = result.data.userRating;
+            renderUserRatingBadge(userCurrentRating);
+        }
+    } catch (err) {
+        console.warn("No se pudo cargar la calificación previa del usuario:", err);
+    }
+}
+
+function renderUserRatingBadge(score) {
+    const container = document.getElementById("userRatingFeedback");
+    if (!container) return;
+    container.innerHTML = `
+        <div class="user-rating-badge" title="Tu calificación guardada">
+            <span>★ Tu puntuación: ${score}/5</span>
+        </div>
+    `;
 }
 
 /**
@@ -475,8 +603,8 @@ function loadSuggestions(currentBook) {
                         <h4 class="mini-book-title">${escapeHtml(book.nombre || "Sin título")}</h4>
                         <p class="mini-book-author">${escapeHtml(book.autor || "Autor")}</p>
                         <div class="mini-book-rating">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <span>${(book.puntuacion_media || 0).toFixed(1)}</span>
+                            <svg viewBox="0 0 24 24" fill="#F5A623" width="14" height="14"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <span>${(Number(book.puntuacion_media) || 0).toFixed(1)}</span>
                         </div>
                     </div>
                 </a>
@@ -659,7 +787,7 @@ function savePdfToIndexedDB(bookId, blob) {
     return new Promise((resolve, reject) => {
         const DB_NAME = "clickylee_pdf_cache";
         const STORE_NAME = "pdfs";
-        const req = indexedDB.open(DB_NAME, 1);
+        const req = indexedDB.open(DB_NAME, 2);
         req.onupgradeneeded = (e) => {
             const db = e.target.result;
             if (!db.objectStoreNames.contains(STORE_NAME)) {

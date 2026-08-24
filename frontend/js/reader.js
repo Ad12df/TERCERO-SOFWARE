@@ -114,7 +114,7 @@
     // INDEXEDDB - Caché local de PDFs
     // ===================================
     const DB_NAME = 'clickylee_pdf_cache';
-    const DB_VERSION = 1;
+    const DB_VERSION = 2;
     const STORE_NAME = 'pdfs';
 
     function openDB() {

@@ -66,4 +66,12 @@ router.get("/:id/comments", BookController.getComments);
 // POST /api/books/:id/comments - Crear un comentario (requiere auth)
 router.post("/:id/comments", authenticate, BookController.createComment);
 
+// ─── Rutas de Calificación / Estrellas (Neon DB) ───────────
+
+// POST /api/books/:id/ratings - Calificar un libro (1-5 estrellas, requiere auth)
+router.post("/:id/ratings", authenticate, BookController.rateBook);
+
+// GET /api/books/:id/ratings/me - Obtener la calificación propia del usuario para este libro (requiere auth)
+router.get("/:id/ratings/me", authenticate, BookController.getUserRating);
+
 module.exports = router;

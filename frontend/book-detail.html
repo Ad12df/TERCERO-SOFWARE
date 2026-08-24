@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/book-detail.css">
     <!-- PWA: manifest y tema -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1E4B65">
+    <meta name="theme-color" content="#784A33">
 </head>
 
 <body class="book-detail-light">
@@ -152,18 +152,21 @@
                             
                             <!-- Contenedor de Acciones -->
                             <div class="actions-container">
-                                <!-- Sistema de Valoración -->
+                                <!-- Sistema de Valoración Interactivo -->
                                 <div class="rating-section">
-                                    <div class="stars-container">
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star">★</span>
+                                    <div>
+                                        <div class="stars-container" id="starsContainer" title="Haz clic para calificar este libro">
+                                            <span class="star" data-value="1" role="button" aria-label="1 estrella">★</span>
+                                            <span class="star" data-value="2" role="button" aria-label="2 estrellas">★</span>
+                                            <span class="star" data-value="3" role="button" aria-label="3 estrellas">★</span>
+                                            <span class="star" data-value="4" role="button" aria-label="4 estrellas">★</span>
+                                            <span class="star" data-value="5" role="button" aria-label="5 estrellas">★</span>
+                                        </div>
+                                        <div id="userRatingFeedback"></div>
                                     </div>
                                     <div class="rating-info">
-                                        <span class="rating-number" id="ratingNumber">4.5</span>
-                                        <span class="rating-votes" id="ratingVotes">7 votos</span>
+                                        <span class="rating-number" id="ratingNumber">0.0</span>
+                                        <span class="rating-votes" id="ratingVotes">0 votos</span>
                                     </div>
                                 </div>
                                 

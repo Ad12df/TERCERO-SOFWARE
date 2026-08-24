@@ -46,7 +46,7 @@
     justify-content: center;
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #1E4B65, #2D6A8F);
+    background: linear-gradient(135deg, #784A33, #9B674B);
     border-radius: 14px;
     flex-shrink: 0;
 }
@@ -108,7 +108,7 @@
     width: 110px;
     height: 110px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #1E4B65, #2D6A8F);
+    background: linear-gradient(135deg, #784A33, #9B674B);
     padding: 3px;
     box-shadow: 0 4px 18px rgba(30, 75, 101, 0.3);
     display: flex;
@@ -122,7 +122,7 @@
     height: 104px;
     font-size: 2.6rem;
     border-radius: 50%;
-    background: linear-gradient(135deg, #1E4B65, #2D6A8F);
+    background: linear-gradient(135deg, #784A33, #9B674B);
     color: #FFFFFF;
     display: flex;
     align-items: center;
@@ -161,8 +161,8 @@
 }
 
 .avatar-upload-btn:hover {
-    background: #1E4B65;
-    border-color: #1E4B65;
+    background: #784A33;
+    border-color: #784A33;
     transform: scale(1.1);
 }
 
@@ -173,7 +173,7 @@
 .avatar-upload-btn svg {
     width: 17px;
     height: 17px;
-    stroke: #1E4B65;
+    stroke: #784A33;
     transition: stroke 0.2s;
 }
 
@@ -239,7 +239,7 @@
     text-transform: uppercase;
     letter-spacing: 0.4px;
     background: rgba(30, 75, 101, 0.1);
-    color: #1E4B65;
+    color: #784A33;
 }
 
 .role-chip.chip-admin   { background: rgba(239, 68, 68, 0.1);  color: #DC2626; }
@@ -297,7 +297,7 @@
 
 .pw-input-wrap input:focus {
     outline: none;
-    border-color: #1E4B65;
+    border-color: #784A33;
     background: #FFFFFF;
     box-shadow: 0 0 0 3px rgba(30, 75, 101, 0.1);
 }
@@ -318,7 +318,7 @@
 }
 
 .pw-eye:hover {
-    color: #1E4B65;
+    color: #784A33;
     background: rgba(30, 75, 101, 0.06);
 }
 
@@ -436,7 +436,7 @@
     align-items: center;
     gap: 6px;
     padding: 10px 18px;
-    background: linear-gradient(135deg, #1E4B65, #2D6A8F);
+    background: linear-gradient(135deg, #784A33, #9B674B);
     color: #FFFFFF;
     border: none;
     border-radius: 10px;
@@ -455,12 +455,12 @@
 
 .btn-action-outline {
     background: transparent;
-    color: #1E4B65;
-    border: 1.5px solid #1E4B65;
+    color: #784A33;
+    border: 1.5px solid #784A33;
 }
 
 .btn-action-outline:hover {
-    background: #1E4B65;
+    background: #784A33;
     color: #FFFFFF;
 }
 
@@ -480,7 +480,7 @@
    ========================================================================== */
 
 .settings-card-info {
-    background: linear-gradient(135deg, #1E4B65 0%, #0F2D42 100%);
+    background: linear-gradient(135deg, #784A33 0%, #4A2C1D 100%);
     color: #FFFFFF;
 }
 
