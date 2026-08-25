@@ -208,7 +208,7 @@ async function loadBooks() {
         }
 
         books = Array.isArray(data.data) ? data.data : [];
-        renderBooks(books);
+        renderBooks(applyParentalFilter(books));
     } catch (error) {
         console.error("❌ Error al cargar libros:", error);
         try {
@@ -392,19 +392,94 @@ function readBook(bookId) {
 }
 
 /**
- * Filtra los libros por texto de búsqueda y tags activos (multi-selección)
+ * Normaliza un texto para comparaciones seguras sin tildes ni mayúsculas
  */
+function normalizeCategory(str) {
+    return String(str || '')
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+}
+
+/**
+ * Obtiene la lista de categorias bloqueadas por control parental
+ */
+function getActiveParentalBlockedCategories() {
+    if (typeof window.getBlockedCategories === 'function') {
+        const blocked = window.getBlockedCategories();
+        if (Array.isArray(blocked) && blocked.length > 0) return blocked;
+    }
+
+    try {
+        const raw = localStorage.getItem('parentalSettings');
+        if (!raw) return [];
+        const ps = JSON.parse(raw);
+        if (!ps || !ps.master) return [];
+
+        if (Array.isArray(ps.blockedCategories) && ps.blockedCategories.length > 0) {
+            return ps.blockedCategories;
+        }
+
+        const PARENTAL_FILTER_CATEGORIES = {
+            'filter-erotico': ['Erótico', 'Erotico'],
+            'filter-sexualidad': ['Sexualidad'],
+            'filter-romantico': ['Romántico', 'Romantico'],
+            'filter-terror': ['Terror'],
+            'filter-belico': ['Terrorismo', 'Bélico', 'Belico', 'Nazis'],
+            'filter-thriller': ['Thriller', 'Novela Negra', 'Policial', 'Policíaco', 'Policiaco', 'Espionaje'],
+            'filter-distopia': ['Distopía', 'Distopia', 'Ucronía', 'Ucronia']
+        };
+
+        const blocked = [];
+        if (ps.filters) {
+            Object.entries(ps.filters).forEach(([id, checked]) => {
+                if (checked && PARENTAL_FILTER_CATEGORIES[id]) {
+                    blocked.push(...PARENTAL_FILTER_CATEGORIES[id]);
+                }
+            });
+        }
+        return blocked;
+    } catch(e) {
+        return [];
+    }
+}
+
+/**
+ * Aplica el filtro de control parental a una lista de libros.
+ * Si el control parental está activo, elimina los libros cuya categoría
+ * coincida con alguna de las bloqueadas (insensible a tildes y mayúsculas).
+ * @param {Array} list - Lista de libros a filtrar
+ * @returns {Array} Lista filtrada
+ */
+function applyParentalFilter(list) {
+    if (!Array.isArray(list)) return [];
+    const blocked = getActiveParentalBlockedCategories();
+    if (!blocked || blocked.length === 0) return list;
+
+    const blockedNormalized = new Set(blocked.map(c => normalizeCategory(c)));
+
+    return list.filter(book => {
+        const cat = normalizeCategory(book.categoria);
+        return !blockedNormalized.has(cat);
+    });
+}
+
 function filterBooks() {
     const searchInput = document.getElementById("searchInput");
     const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
 
     let filtered = books;
 
+    // Aplicar filtro de control parental primero
+    filtered = applyParentalFilter(filtered);
+
     // Filtrar por categorías seleccionadas (OR entre tags)
     if (activeTags.length > 0) {
+        const activeNormalized = activeTags.map(t => normalizeCategory(t));
         filtered = filtered.filter(book => {
-            const cat = book.categoria || "Sin categoría";
-            return activeTags.includes(cat);
+            const cat = normalizeCategory(book.categoria || "Sin categoría");
+            return activeNormalized.includes(cat);
         });
     }
 
@@ -422,18 +497,24 @@ function filterBooks() {
 /**
  * Obtiene todas las categorías disponibles para mostrar en los filtros.
  * Combina el catálogo global (CATEGORIES) con cualquier categoría extra
- * que exista en los libros cargados desde el backend, para no perder
- * categorías históricas que no estén en la lista maestra.
+ * que exista en los libros cargados desde el backend.
+ * Si el control parental está activo, excluye las categorías bloqueadas.
  * @returns {Array} Lista de categorías únicas ordenadas alfabéticamente
  */
 function getAvailableCategories() {
+    const blocked = getActiveParentalBlockedCategories();
+    const blockedNormalized = new Set(blocked.map(c => normalizeCategory(c)));
+
     const cats = new Set(CATEGORIES);
     books.forEach(book => {
         if (book.categoria) {
             cats.add(book.categoria);
         }
     });
-    return Array.from(cats).sort((a, b) => a.localeCompare(b, "es"));
+
+    return Array.from(cats)
+        .filter(cat => !blockedNormalized.has(normalizeCategory(cat)))
+        .sort((a, b) => a.localeCompare(b, "es"));
 }
 
 /**
@@ -1392,3 +1473,12 @@ async function refreshAfterModeration() {
     await loadBooks();
 }
 
+// =========================================================================
+// ESCUCHAR CAMBIOS DE CONTROL PARENTAL
+// Cuando el usuario cambia ajustes en settings.js, se re-filtra el catalogo
+// =========================================================================
+window.addEventListener('parentalSettingsChanged', function () {
+    if (books && books.length > 0) {
+        filterBooks();
+    }
+});

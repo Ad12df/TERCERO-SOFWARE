@@ -1,22 +1,285 @@
 /* ==========================================================================
-   CONFIGURACIÓN - ESTILOS DE LA PÁGINA DE CONFIGURACIÓN (v2)
+   CONFIGURACION - ESTILOS DE LA PAGINA DE CONFIGURACION (v3 - Con tabs)
    ========================================================================== */
 
 /* ==========================================================================
-   CONTENEDOR PRINCIPAL
+   LAYOUT PRINCIPAL DE SETTINGS (dos columnas)
    ========================================================================== */
 
-.settings-container {
-    display: flex;
-    flex-direction: column;
+.settings-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
     gap: 24px;
-    max-width: 800px;
+    align-items: flex-start;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 8px 0 48px;
 }
 
 /* ==========================================================================
-   TARJETA
+   PANEL DE NAVEGACION (izquierda)
+   ========================================================================== */
+
+.settings-nav-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 24px;
+}
+
+/* Tarjeta de perfil en el panel de navegacion */
+.settings-profile-card {
+    background: linear-gradient(135deg, #784A33 0%, #4A2C1D 100%);
+    border-radius: 20px;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 4px 24px rgba(120, 74, 51, 0.35);
+    animation: fadeInSlideUp 0.3s ease-out both;
+}
+
+.settings-profile-avatar-wrap {
+    position: relative;
+}
+
+.settings-nav-avatar-ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 3px solid rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.settings-nav-avatar-letter {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    letter-spacing: -1px;
+}
+
+.settings-profile-info {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+}
+
+.settings-profile-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.settings-profile-email {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.65);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.settings-profile-info .role-chip {
+    margin-top: 4px;
+    background: rgba(255,255,255,0.18);
+    color: #FFFFFF;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* Navegacion tabs */
+.settings-tabs-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: fadeInSlideUp 0.35s ease-out both;
+    animation-delay: 0.05s;
+}
+
+.settings-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    text-align: left;
+    width: 100%;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+    position: relative;
+    overflow: hidden;
+}
+
+.settings-tab-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: transparent;
+    border-radius: 0 3px 3px 0;
+    transition: background 0.2s ease;
+}
+
+.settings-tab-btn:hover {
+    border-color: #784A33;
+    box-shadow: 0 4px 16px rgba(120,74,51,0.12);
+    transform: translateX(2px);
+}
+
+.settings-tab-btn.active {
+    border-color: #784A33;
+    background: linear-gradient(135deg, rgba(120,74,51,0.06), rgba(155,103,75,0.03));
+    box-shadow: 0 4px 20px rgba(120,74,51,0.15);
+}
+
+.settings-tab-btn.active::before {
+    background: linear-gradient(to bottom, #784A33, #9B674B);
+}
+
+.tab-btn-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.tab-btn-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.tab-icon-cuenta {
+    background: linear-gradient(135deg, rgba(120,74,51,0.12), rgba(155,103,75,0.08));
+}
+.tab-icon-cuenta svg { stroke: #784A33; }
+
+.settings-tab-btn.active .tab-icon-cuenta {
+    background: linear-gradient(135deg, #784A33, #9B674B);
+}
+.settings-tab-btn.active .tab-icon-cuenta svg { stroke: #FFFFFF; }
+
+.tab-icon-parental {
+    background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(168,85,247,0.08));
+}
+.tab-icon-parental svg { stroke: #7C3AED; }
+
+.settings-tab-btn.active .tab-icon-parental {
+    background: linear-gradient(135deg, #7C3AED, #A855F7);
+}
+.settings-tab-btn.active .tab-icon-parental svg { stroke: #FFFFFF; }
+
+.tab-btn-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.tab-btn-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 2px;
+}
+
+.tab-btn-desc {
+    display: block;
+    font-size: 0.74rem;
+    color: #94A3B8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.settings-tab-btn.active .tab-btn-label { color: #784A33; }
+
+.tab-chevron {
+    width: 16px;
+    height: 16px;
+    stroke: #CBD5E1;
+    flex-shrink: 0;
+    transition: stroke 0.2s;
+}
+
+.settings-tab-btn.active .tab-chevron { stroke: #784A33; }
+.settings-tab-btn:hover .tab-chevron { stroke: #784A33; }
+
+/* Info de la app al fondo del panel */
+.settings-nav-app-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #F8FAFC;
+    border-radius: 14px;
+    border: 1.5px solid #E2E8F0;
+    animation: fadeInSlideUp 0.4s ease-out both;
+    animation-delay: 0.1s;
+}
+
+.settings-nav-app-info svg {
+    width: 22px;
+    height: 22px;
+    stroke: #784A33;
+    flex-shrink: 0;
+}
+
+.app-info-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0;
+}
+
+.app-info-version {
+    font-size: 0.72rem;
+    color: #94A3B8;
+    margin: 0;
+}
+
+/* ==========================================================================
+   PANEL DE CONTENIDO (derecha)
+   ========================================================================== */
+
+.settings-content-panel {
+    min-width: 0;
+}
+
+/* Panels de tabs */
+.settings-tab-panel {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeInSlideUp 0.3s ease-out both;
+}
+
+.settings-tab-panel.active {
+    display: flex;
+}
+
+/* ==========================================================================
+   TARJETAS (settings-card) - heredado
    ========================================================================== */
 
 .settings-card {
@@ -31,6 +294,7 @@
 .settings-card:nth-child(2) { animation-delay: 0.1s; }
 .settings-card:nth-child(3) { animation-delay: 0.15s; }
 .settings-card:nth-child(4) { animation-delay: 0.2s; }
+.settings-card:nth-child(5) { animation-delay: 0.25s; }
 
 .settings-card-header {
     display: flex;
@@ -87,7 +351,6 @@
     align-items: flex-start;
 }
 
-/* ── Avatar zone ── */
 .avatar-zone {
     display: flex;
     flex-direction: column;
@@ -131,7 +394,6 @@
     letter-spacing: -1px;
 }
 
-/* Cuando hay foto, ocupa el anillo completo */
 .avatar-ring img {
     position: absolute;
     inset: 0;
@@ -141,7 +403,6 @@
     border-radius: 50%;
 }
 
-/* Botón cámara flotante posicionado sobre el avatar */
 .avatar-upload-btn {
     position: absolute;
     bottom: 2px;
@@ -166,9 +427,7 @@
     transform: scale(1.1);
 }
 
-.avatar-upload-btn:hover svg {
-    stroke: #FFFFFF;
-}
+.avatar-upload-btn:hover svg { stroke: #FFFFFF; }
 
 .avatar-upload-btn svg {
     width: 17px;
@@ -185,7 +444,6 @@
     line-height: 1.3;
 }
 
-/* ── Campos de solo lectura ── */
 .profile-readonly-fields {
     flex: 1;
     display: flex;
@@ -247,7 +505,7 @@
 .role-chip.chip-user    { background: rgba(16, 185, 129, 0.1); color: #059669; }
 
 /* ==========================================================================
-   SECCIÓN CONTRASEÑA
+   SECCION CONTRASENA
    ========================================================================== */
 
 .password-fields-grid {
@@ -299,7 +557,7 @@
     outline: none;
     border-color: #784A33;
     background: #FFFFFF;
-    box-shadow: 0 0 0 3px rgba(30, 75, 101, 0.1);
+    box-shadow: 0 0 0 3px rgba(120, 74, 51, 0.1);
 }
 
 .pw-eye {
@@ -319,7 +577,7 @@
 
 .pw-eye:hover {
     color: #784A33;
-    background: rgba(30, 75, 101, 0.06);
+    background: rgba(120, 74, 51, 0.06);
 }
 
 .pw-eye svg {
@@ -476,57 +734,261 @@
 }
 
 /* ==========================================================================
-   TARJETA INFO APP
+   CONTROL PARENTAL
    ========================================================================== */
 
-.settings-card-info {
-    background: linear-gradient(135deg, #784A33 0%, #4A2C1D 100%);
-    color: #FFFFFF;
+/* Toggle switch general */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    flex-shrink: 0;
+    cursor: pointer;
 }
 
-.settings-card-info .app-info {
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #CBD5E1;
+    border-radius: 34px;
+    transition: all 0.3s ease;
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background: #7C3AED;
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+    transform: translateX(22px);
+}
+
+/* Master toggle mas grande */
+.master-toggle {
+    width: 58px;
+    height: 32px;
+}
+
+.master-toggle .toggle-slider::before {
+    height: 26px;
+    width: 26px;
+}
+
+.master-toggle input:checked + .toggle-slider {
+    background: linear-gradient(135deg, #7C3AED, #A855F7);
+}
+
+.master-toggle input:checked + .toggle-slider::before {
+    transform: translateX(26px);
+}
+
+/* Status badge del control parental */
+.parental-master-status {
+    padding: 0 28px 20px;
+}
+
+.parental-status-badge {
     display: flex;
     align-items: center;
-    gap: 22px;
-    padding: 28px;
+    gap: 10px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 0.83rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
-.settings-card-info .app-logo {
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 16px;
+.parental-status-badge.inactive {
+    background: #F8FAFC;
+    color: #64748B;
+    border: 1.5px solid #E2E8F0;
+}
+
+.parental-status-badge.inactive svg {
+    stroke: #94A3B8;
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+}
+
+.parental-status-badge.active {
+    background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(168,85,247,0.05));
+    color: #6D28D9;
+    border: 1.5px solid rgba(124,58,237,0.25);
+}
+
+.parental-status-badge.active svg {
+    stroke: #7C3AED;
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+}
+
+/* Tarjetas de grupos de control parental con transicion */
+.parental-group-card {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.parental-group-card.disabled {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+/* Lista de filtros dentro de una tarjeta */
+.parental-filters-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.parental-filter-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid #F1F5F9;
+    transition: all 0.2s ease;
+}
+
+.parental-filter-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.parental-filter-item:first-child {
+    padding-top: 0;
+}
+
+.parental-filter-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    backdrop-filter: blur(4px);
 }
 
-.settings-card-info .app-logo svg {
-    width: 30px;
-    height: 30px;
-    stroke: #FFFFFF;
+.parental-filter-icon svg {
+    width: 22px;
+    height: 22px;
 }
 
-.settings-card-info .app-details h4 {
-    font-size: 1.1rem;
-    font-weight: 700;
+.parental-filter-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.parental-filter-info h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1E293B;
     margin: 0 0 4px;
-    color: #FFFFFF;
 }
 
-.settings-card-info .app-details p {
+.parental-filter-info p {
+    font-size: 0.78rem;
+    color: #64748B;
+    margin: 0 0 8px;
+    line-height: 1.4;
+}
+
+.parental-filter-info p strong {
+    color: #1E293B;
+    font-weight: 700;
+}
+
+.filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.filter-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    background: #F1F5F9;
+    color: #64748B;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border: 1px solid #E2E8F0;
+}
+
+/* Cuando el toggle esta activo, las tags se colorean */
+.parental-filter-item:has(input:checked) .filter-tag {
+    background: rgba(124,58,237,0.08);
+    color: #7C3AED;
+    border-color: rgba(124,58,237,0.2);
+}
+
+/* Resumen de categorias bloqueadas */
+.parental-summary-card {
+    background: linear-gradient(135deg, rgba(124,58,237,0.06), rgba(168,85,247,0.03));
+    border: 1.5px solid rgba(124,58,237,0.2);
+    border-radius: 20px;
+    padding: 20px 24px;
+    animation: fadeInSlideUp 0.3s ease-out both;
+}
+
+.parental-summary-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 0.85rem;
-    margin: 0;
-    opacity: 0.75;
-    color: #FFFFFF;
+    font-weight: 700;
+    color: #6D28D9;
+    margin-bottom: 14px;
 }
 
-.settings-card-info .app-copyright {
-    margin-top: 6px !important;
-    font-size: 0.72rem !important;
-    opacity: 0.5 !important;
+.parental-summary-header svg {
+    width: 18px;
+    height: 18px;
+    stroke: #7C3AED;
+    flex-shrink: 0;
+}
+
+.parental-blocked-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.parental-blocked-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    background: rgba(124,58,237,0.1);
+    color: #6D28D9;
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.parental-blocked-tag svg {
+    width: 13px;
+    height: 13px;
+    stroke: #7C3AED;
 }
 
 /* ==========================================================================
@@ -581,6 +1043,47 @@
    RESPONSIVE
    ========================================================================== */
 
+@media (max-width: 900px) {
+    .settings-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-nav-panel {
+        position: static;
+    }
+
+    .settings-tabs-nav {
+        flex-direction: row;
+    }
+
+    .settings-tab-btn {
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 14px 12px;
+    }
+
+    .settings-tab-btn::before {
+        left: 0; right: 0; top: 0; bottom: auto;
+        height: 3px;
+        width: auto;
+        border-radius: 0 0 3px 3px;
+    }
+
+    .settings-tab-btn:hover {
+        transform: none;
+    }
+
+    .tab-btn-content { display: none; }
+    .tab-chevron { display: none; }
+
+    .tab-btn-icon {
+        width: 36px;
+        height: 36px;
+    }
+}
+
 @media (max-width: 640px) {
     .profile-hero {
         flex-direction: column;
@@ -611,5 +1114,14 @@
     .btn-action {
         width: 100%;
         justify-content: center;
+    }
+
+    .parental-filter-item {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .settings-profile-card {
+        padding: 20px 16px;
     }
 }

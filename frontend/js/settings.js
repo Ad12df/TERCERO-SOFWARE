@@ -1,9 +1,9 @@
 /* ==========================================================================
-   SETTINGS.JS - Lógica de la página de configuración
+   SETTINGS.JS - Logica de la pagina de configuracion (v3 - Con tabs y control parental)
    ========================================================================== */
 
 // =========================================================================
-// INICIALIZACIÓN
+// INICIALIZACION
 // =========================================================================
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -15,7 +15,41 @@ document.addEventListener('DOMContentLoaded', function () {
     loadUserProfile();
     setupEventListeners();
     setupWriterRequestButton();
+    initParentalControls();
 });
+
+// =========================================================================
+// SISTEMA DE TABS
+// =========================================================================
+
+/**
+ * Cambia el tab activo en la seccion de configuracion
+ * @param {string} tabName - Nombre del tab: 'cuenta' | 'parental'
+ */
+function switchTab(tabName) {
+    // Desactivar todos los botones y paneles
+    document.querySelectorAll('.settings-tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.settings-tab-panel').forEach(panel => panel.classList.remove('active'));
+
+    // Activar el boton seleccionado
+    const activeBtn = document.getElementById('tab-btn-' + tabName);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    // Activar el panel correspondiente
+    const activePanel = document.getElementById('tab-panel-' + tabName);
+    if (activePanel) activePanel.classList.add('active');
+
+    // Guardar el tab activo en sessionStorage
+    sessionStorage.setItem('settingsActiveTab', tabName);
+}
+
+/**
+ * Restaura el tab activo al recargar la pagina
+ */
+function restoreActiveTab() {
+    const savedTab = sessionStorage.getItem('settingsActiveTab') || 'cuenta';
+    switchTab(savedTab);
+}
 
 // =========================================================================
 // CARGAR PERFIL DE USUARIO (GET /api/user/profile)
@@ -51,17 +85,36 @@ async function loadUserProfile() {
         console.error('Error al cargar perfil:', err);
         showNotification('No se pudo cargar el perfil desde el servidor', 'error');
     }
+
+    // Restaurar tab activo despues de cargar
+    restoreActiveTab();
 }
 
 /**
  * Aplica los datos del usuario a todos los elementos del DOM
+ * incluyendo el panel lateral de navegacion
  */
 function applyProfileToUI(user) {
     const name  = user.name  || user.email || '';
     const email = user.email || '';
     const role  = user.role  || 'user';
 
-    // ── Datos de solo lectura en el perfil ──
+    // ── Datos en el panel de navegacion (siempre visible) ──
+    const navProfileName  = document.getElementById('navProfileName');
+    const navProfileEmail = document.getElementById('navProfileEmail');
+    const navRoleChip     = document.getElementById('navRoleChip');
+
+    if (navProfileName)  navProfileName.textContent  = name || '---';
+    if (navProfileEmail) navProfileEmail.textContent = email || '---';
+    if (navRoleChip) {
+        navRoleChip.textContent = formatRole(role);
+        navRoleChip.className = 'role-chip chip-' + String(role).toLowerCase();
+    }
+
+    // ── Avatar del panel de navegacion ──
+    updateNavAvatar(name, user.foto);
+
+    // ── Datos de solo lectura en el perfil del tab Cuenta ──
     const displayName  = document.getElementById('displayName');
     const displayEmail = document.getElementById('displayEmail');
     const roleChip     = document.getElementById('roleChip');
@@ -81,8 +134,32 @@ function applyProfileToUI(user) {
 }
 
 /**
+ * Actualiza el avatar del panel lateral de navegacion
+ */
+function updateNavAvatar(nameOrEmail, explicitPhoto) {
+    const initial = (nameOrEmail || 'A').charAt(0).toUpperCase();
+    const savedPhoto = explicitPhoto || localStorage.getItem('avatarPhoto');
+
+    const navImg    = document.getElementById('navAvatarImg');
+    const navLetter = document.getElementById('navAvatarLetter');
+
+    if (savedPhoto) {
+        if (navImg) {
+            navImg.src          = savedPhoto;
+            navImg.style.display = 'block';
+        }
+        if (navLetter) navLetter.style.display = 'none';
+    } else {
+        if (navImg) navImg.style.display = 'none';
+        if (navLetter) {
+            navLetter.style.display = '';
+            navLetter.textContent   = initial;
+        }
+    }
+}
+
+/**
  * Actualiza el avatar grande de settings y el topbar.
- * Si hay foto en localStorage la usa; de lo contrario muestra inicial.
  */
 function updateAvatarFromStorage(nameOrEmail, explicitPhoto) {
     const initial = (nameOrEmail || 'A').charAt(0).toUpperCase();
@@ -105,6 +182,9 @@ function updateAvatarFromStorage(nameOrEmail, explicitPhoto) {
             settingsAvatar.textContent   = initial;
         }
     }
+
+    // ── Nav panel avatar ──
+    updateNavAvatar(nameOrEmail, savedPhoto);
 
     // ── Topbar avatar ──
     refreshTopbarAvatar(initial, savedPhoto);
@@ -150,7 +230,7 @@ async function previewAndSaveAvatar(input) {
     const file = input.files[0];
 
     if (!file.type.startsWith('image/')) {
-        showNotification('Por favor selecciona una imagen válida', 'error');
+        showNotification('Por favor selecciona una imagen valida', 'error');
         return;
     }
 
@@ -219,7 +299,7 @@ function formatRole(role) {
 }
 
 // =========================================================================
-// CAMBIAR CONTRASEÑA (PUT /api/user/password)
+// CAMBIAR CONTRASENA (PUT /api/user/password)
 // =========================================================================
 
 async function changePassword() {
@@ -234,22 +314,22 @@ async function changePassword() {
     const confirmPassword = confirmEl.value;
 
     if (!currentPassword) {
-        showNotification('Por favor, ingresa tu contraseña actual', 'error');
+        showNotification('Por favor, ingresa tu contrasena actual', 'error');
         currentEl.focus();
         return;
     }
     if (!newPassword) {
-        showNotification('Por favor, ingresa la nueva contraseña', 'error');
+        showNotification('Por favor, ingresa la nueva contrasena', 'error');
         newEl.focus();
         return;
     }
     if (newPassword.length < 6) {
-        showNotification('La nueva contraseña debe tener al menos 6 caracteres', 'error');
+        showNotification('La nueva contrasena debe tener al menos 6 caracteres', 'error');
         newEl.focus();
         return;
     }
     if (newPassword !== confirmPassword) {
-        showNotification('Las contraseñas no coinciden', 'error');
+        showNotification('Las contrasenas no coinciden', 'error');
         confirmEl.focus();
         return;
     }
@@ -269,7 +349,7 @@ async function changePassword() {
         const data = await res.json();
 
         if (!res.ok || !data.success) {
-            showNotification(data.message || 'Error al cambiar la contraseña', 'error');
+            showNotification(data.message || 'Error al cambiar la contrasena', 'error');
             return;
         }
 
@@ -277,9 +357,9 @@ async function changePassword() {
         newEl.value     = '';
         confirmEl.value = '';
 
-        showNotification('Contraseña actualizada correctamente', 'success');
+        showNotification('Contrasena actualizada correctamente', 'success');
     } catch (err) {
-        console.error('Error al cambiar contraseña:', err);
+        console.error('Error al cambiar contrasena:', err);
         showNotification('No se pudo conectar con el servidor', 'error');
     } finally {
         if (btn) {
@@ -289,7 +369,7 @@ async function changePassword() {
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
-                Actualizar Contraseña
+                Actualizar Contrasena
             `;
         }
     }
@@ -321,7 +401,7 @@ function setupWriterRequestButton() {
         const desc = document.getElementById('writerRequestDesc');
         if (desc) {
             desc.textContent = role === 'admin'
-                ? 'Ya tienes el rol más alto en la plataforma.'
+                ? 'Ya tienes el rol mas alto en la plataforma.'
                 : 'Ya tienes permisos de escritor para publicar libros.';
         }
     }
@@ -365,7 +445,7 @@ async function requestWriterPromotion() {
             return;
         }
 
-        showNotification('Solicitud enviada. Un administrador la revisará pronto.', 'success');
+        showNotification('Solicitud enviada. Un administrador la revisara pronto.', 'success');
 
         if (btn) {
             btn.disabled = true;
@@ -378,7 +458,7 @@ async function requestWriterPromotion() {
                 Solicitud pendiente
             `;
             const desc = document.getElementById('writerRequestDesc');
-            if (desc) desc.textContent = 'Tu solicitud está en revisión. Un administrador la evaluará pronto.';
+            if (desc) desc.textContent = 'Tu solicitud esta en revision. Un administrador la evaluara pronto.';
         }
     } catch (err) {
         console.error('Error al solicitar ascenso:', err);
@@ -401,11 +481,11 @@ async function requestWriterPromotion() {
 // =========================================================================
 
 function openContactModal() {
-    showNotification('Escríbenos a: clickylee@soporte.com', 'info');
+    showNotification('Escribenos a: clickylee@soporte.com', 'info');
 }
 
 // =========================================================================
-// VISIBILIDAD DE CONTRASEÑA
+// VISIBILIDAD DE CONTRASENA
 // =========================================================================
 
 function togglePasswordVisibility(inputId, btn) {
@@ -413,6 +493,246 @@ function togglePasswordVisibility(inputId, btn) {
     if (!input) return;
     input.type = input.type === 'password' ? 'text' : 'password';
 }
+
+// =========================================================================
+// CONTROL PARENTAL
+// =========================================================================
+
+/** Clave de localStorage para los ajustes de control parental */
+const PARENTAL_SETTINGS_KEY = 'parentalSettings';
+
+/** Mapa maestro de filtros con sus categorias asociadas */
+const PARENTAL_FILTER_CATEGORIES = {
+    'filter-erotico': ['Erótico', 'Erotico'],
+    'filter-sexualidad': ['Sexualidad'],
+    'filter-romantico': ['Romántico', 'Romantico'],
+    'filter-terror': ['Terror'],
+    'filter-belico': ['Terrorismo', 'Bélico', 'Belico', 'Nazis'],
+    'filter-thriller': ['Thriller', 'Novela Negra', 'Policial', 'Policíaco', 'Policiaco', 'Espionaje'],
+    'filter-distopia': ['Distopía', 'Distopia', 'Ucronía', 'Ucronia']
+};
+
+/**
+ * Normaliza un texto para comparaciones seguras sin tildes ni mayusculas
+ */
+function normalizeCategoryStr(str) {
+    return String(str || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+}
+
+/**
+ * Lee los ajustes guardados de control parental desde localStorage
+ * @returns {{ master: boolean, filters: Object, blockedCategories: string[] }}
+ */
+function loadParentalSettings() {
+    try {
+        const raw = localStorage.getItem(PARENTAL_SETTINGS_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            return {
+                master: Boolean(parsed.master),
+                filters: parsed.filters || {},
+                blockedCategories: Array.isArray(parsed.blockedCategories) ? parsed.blockedCategories : []
+            };
+        }
+    } catch (e) {
+        console.warn('Error al parsear parentalSettings:', e);
+    }
+    return { master: false, filters: {}, blockedCategories: [] };
+}
+
+/**
+ * Guarda los ajustes de control parental en localStorage y emite evento global
+ */
+function saveParentalSettings() {
+    const master = document.getElementById('toggleParentalMaster')?.checked || false;
+    const filters = {};
+    const blockedCategories = [];
+
+    document.querySelectorAll('.parental-filter-item input[type="checkbox"]').forEach(cb => {
+        filters[cb.id] = cb.checked;
+        if (cb.checked) {
+            const fromAttr = (cb.getAttribute('data-categories') || '').split(',').map(c => c.trim()).filter(Boolean);
+            const fromMap = PARENTAL_FILTER_CATEGORIES[cb.id] || [];
+            const combined = Array.from(new Set([...fromAttr, ...fromMap]));
+            blockedCategories.push(...combined);
+        }
+    });
+
+    const settings = {
+        master,
+        filters,
+        blockedCategories: Array.from(new Set(blockedCategories))
+    };
+
+    localStorage.setItem(PARENTAL_SETTINGS_KEY, JSON.stringify(settings));
+
+    // Disparar evento personalizado para sincronizar en vivo con books.js y otras vistas
+    window.dispatchEvent(new CustomEvent('parentalSettingsChanged', { detail: settings }));
+}
+
+/**
+ * Inicializa los controles de control parental cargando los ajustes guardados
+ */
+function initParentalControls() {
+    const settings = loadParentalSettings();
+    const masterToggle = document.getElementById('toggleParentalMaster');
+
+    if (masterToggle) {
+        masterToggle.checked = settings.master;
+    }
+
+    // Restaurar estado de cada filtro individual
+    if (settings.filters) {
+        Object.entries(settings.filters).forEach(([id, checked]) => {
+            const el = document.getElementById(id);
+            if (el) el.checked = Boolean(checked);
+        });
+    }
+
+    // Aplicar estado visual inicial y resumen
+    applyParentalState(settings.master);
+    updateParentalSummary();
+}
+
+/**
+ * Callback cuando el toggle maestro cambia
+ */
+function onMasterToggleChange(checkbox) {
+    const enabled = checkbox.checked;
+    applyParentalState(enabled);
+    saveParentalSettings();
+    updateParentalSummary();
+
+    if (enabled) {
+        showNotification('Control parental activado correctamente', 'success');
+    } else {
+        showNotification('Control parental desactivado (se muestra todo el catálogo)', 'info');
+    }
+}
+
+/**
+ * Callback cuando cualquier filtro individual cambia
+ */
+function onParentalFilterChange() {
+    saveParentalSettings();
+    updateParentalSummary();
+}
+
+/**
+ * Aplica el estado visual del control parental (activo/inactivo)
+ * Habilita o deshabilita los grupos de tarjetas segun el toggle maestro
+ */
+function applyParentalState(enabled) {
+    const groupCards = document.querySelectorAll('.parental-group-card');
+    groupCards.forEach(card => {
+        if (enabled) {
+            card.classList.remove('disabled');
+            card.style.opacity = '1';
+            card.style.pointerEvents = 'auto';
+        } else {
+            card.classList.add('disabled');
+            card.style.opacity = '0.5';
+            card.style.pointerEvents = 'none';
+        }
+    });
+
+    // Actualizar badge de estado
+    const badge    = document.getElementById('parentalStatusBadge');
+    const statusEl = document.getElementById('parentalStatusText');
+
+    if (badge && statusEl) {
+        if (enabled) {
+            badge.className = 'parental-status-badge active';
+            badge.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>Control parental activo — Filtros aplicados al catálogo de libros</span>
+            `;
+        } else {
+            badge.className = 'parental-status-badge inactive';
+            badge.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                </svg>
+                <span>Control parental desactivado — Se muestra todo el contenido</span>
+            `;
+        }
+    }
+}
+
+/**
+ * Actualiza el resumen de categorias bloqueadas al pie de la seccion
+ */
+function updateParentalSummary() {
+    const masterEnabled = document.getElementById('toggleParentalMaster')?.checked || false;
+    const summaryCard   = document.getElementById('parentalSummary');
+    const tagsContainer = document.getElementById('parentalBlockedTags');
+
+    if (!summaryCard || !tagsContainer) return;
+
+    if (!masterEnabled) {
+        summaryCard.style.display = 'none';
+        return;
+    }
+
+    const blockedCategories = [];
+
+    document.querySelectorAll('.parental-filter-item input[type="checkbox"]:checked').forEach(cb => {
+        const fromAttr = (cb.getAttribute('data-categories') || '').split(',').map(c => c.trim()).filter(Boolean);
+        const fromMap  = PARENTAL_FILTER_CATEGORIES[cb.id] || [];
+        const combined = [...fromAttr, ...fromMap];
+        combined.forEach(c => {
+            if (!blockedCategories.includes(c)) blockedCategories.push(c);
+        });
+    });
+
+    if (blockedCategories.length === 0) {
+        summaryCard.style.display = 'none';
+        return;
+    }
+
+    summaryCard.style.display = 'block';
+    tagsContainer.innerHTML = blockedCategories.map(cat => `
+        <span class="parental-blocked-tag">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+            </svg>
+            ${cat}
+        </span>
+    `).join('');
+}
+
+/**
+ * Funcion global para que books.js y otros modulos obtengan
+ * las categorias actualmente bloqueadas por el control parental.
+ *
+ * @returns {string[]} - Array de categorias bloqueadas. Vacio si el control parental esta desactivado.
+ */
+window.getBlockedCategories = function () {
+    const settings = loadParentalSettings();
+    if (!settings.master) return [];
+
+    if (Array.isArray(settings.blockedCategories) && settings.blockedCategories.length > 0) {
+        return settings.blockedCategories;
+    }
+
+    const blocked = [];
+    if (settings.filters) {
+        Object.entries(settings.filters).forEach(([id, checked]) => {
+            if (!checked) return;
+            const fromMap = PARENTAL_FILTER_CATEGORIES[id] || [];
+            blocked.push(...fromMap);
+        });
+    }
+    return Array.from(new Set(blocked));
+};
 
 // =========================================================================
 // NOTIFICACIONES
